@@ -9,11 +9,12 @@
 #define PLAYER_SPEED			4
 #define PLAYER_TRESHOLD		4
 #define PLAYER_MAX_FRAMES		2
-#define PLAYER_GRAVITY			3
-#define PLAYER_LIFT			2
+#define PLAYER_GRAVITY			6
+#define PLAYER_LIFT			1
 
 #define PLAYER_SPEED_TRESHOLD	6
-#define PLAYER_FLAP_TRESHOLD	4
+#define PLAYER_FLAP_TRESHOLD	8
+#define PLAYER_GRAVITY_TRESHOLD	4
 
 #define PLAYER_STATE_NORMAL		0
 #define PLAYER_STATE_FLAP		1
@@ -27,6 +28,7 @@ struct player
 	unsigned int state;
 	unsigned int state_counter;
 	unsigned int speed_counter;
+	unsigned int gravity_counter;
 };
 
 void init_player(

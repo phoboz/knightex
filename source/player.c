@@ -107,7 +107,14 @@ unsigned int move_player(
 			}
 			else
 			{
-				player->ch.dy = -PLAYER_GRAVITY;
+				if (++player->gravity_counter >= PLAYER_GRAVITY_TRESHOLD)
+				{
+					player->gravity_counter = 0;
+					if (player->ch.dy > -PLAYER_GRAVITY)
+					{
+						player->ch.dy--;
+					}
+				}
 			}
 			break;
 
