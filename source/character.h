@@ -3,10 +3,8 @@
 
 #include "object.h"
 
-#define CHARACTER_MIN_Y	-108
-#define CHARACTER_MAX_Y	 108
-#define CHARACTER_MIN_X	-100
-#define CHARACTER_MAX_X	 100
+#define CHARACTER_MIN_Y	-100
+#define CHARACTER_MAX_Y	 100
 
 struct character
 {
@@ -45,6 +43,12 @@ void deinit_character(
 void set_dir_character(
 	struct character *ch,
 	unsigned int dir
+	);
+
+void set_animation_character(
+	struct character *ch,
+	unsigned int base_frame,
+	unsigned int max_frames
 	);
 
 unsigned int animate_character(

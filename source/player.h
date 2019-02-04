@@ -7,8 +7,8 @@
 #define PLAYER_WIDTH			12
 #define PLAYER_SCALE			0x40/10
 #define PLAYER_SPEED			4
-#define PLAYER_TRESHOLD		4
-#define PLAYER_MAX_FRAMES		2
+#define PLAYER_TRESHOLD		6
+#define PLAYER_MAX_FRAMES		4
 #define PLAYER_GRAVITY			6
 #define PLAYER_LIFT			1
 
@@ -18,9 +18,11 @@
 
 #define PLAYER_STATE_NORMAL		0
 #define PLAYER_STATE_FLAP		1
+#define PLAYER_STATE_WALK		2
 #define PLAYER_STATE_DEAD		10
 
 #define PLAYER_STATUS_FLAP		0x01
+#define PLAYER_STATUS_BRAKE		0x02
 
 struct player
 {

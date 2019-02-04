@@ -80,6 +80,16 @@ void set_dir_character(
 	}
 }
 
+void set_animation_character(
+	struct character *ch,
+	unsigned int base_frame,
+	unsigned int max_frames
+	)
+{
+	ch->base_frame = base_frame;
+	ch->max_frames = max_frames;
+}
+
 unsigned int animate_character(
 	struct character *ch
 	)
@@ -110,31 +120,17 @@ unsigned int move_character(
 	ch->obj.y += ch->dy;
 	ch->obj.x += ch->dx;
 
-	if (ch->obj.y < CHARACTER_MIN_Y)
+	if (ch->obj.y <= CHARACTER_MIN_Y)
 	{
 		ch->obj.y = CHARACTER_MIN_Y;
 		stopped = 1;
 	}
 
-	if (ch->obj.y > CHARACTER_MAX_Y)
+	if (ch->obj.y >= CHARACTER_MAX_Y)
 	{
 		ch->obj.y = CHARACTER_MAX_Y;
-		stopped = 1;
+		stopped = 2;
 	}
-
-#if 0
-	if (ch->obj.x < CHARACTER_MIN_X)
-	{
-		ch->obj.x = CHARACTER_MIN_X;
-		stopped = 1;
-	}
-
-	if (ch->obj.x > CHARACTER_MAX_X)
-	{
-		ch->obj.x = CHARACTER_MAX_X;
-		stopped = 1;
-	}
-#endif
 
 	return stopped;
 }
@@ -148,31 +144,17 @@ unsigned int retreat_character(
 	ch->obj.y -= ch->dy << 1;
 	ch->obj.x -= ch->dx << 1;
 
-	if (ch->obj.y < CHARACTER_MIN_Y)
+	if (ch->obj.y <= CHARACTER_MIN_Y)
 	{
 		ch->obj.y = CHARACTER_MIN_Y;
 		stopped = 1;
 	}
 
-	if (ch->obj.y > CHARACTER_MAX_Y)
+	if (ch->obj.y >= CHARACTER_MAX_Y)
 	{
 		ch->obj.y = CHARACTER_MAX_Y;
-		stopped = 1;
+		stopped = 2;
 	}
-
-#if 0
-	if (ch->obj.x < CHARACTER_MIN_X)
-	{
-		ch->obj.x = CHARACTER_MIN_X;
-		stopped = 1;
-	}
-
-	if (ch->obj.x > CHARACTER_MAX_X)
-	{
-		ch->obj.x = CHARACTER_MAX_X;
-		stopped = 1;
-	}
-#endif
 
 	return stopped;
 }
