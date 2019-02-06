@@ -6,6 +6,7 @@
 #include "generic.h"
 #include "controller.h"
 #include "draw.h"
+#include "platform.h"
 #include "ostrich.h"
 #include "player.h"
 
@@ -136,6 +137,19 @@ unsigned int move_player(
 					}
 				}
 			}
+
+			if (hit_over_platform(&player->ch.obj, &player->ch.dy, player->ch.dx))
+			{
+				player->state = PLAYER_STATE_WALK;
+				if (player->ch.base_frame == OSTRICH_LEFT)
+				{
+					player->ch.base_frame = OSTRICH_WALK_LEFT_START;
+				}
+				else if (player->ch.base_frame == OSTRICH_RIGHT)
+				{
+					player->ch.base_frame = OSTRICH_WALK_RIGHT_START;
+				}
+			}
 			break;
 
 		case PLAYER_STATE_FLAP:
@@ -168,6 +182,7 @@ unsigned int move_player(
 			break;
 
 		case PLAYER_STATE_WALK:
+			player->ch.dy = 0;
 			if (player->ch.dx < 0 && player->ch.dir != DIR_LEFT)
 			{
 				player->ch.base_frame = OSTRICH_WALK_LEFT_START;
@@ -218,16 +233,9 @@ unsigned int move_player(
 				player->state = PLAYER_STATE_FLAP;
 				status |= PLAYER_STATUS_FLAP;
 			}
-			else
+			else if (!hit_over_platform(&player->ch.obj, &player->ch.dy, player->ch.dx))
 			{
-				if (++player->gravity_counter >= PLAYER_GRAVITY_TRESHOLD)
-				{
-					player->gravity_counter = 0;
-					if (player->ch.dy > -PLAYER_GRAVITY)
-					{
-						player->ch.dy--;
-					}
-				}
+				player->state = PLAYER_STATE_NORMAL;
 			}
 			break;
 

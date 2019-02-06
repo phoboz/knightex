@@ -1,19 +1,27 @@
 #ifndef _PLATFORM_H
 #define _PLATFORM_H
 
+#define MAX_PLATFORMS		7
+
 #define PLATFORM_HEIGHT	-8
 #define PLATFORM_WIDTH		24
 
-struct platform
-{
-	signed int y, x;
-	const unsigned int * const data;
-};
+struct object;
 
-extern const struct platform platforms[];
+void enable_platform(
+	signed int index
+	);
 
-void draw_platform(
-	unsigned int index
+void disable_platform(
+	signed int index
+	);
+
+void draw_platforms(void);
+
+unsigned int hit_over_platform(
+	struct object *obj,
+	signed int *dy,
+	signed int dx
 	);
 
 #endif

@@ -19,7 +19,7 @@ struct object
 	struct object *prev, *next;
 };
 
-void  give_object(
+void give_object(
 	struct object *obj,
 	struct object **head
 	);

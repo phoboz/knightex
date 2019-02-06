@@ -92,10 +92,7 @@ int main(void)
 		Draw_Line_d(0, 127);
 		Draw_Line_d(0, 127);
 
-		for (unsigned int i = 0; i < 7; i++)
-		{
-			draw_platform(i);
-		}
+		draw_platforms();
 
 		draw_player(&player_1);
 	};
