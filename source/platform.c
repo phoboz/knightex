@@ -4,7 +4,7 @@
 
 #include <vectrex.h>
 #include "rasterDraw.h"
-#include "platforms.h"
+#include "platform.h"
 
 // ---------------------------------------------------------------------------
 // format:

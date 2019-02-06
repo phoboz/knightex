@@ -17,7 +17,7 @@
 #include "controller.h"
 #include "ayfxPlayer.h"
 #include "player.h"
-#include "platforms.h"
+#include "platform.h"
 #include "flap_snd.h"
 #include "brake_snd.h"
 

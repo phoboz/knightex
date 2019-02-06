@@ -1,5 +1,5 @@
-#ifndef _PLATFORMS_H
-#define _PLATFORMS_H
+#ifndef _PLATFORM_H
+#define _PLATFORM_H
 
 #define PLATFORM_HEIGHT	-12
 #define PLATFORM_WIDTH		24
