@@ -16,7 +16,9 @@
 #include <vectrex.h>
 #include "controller.h"
 #include "ayfxPlayer.h"
+#include "rasterDraw.h"
 #include "player.h"
+#include "platforms.h"
 #include "flap_snd.h"
 #include "brake_snd.h"
 
@@ -83,6 +85,29 @@ int main(void)
 
 		Wait_Recal();
 
+		Intensity_3F();
+
+		Moveto_d(platform01_dim[0], platform01_dim[1]);
+		Vec_Text_Height = platform01_dim[2];
+		Vec_Text_Width = platform01_dim[3];
+		rasterDraw(platform01_data);
+
+		Moveto_d(platform02_dim[0], platform02_dim[1]);
+		Vec_Text_Height = platform02_dim[2];
+		Vec_Text_Width = platform02_dim[3];
+		rasterDraw(platform02_data);
+
+		Moveto_d(platform03_dim[0], platform03_dim[1]);
+		Vec_Text_Height = platform03_dim[2];
+		Vec_Text_Width = platform03_dim[3];
+		rasterDraw(platform03_data);
+
+		Moveto_d(platform04_dim[0], platform04_dim[1]);
+		Vec_Text_Height = platform04_dim[2];
+		Vec_Text_Width = platform04_dim[3];
+		rasterDraw(platform04_data);
+
+		Intensity_7F();
 		draw_player(&player_1);
 	};
 	

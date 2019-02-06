@@ -1,0 +1,199 @@
+;!FILE C:\Users\avonknor\Documents\Vectrex\Vide\projects\joust\source\rasterDraw.s
+XH2
+H 3 areas 71 global symbols 2 banks 1 modes
+M rasterDraw.s
+G 00 00 80 81 82 83 84 85 86 87 88 89 8A 8B 8C 8D 8E 8F
+B _CSEG base 0 size 0 map 0 flags 0
+B _DSEG base 0 size 0 map 0 flags 4 fsfx _DS
+S .__.ABS. Def0000
+A _CODE size 0 flags CC80 bank 0
+A _DATA size 0 flags CCC0 bank 1
+A .text size D6 flags D00
+S A$rasterDraw$440 Def0086
+S A$rasterDraw$422 Def006C
+S A$rasterDraw$413 Def005C
+S A$rasterDraw$404 Def004C
+S draw_raster_image Def0007
+S A$rasterDraw$441 Def0089
+S A$rasterDraw$423 Def006D
+S A$rasterDraw$414 Def005E
+S A$rasterDraw$405 Def004F
+S A$rasterDraw$451 Def0091
+S A$rasterDraw$442 Def008A
+S A$rasterDraw$424 Def006F
+S A$rasterDraw$415 Def0060
+S A$rasterDraw$470 Def00B4
+S A$rasterDraw$461 Def00A0
+S A$rasterDraw$452 Def0092
+S A$rasterDraw$425 Def0071
+S A$rasterDraw$416 Def0063
+S A$rasterDraw$362 Def0014
+S A$rasterDraw$353 Def0007
+S A$rasterDraw$480 Def00C4
+S A$rasterDraw$471 Def00B6
+S A$rasterDraw$462 Def00A2
+S A$rasterDraw$453 Def0094
+S A$rasterDraw$435 Def007D
+S A$rasterDraw$426 Def0073
+S A$rasterDraw$417 Def0065
+S A$rasterDraw$408 Def0051
+S A$rasterDraw$381 Def002E
+S A$rasterDraw$363 Def0017
+S A$rasterDraw$354 Def0009
+S A$rasterDraw$481 Def00C7
+S A$rasterDraw$472 Def00B8
+S A$rasterDraw$463 Def00A4
+S A$rasterDraw$454 Def0096
+S A$rasterDraw$445 Def008B
+S A$rasterDraw$436 Def0080
+S A$rasterDraw$427 Def0075
+S A$rasterDraw$418 Def0067
+S A$rasterDraw$409 Def0053
+S A$rasterDraw$391 Def003C
+S A$rasterDraw$382 Def0031
+S A$rasterDraw$373 Def0025
+S A$rasterDraw$364 Def0019
+S A$rasterDraw$355 Def000C
+S A$rasterDraw$482 Def00CA
+S A$rasterDraw$464 Def00A6
+S A$rasterDraw$455 Def0097
+S A$rasterDraw$446 Def008D
+S A$rasterDraw$437 Def0082
+S A$rasterDraw$428 Def0078
+S A$rasterDraw$419 Def0069
+S A$rasterDraw$392 Def003E
+S A$rasterDraw$383 Def0033
+S A$rasterDraw$374 Def0027
+S A$rasterDraw$365 Def001B
+S A$rasterDraw$356 Def000E
+S A$rasterDraw$347 Def0000
+S A$rasterDraw$483 Def00CC
+S A$rasterDraw$474 Def00BA
+S A$rasterDraw$465 Def00A9
+S A$rasterDraw$456 Def0099
+S A$rasterDraw$447 Def008F
+S A$rasterDraw$438 Def0084
+S A$rasterDraw$429 Def007B
+S A$rasterDraw$384 Def0035
+S A$rasterDraw$375 Def0029
+S A$rasterDraw$366 Def001D
+S A$rasterDraw$357 Def0011
+S A$rasterDraw$348 Def0002
+S A$rasterDraw$475 Def00BB
+S A$rasterDraw$466 Def00AB
+S A$rasterDraw$457 Def009B
+S A$rasterDraw$394 Def0040
+S A$rasterDraw$376 Def002C
+S A$rasterDraw$367 Def001F
+S A$rasterDraw$349 Def0004
+S A$rasterDraw$476 Def00BC
+S A$rasterDraw$467 Def00AD
+S A$rasterDraw$458 Def009E
+S A$rasterDraw$386 Def0037
+S A$rasterDraw$368 Def0022
+S A$rasterDraw$477 Def00BE
+S A$rasterDraw$468 Def00AF
+S A$rasterDraw$387 Def003A
+S A$rasterDraw$369 Def0023
+S A$rasterDraw$487 Def00CF
+S A$rasterDraw$478 Def00C0
+S A$rasterDraw$469 Def00B2
+S A$rasterDraw$388 Def003B
+S A$rasterDraw$488 Def00D1
+S A$rasterDraw$479 Def00C2
+S A$rasterDraw$398 Def0042
+S A$rasterDraw$489 Def00D3
+S A$rasterDraw$399 Def0043
+S oneShiftOutForward Def003C
+S oneShiftOutBackward Def008B
+S A$rasterDraw$3 Def0000
+S nextForwardLine Def002E
+S dummy1 Def0042
+S dummy2 Def0091
+S dummy3 Def007D
+S exit_raster_early Def0000
+S exit_raster_late Def00CF
+S A$rasterDraw$400 Def0045
+S A$rasterDraw$410 Def0055
+S A$rasterDraw$401 Def0047
+S A$rasterDraw$411 Def0057
+S A$rasterDraw$402 Def0048
+S A$rasterDraw$421 Def006B
+S A$rasterDraw$412 Def005A
+S A$rasterDraw$403 Def004A
+T 00 00 00 01 D0 00
+P 00 00 00 02
+T 00 00
+R 00 00 00 02
+T 00 00 86 98 97 D0 0B 7E F3 54
+R 00 00 00 02 20 05 00 01
+T 00 07
+R 00 00 00 02
+T 00 07 A6 C0 B7 C8 2E A6 C0 B7 C8 2F B7 C8 30
+R 00 00 00 02
+T 00 14 CC 18 83 0F D0 01 97 D0 0B D7
+R 00 00 00 02 20 06 00 01 20 09 00 01
+T 00 1C D0 00 0A D0 00 CC 80 81 12 0C
+R 00 00 00 02 20 02 00 01 20 05 00 01
+T 00 24 D0 00 D7 D0 00 97
+R 00 00 00 02 20 02 00 01 20 05 00 01
+T 00 28 D0 00 7D C8 00 0C D0 00
+R 00 00 00 02 20 02 00 01 20 08 00 01
+T 00 2E
+R 00 00 00 02
+T 00 2E B6 C8 2B 97 D0 01 86 01 97 D0 00 F6
+R 00 00 00 02 20 06 00 01 20 0B 00 01
+T 00 38 C8 30 12 12
+R 00 00 00 02
+T 00 3C
+R 00 00 00 02
+T 00 3C A6 C0 97 D0 0A 20 00
+R 00 00 00 02 20 05 00 01
+T 00 42
+R 00 00 00 02
+T 00 42 5A 26 F7 86 81 12 97 D0 00 D7 D0 01 7A
+R 00 00 00 02 20 09 00 01 20 0C 00 01
+T 00 4D C8 2E 27 AF 86 83 97 D0 00 0A D0 00 B6
+R 00 00 00 02 20 09 00 01 20 0C 00 01
+T 00 58 C8 2A 0A D0 00 0A D0 00 97
+R 00 00 00 02 20 05 00 01 20 08 00 01
+T 00 5F D0 01 70 C8 2B 0C D0 00 0F
+R 00 00 00 02 20 02 00 01 20 08 00 01
+T 00 66 D0 01 86 01 97 D0 00 12 12 86 81 97
+R 00 00 00 02 20 02 00 01 20 07 00 01
+T 00 70 D0 00 0F D0 01 0A
+R 00 00 00 02 20 02 00 01 20 05 00 01
+T 00 74 D0 00 B6 C8 2F B7 C8 30 0C D0 00
+R 00 00 00 02 20 02 00 01 20 0B 00 01
+T 00 7D
+R 00 00 00 02
+T 00 7D B6 C8 2B 97 D0 01 86 01 97 D0 00 F6
+R 00 00 00 02 20 06 00 01 20 0B 00 01
+T 00 87 C8 30 12 12
+R 00 00 00 02
+T 00 8B
+R 00 00 00 02
+T 00 8B A6 C0 97 D0 0A 20 00
+R 00 00 00 02 20 05 00 01
+T 00 91
+R 00 00 00 02
+T 00 91 5A 26 F7 86 81 12 97 D0 00 D7 D0 01 7A
+R 00 00 00 02 20 09 00 01 20 0C 00 01
+T 00 9C C8 2E 27 2F 86 83 97 D0 00 0A D0 00 B6
+R 00 00 00 02 20 09 00 01 20 0C 00 01
+T 00 A7 C8 2A 0A D0 00 0A D0 00 97
+R 00 00 00 02 20 05 00 01 20 08 00 01
+T 00 AE D0 01 70 C8 2B 0C D0 00 0F
+R 00 00 00 02 20 02 00 01 20 08 00 01
+T 00 B5 D0 01 86 01 97 D0 00 12 12 86 81 97
+R 00 00 00 02 20 02 00 01 20 07 00 01
+T 00 BF D0 00 0F D0 01 0A
+R 00 00 00 02 20 02 00 01 20 05 00 01
+T 00 C3 D0 00 B6 C8 2F B7 C8 30 0C D0 00 7E
+R 00 00 00 02 20 02 00 01 20 0B 00 01
+T 00 CD 00 2E
+R 00 00 00 02 01 02 00 02
+T 00 CF
+R 00 00 00 02
+T 00 CF 86 98 97 D0 0B 7E F3 54
+R 00 00 00 02 20 05 00 01
