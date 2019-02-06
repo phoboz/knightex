@@ -88,7 +88,7 @@ int main(void)
 
 		Reset0Ref();
 		VIA_t1_cnt_lo = OBJECT_MOVE_SCALE;
-		Moveto_d(-90, -127);
+		Moveto_d(-86, -127);
 		Draw_Line_d(0, 127);
 		Draw_Line_d(0, 127);
 
