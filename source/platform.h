@@ -1,7 +1,7 @@
 #ifndef _PLATFORM_H
 #define _PLATFORM_H
 
-#define PLATFORM_HEIGHT	-12
+#define PLATFORM_HEIGHT	-8
 #define PLATFORM_WIDTH		24
 
 struct platform

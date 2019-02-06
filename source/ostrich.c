@@ -6,7 +6,7 @@
 
 // ---------------------------------------------------------------------------
 
-#define BLOW_UP 10
+#define BLOW_UP 6
 
 const signed char ostrich_0[]=
 {	(signed char) +1, +12*BLOW_UP, +8*BLOW_UP, // sync and move to y, x

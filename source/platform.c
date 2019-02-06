@@ -85,7 +85,7 @@ const struct platform platforms[]=
 	{	64,	84,		platform03_data	},
 	{	0,	-120,	platform04_data	},
 	{	-28,	-26,		platform05_data	},
-	{	10,	48,		platform06_data	},
+	{	4,	48,		platform06_data	},
 	{	0,	90,		platform07_data	}
 };
 
