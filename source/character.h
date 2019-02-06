@@ -3,7 +3,7 @@
 
 #include "object.h"
 
-#define CHARACTER_MIN_Y	-100
+#define CHARACTER_MIN_Y	 -80
 #define CHARACTER_MAX_Y	 100
 
 struct character
