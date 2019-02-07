@@ -192,65 +192,28 @@ unsigned int hit_over_platform(
 	return result;
 }
 
-unsigned int hit_under_platform(
+unsigned int hit_platform(
 	struct object *obj,
 	signed int *dy,
-	signed int dx
-	)
-{
-	unsigned int i;
-	signed int y, x, new_dy, def_y, index;
-	const struct platform_def *def;
-	unsigned int result = 0;
-
-	y = obj->y + obj->h_2;
-	x = obj->x + dx;
-	for (i = 0; i < MAX_PLATFORMS; i++)
-	{
-		index = platform_indices[i];
-		if (index >= 0 && index < MAX_PLATFORMS)
-		{
-			def = &platform_defs[index];
-			if (y <= def->y && y + *dy >= def->y &&
-				x >= def->x && x <= def->x + def->w)
-			{
-				new_dy = y - def->y;
-				result = 1;
-				break;
-			}
-
-			def_y = def->y + PLATFORM_HEIGHT;  // already negative
-			if (y <= def_y && y + *dy >= def_y &&
-				x >= def->x && x <= def->x + def->w)
-			{
-				new_dy = y - def_y;
-				result = 1;
-				break;
-			}
-		}
-	}
-
-	if (result)
-	{
-		*dy = new_dy;
-	}
-
-	return result;
-}
-
-unsigned int hit_side_platform(
-	struct object *obj,
-	signed int dy,
 	signed int *dx
 	)
 {
 	unsigned int i;
-	signed int y, x, new_dx, index;
+	signed int index;
+	signed int obj_y1, obj_x1, obj_y2, obj_x2;
+	signed int platform_y1, platform_x1, platform_y2, platform_x2;
 	const struct platform_def *def;
 	unsigned int result = 0;
 
-	y = obj->y + dy;
-	x = obj->x;
+	obj_y1 = obj->y;
+	obj_x1 = obj->x - obj->w_2;
+	obj_y2 = obj->y + obj->h_2;
+	obj_x2 = obj->x + obj->w_2;
+
+	obj_y1 += *dy;
+	obj_x1 += *dx;
+	obj_y2 += *dy;
+	obj_x2 += *dx;
 
 	for (i = 0; i < MAX_PLATFORMS; i++)
 	{
@@ -258,27 +221,23 @@ unsigned int hit_side_platform(
 		if (index >= 0 && index < MAX_PLATFORMS)
 		{
 			def = &platform_defs[index];
-			if (def->y > y && def->y < y + obj->h_2 &&
-				x >= def->x && x + *dx <= def->x)
+			platform_y1 = def->y + PLATFORM_HEIGHT;
+			platform_x1 = def->x;
+			platform_y2 = def->y;
+			platform_x2 = def->x + def->w;
+			if (obj_y1 < platform_y2 && obj_y2 > platform_y1 &&
+				obj_x1 < platform_x2 && obj_x2 > platform_x1)
 			{
-				new_dx = def->x - x;
 				result = 1;
 				break;
 			}
-
-			if (def->y > y && def->y < y + obj->h_2 &&
-				x >= def->x + def->w && x + *dx <= def->x + def->w)
-			{
-				new_dx = def->x + def->w - x;
-				result = 1;
-				break;
-			}				
 		}
 	}
 
 	if (result)
 	{
-		*dx = new_dx;
+		*dy = 0;
+		*dx = 0;
 	}
 
 	return result;

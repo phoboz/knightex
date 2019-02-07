@@ -24,15 +24,9 @@ unsigned int hit_over_platform(
 	signed int dx
 	);
 
-unsigned int hit_under_platform(
+unsigned int hit_platform(
 	struct object *obj,
 	signed int *dy,
-	signed int dx
-	);
-
-unsigned int hit_side_platform(
-	struct object *obj,
-	signed int dy,
 	signed int *dx
 	);
 

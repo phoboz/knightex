@@ -94,8 +94,6 @@ unsigned int move_player(
 		}
 	}
 
-	hit_side_platform(&player->ch.obj, player->ch.dy, &player->ch.dx);
-
 	player->ch.treshold = PLAYER_TRESHOLD - (unsigned int) abs(player->ch.dx);
 
 	switch (player->state)
@@ -126,7 +124,7 @@ unsigned int move_player(
 				player->ch.dy = PLAYER_LIFT;
 				player->ch.frame = 1;
 				status |= PLAYER_STATUS_FLAP;
-				if (!hit_under_platform(&player->ch.obj, &player->ch.dy, player->ch.dx))
+				if (!hit_platform(&player->ch.obj, &player->ch.dy, &player->ch.dx))
 				{
 					player->state = PLAYER_STATE_FLAP;
 				}
@@ -178,7 +176,7 @@ unsigned int move_player(
 				}
 			}
 
-			if (hit_under_platform(&player->ch.obj, &player->ch.dy, player->ch.dx))
+			if (hit_platform(&player->ch.obj, &player->ch.dy, &player->ch.dx))
 			{
 				player->state_counter = 0;
 				player->ch.frame = 0;
@@ -255,6 +253,7 @@ unsigned int move_player(
 			break;
 	}
 
+	hit_platform(&player->ch.obj, &player->ch.dy, &player->ch.dx);
 	if (move_character(&player->ch) == 1)
 	{
 		player->state = PLAYER_STATE_WALK;
