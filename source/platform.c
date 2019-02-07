@@ -192,6 +192,98 @@ unsigned int hit_over_platform(
 	return result;
 }
 
+unsigned int hit_under_platform(
+	struct object *obj,
+	signed int *dy,
+	signed int dx
+	)
+{
+	unsigned int i;
+	signed int y, x, new_dy, def_y, index;
+	const struct platform_def *def;
+	unsigned int result = 0;
+
+	y = obj->y + obj->h_2;
+	x = obj->x + dx;
+	for (i = 0; i < MAX_PLATFORMS; i++)
+	{
+		index = platform_indices[i];
+		if (index >= 0 && index < MAX_PLATFORMS)
+		{
+			def = &platform_defs[index];
+			if (y <= def->y && y + *dy >= def->y &&
+				x >= def->x && x <= def->x + def->w)
+			{
+				new_dy = y - def->y;
+				result = 1;
+				break;
+			}
+
+			def_y = def->y + PLATFORM_HEIGHT;  // already negative
+			if (y <= def_y && y + *dy >= def_y &&
+				x >= def->x && x <= def->x + def->w)
+			{
+				new_dy = y - def_y;
+				result = 1;
+				break;
+			}
+		}
+	}
+
+	if (result)
+	{
+		*dy = new_dy;
+	}
+
+	return result;
+}
+
+unsigned int hit_side_platform(
+	struct object *obj,
+	signed int dy,
+	signed int *dx
+	)
+{
+	unsigned int i;
+	signed int y, x, new_dx, index;
+	const struct platform_def *def;
+	unsigned int result = 0;
+
+	y = obj->y + dy;
+	x = obj->x;
+
+	for (i = 0; i < MAX_PLATFORMS; i++)
+	{
+		index = platform_indices[i];
+		if (index >= 0 && index < MAX_PLATFORMS)
+		{
+			def = &platform_defs[index];
+			if (def->y > y && def->y < y + obj->h_2 &&
+				x >= def->x && x + *dx <= def->x)
+			{
+				new_dx = def->x - x;
+				result = 1;
+				break;
+			}
+
+			if (def->y > y && def->y < y + obj->h_2 &&
+				x >= def->x + def->w && x + *dx <= def->x + def->w)
+			{
+				new_dx = def->x + def->w - x;
+				result = 1;
+				break;
+			}				
+		}
+	}
+
+	if (result)
+	{
+		*dx = new_dx;
+	}
+
+	return result;
+}
+
 // ***************************************************************************
 // end of file
 // ***************************************************************************
