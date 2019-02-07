@@ -132,28 +132,14 @@ unsigned int move_character(
 		stopped = 2;
 	}
 
-	return stopped;
-}
-
-unsigned int retreat_character(
-	struct character *ch
-	)
-{
-	unsigned int stopped = 0;
-
-	ch->obj.y -= ch->dy << 1;
-	ch->obj.x -= ch->dx << 1;
-
-	if (ch->obj.y <= CHARACTER_MIN_Y)
+	if (ch->obj.x <= CHARACTER_MIN_X)
 	{
-		ch->obj.y = CHARACTER_MIN_Y;
-		stopped = 1;
+		ch->obj.x = CHARACTER_MAX_X - 1;
 	}
 
-	if (ch->obj.y >= CHARACTER_MAX_Y)
+	if (ch->obj.x >= CHARACTER_MAX_X)
 	{
-		ch->obj.y = CHARACTER_MAX_Y;
-		stopped = 2;
+		ch->obj.x = CHARACTER_MIN_X + 1;
 	}
 
 	return stopped;

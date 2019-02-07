@@ -205,7 +205,7 @@ unsigned int hit_platform(
 	const struct platform_def *def;
 	unsigned int result = 0;
 
-	obj_y1 = obj->y;
+	obj_y1 = obj->y - obj->h_2;
 	obj_x1 = obj->x - obj->w_2;
 	obj_y2 = obj->y + obj->h_2;
 	obj_x2 = obj->x + obj->w_2;
