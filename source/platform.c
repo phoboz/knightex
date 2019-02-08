@@ -91,12 +91,12 @@ static const struct platform_def platform_defs[]=
 {
 	// format
 	//	y,	x,		w,		data
-	{	64,	-120,	0x09*3,	platform01_data	},
-	{	52,	-40,		0x16*3,	platform02_data	},
+	{	64,	-120,	0x09*3+9,	platform01_data	},
+	{	52,	-40,		0x16*3+9,	platform02_data	},
 	{	64,	84,		0x0c*3,	platform03_data	},
-	{	0,	-120,	0x10*3,	platform04_data	},
-	{	-28,	-26,		0x12*3,	platform05_data	},
-	{	4,	48,		0x0f*3,	platform06_data	},
+	{	0,	-120,	0x10*3+9,	platform04_data	},
+	{	-28,	-26,		0x12*3+9,	platform05_data	},
+	{	4,	48,		0x0f*3+6,	platform06_data	},
 	{	0,	90,		0x0c*3,	platform07_data	}
 };
 
@@ -172,7 +172,7 @@ unsigned int hit_over_platform(
 		{
 			def = &platform_defs[index];
 			if (y >= def->y && y + *dy <= def->y &&
-				x >= def->x && x <= def->x + def->w)
+				x > def->x && x < def->x + def->w)
 			{
 				new_dy = def->y - y;
 				if (new_dy > min_dy)

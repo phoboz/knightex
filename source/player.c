@@ -245,6 +245,15 @@ unsigned int move_player(
 			}
 			else if (!hit_over_platform(&player->ch.obj, &player->ch.dy, player->ch.dx))
 			{
+				if (player->ch.base_frame == OSTRICH_WALK_LEFT_START)
+				{
+					player->ch.base_frame = OSTRICH_LEFT;
+				}
+				else if (player->ch.base_frame == OSTRICH_WALK_RIGHT_START)
+				{
+					player->ch.base_frame = OSTRICH_RIGHT;
+				}
+				player->ch.frame = 0;
 				player->state = PLAYER_STATE_NORMAL;
 			}
 			break;
