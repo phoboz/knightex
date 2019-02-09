@@ -6,7 +6,11 @@
 #define PLATFORM_HEIGHT	 8
 #define PLATFORM_WIDTH		24
 
+#define PLATFORM_GROUND_Y	-80
+
 struct object;
+
+extern signed int platform_ground_length;
 
 void enable_platform(
 	signed int index

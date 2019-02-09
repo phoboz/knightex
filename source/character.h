@@ -5,7 +5,7 @@
 
 #define CHARACTER_MIN_X	-120
 #define CHARACTER_MAX_X	 120
-#define CHARACTER_MIN_Y	 -80
+#define CHARACTER_MIN_Y	-100
 #define CHARACTER_MAX_Y	 100
 
 struct character

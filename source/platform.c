@@ -111,6 +111,8 @@ static signed int platform_indices[MAX_PLATFORMS] =
 	6
 };
 
+signed int platform_ground_length = 127;
+
 void enable_platform(
 	signed int index
 	)
@@ -140,6 +142,12 @@ void draw_platforms(void)
 {
 	unsigned int i;
 	signed int index;
+
+	Reset0Ref();
+	VIA_t1_cnt_lo = OBJECT_MOVE_SCALE;
+	Moveto_d(PLATFORM_GROUND_Y, -platform_ground_length);
+	Draw_Line_d(0, platform_ground_length);
+	Draw_Line_d(0, platform_ground_length);
 
 	for (i = 0; i < MAX_PLATFORMS; i++)
 	{
@@ -200,6 +208,15 @@ unsigned int hit_over_platform(
 	if (result)
 	{
 		*dy = min_dy;
+	}
+	else if (y >= PLATFORM_GROUND_Y && y + *dy <= PLATFORM_GROUND_Y)
+	{
+		x = obj->x + dx;
+		if (x >= -platform_ground_length && x <= platform_ground_length)
+		{
+			*dy = PLATFORM_GROUND_Y - y;
+			result = 1;
+		}
 	}
 
 	return result;

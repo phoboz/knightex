@@ -85,13 +85,6 @@ int main(void)
 		Wait_Recal();
 
 		Intensity_7F();
-
-		Reset0Ref();
-		VIA_t1_cnt_lo = OBJECT_MOVE_SCALE;
-		Moveto_d(-86, -127);
-		Draw_Line_d(0, 127);
-		Draw_Line_d(0, 127);
-
 		draw_platforms();
 
 		draw_player(&player_1);

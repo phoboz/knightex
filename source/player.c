@@ -263,18 +263,7 @@ unsigned int move_player(
 	}
 
 	hit_platform(&player->ch.obj, &player->ch.dy, &player->ch.dx);
-	if (move_character(&player->ch) == 1)
-	{
-		player->state = PLAYER_STATE_WALK;
-		if (player->ch.base_frame == OSTRICH_LEFT)
-		{
-			player->ch.base_frame = OSTRICH_WALK_LEFT_START;
-		}
-		else if (player->ch.base_frame == OSTRICH_RIGHT)
-		{
-			player->ch.base_frame = OSTRICH_WALK_RIGHT_START;
-		}
-	}
+	move_character(&player->ch);
 
 	return status;
 }
