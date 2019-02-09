@@ -170,29 +170,29 @@ unsigned int hit_over_platform(
 		if (index >= 0 && index < MAX_PLATFORMS)
 		{
 			def = &platform_defs[index];
-
-			x = obj->x - obj->w_2 + dx;
-			if (y >= def->y && y + *dy <= def->y &&
-				x > def->x && x < def->x + def->w)
+			if (y >= def->y && y + *dy <= def->y)
 			{
-				new_dy = def->y - y;
-				if (new_dy > min_dy)
+				x = obj->x - obj->w_2 + dx;
+				if (x > def->x && x < def->x + def->w)
 				{
-					min_dy = new_dy;
+					new_dy = def->y - y;
+					if (new_dy > min_dy)
+					{
+						min_dy = new_dy;
+					}
+					result = 1;
 				}
-				result = 1;
-			}
 
-			x = obj->x + obj->w_2 + dx;
-			if (y >= def->y && y + *dy <= def->y &&
-				x > def->x && x < def->x + def->w)
-			{
-				new_dy = def->y - y;
-				if (new_dy > min_dy)
+				x = obj->x + obj->w_2 + dx;
+				if (x > def->x && x < def->x + def->w)
 				{
-					min_dy = new_dy;
+					new_dy = def->y - y;
+					if (new_dy > min_dy)
+					{
+						min_dy = new_dy;
+					}
+					result = 1;
 				}
-				result = 1;
 			}
 		}
 	}
