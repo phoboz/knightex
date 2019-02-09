@@ -230,8 +230,25 @@ unsigned int hit_platform(
 			if (obj_y1 < platform_y2 && obj_y2 > platform_y1 &&
 				obj_x1 < platform_x2 && obj_x2 > platform_x1)
 			{
-				new_dx = 0;
-				new_dy = 0;
+				if (obj->y + obj->h_2 <= platform_y1)
+				{
+					new_dx = *dx;
+				}
+#if 0
+				else if (obj->x - obj->w_2 + *dx <= platform_x2)
+				{
+					new_dx = platform_x2 - (obj->x - obj->w_2);
+				}
+				else if (obj->x + obj->w_2 + *dx >= platform_x1)
+				{
+					new_dx = platform_x1 - (obj->x + obj->w_2);
+				}
+#endif
+
+				if (*dy < 0)
+				{
+					new_dy = *dy;
+				}
 
 				result = 1;
 				break;
