@@ -94,7 +94,7 @@ unsigned int animate_character(
 	struct character *ch
 	)
 {
-	unsigned int changed = 0;
+	unsigned int loop = 0;
 
 	if (++ch->counter >= ch->treshold) {
 		ch->counter = 0;
@@ -103,12 +103,12 @@ unsigned int animate_character(
 			if (++ch->frame >= ch->max_frames)
 			{
 				ch->frame = 0;
+				loop = 1;
 			}
 		}
-		changed = 1;
 	}
 
-	return changed;
+	return loop;
 }
 
 unsigned int move_character(

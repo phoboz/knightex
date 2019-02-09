@@ -152,6 +152,7 @@ unsigned int move_player(
 				{
 					player->ch.base_frame = OSTRICH_WALK_RIGHT_START;
 				}
+				status |= PLAYER_STATUS_WALK;
 			}
 			break;
 
@@ -232,7 +233,10 @@ unsigned int move_player(
 				}
 				else
 				{
-					animate_character(&player->ch);
+					if (animate_character(&player->ch))
+					{
+						status |= PLAYER_STATUS_WALK;
+					}
 				}
 			}
 

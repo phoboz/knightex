@@ -19,6 +19,7 @@
 #include "player.h"
 #include "platform.h"
 #include "flap_snd.h"
+#include "walk_snd.h"
 #include "brake_snd.h"
 
 struct player player_1;
@@ -55,6 +56,11 @@ int main(void)
 			if ((player_1_status & PLAYER_STATUS_FLAP) == PLAYER_STATUS_FLAP)
 			{
 				sfx_pointer_1 = (long unsigned int) (&flap_snd_data);
+				sfx_status_1 = 1;
+			}
+			if ((player_1_status & PLAYER_STATUS_WALK) == PLAYER_STATUS_WALK)
+			{
+				sfx_pointer_1 = (long unsigned int) (&walk_snd_data);
 				sfx_status_1 = 1;
 			}
 			else if ((player_1_status & PLAYER_STATUS_BRAKE) == PLAYER_STATUS_BRAKE)
