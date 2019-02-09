@@ -130,8 +130,8 @@ __INLINE void draw_platform(
 	)
 {
 	Reset0Ref();
-	Vec_Text_Height = PLATFORM_HEIGHT;
-	Vec_Text_Width = PLATFORM_WIDTH;
+	Vec_Text_Height	= -PLATFORM_HEIGHT;
+	Vec_Text_Width	=  PLATFORM_WIDTH;
 	Moveto_d(platform_defs[index].y, platform_defs[index].x);
 	rasterDraw(platform_defs[index].data);
 }
@@ -203,6 +203,8 @@ unsigned int hit_platform(
 	signed int obj_y1, obj_x1, obj_y2, obj_x2;
 	signed int platform_y1, platform_x1, platform_y2, platform_x2;
 	const struct platform_def *def;
+	signed int new_dy = 0;
+	signed int new_dx = 0;
 	unsigned int result = 0;
 
 	obj_y1 = obj->y - obj->h_2;
@@ -221,13 +223,16 @@ unsigned int hit_platform(
 		if (index >= 0 && index < MAX_PLATFORMS)
 		{
 			def = &platform_defs[index];
-			platform_y1 = def->y + PLATFORM_HEIGHT;
+			platform_y1 = def->y - PLATFORM_HEIGHT;
 			platform_x1 = def->x;
 			platform_y2 = def->y;
 			platform_x2 = def->x + def->w;
 			if (obj_y1 < platform_y2 && obj_y2 > platform_y1 &&
 				obj_x1 < platform_x2 && obj_x2 > platform_x1)
 			{
+				new_dx = 0;
+				new_dy = 0;
+
 				result = 1;
 				break;
 			}
@@ -236,8 +241,8 @@ unsigned int hit_platform(
 
 	if (result)
 	{
-		*dy = 0;
-		*dx = 0;
+		*dy = new_dy;
+		*dx = new_dx;
 	}
 
 	return result;

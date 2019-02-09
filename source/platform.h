@@ -3,7 +3,7 @@
 
 #define MAX_PLATFORMS		7
 
-#define PLATFORM_HEIGHT	-8
+#define PLATFORM_HEIGHT	 8
 #define PLATFORM_WIDTH		24
 
 struct object;
