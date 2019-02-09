@@ -163,7 +163,6 @@ unsigned int hit_over_platform(
 	unsigned int result = 0;
 
 	y = obj->y - obj->h_2;
-	x = obj->x + dx;
 	min_dy = *dy;
 	for (i = 0; i < MAX_PLATFORMS; i++)
 	{
@@ -171,6 +170,20 @@ unsigned int hit_over_platform(
 		if (index >= 0 && index < MAX_PLATFORMS)
 		{
 			def = &platform_defs[index];
+
+			x = obj->x - obj->w_2 + dx;
+			if (y >= def->y && y + *dy <= def->y &&
+				x > def->x && x < def->x + def->w)
+			{
+				new_dy = def->y - y;
+				if (new_dy > min_dy)
+				{
+					min_dy = new_dy;
+				}
+				result = 1;
+			}
+
+			x = obj->x + obj->w_2 + dx;
 			if (y >= def->y && y + *dy <= def->y &&
 				x > def->x && x < def->x + def->w)
 			{
@@ -235,7 +248,7 @@ unsigned int hit_platform(
 					new_dx = *dx;
 				}
 #if 0
-				else if (obj->x - obj->w_2 + *dx <= platform_x2)
+				else if (obj->x - obj->w_2 + *dx < platform_x2)
 				{
 					new_dx = platform_x2 - (obj->x - obj->w_2);
 				}
