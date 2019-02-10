@@ -253,7 +253,7 @@ unsigned int hit_platform(
 		if (index >= 0 && index < MAX_PLATFORMS)
 		{
 			def = &platform_defs[index];
-			platform_y1 = def->y - PLATFORM_HEIGHT;
+			platform_y1 = def->y - PLATFORM_HEIGHT/2;
 			platform_x1 = def->x;
 			platform_y2 = def->y;
 			platform_x2 = def->x + def->w;

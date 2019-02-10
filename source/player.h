@@ -3,7 +3,7 @@
 
 #include "character.h"
 
-#define PLAYER_HEIGHT			8
+#define PLAYER_HEIGHT			12
 #define PLAYER_WIDTH			6
 #define PLAYER_SCALE			0x18/6
 #define PLAYER_SPEED			4
