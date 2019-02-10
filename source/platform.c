@@ -147,6 +147,9 @@ void draw_platforms(void)
 	VIA_t1_cnt_lo = OBJECT_MOVE_SCALE;
 	Moveto_d(PLATFORM_GROUND_Y, -platform_ground_length);
 	Draw_Line_d(0, platform_ground_length);
+	Moveto_d(-PLATFORM_HEIGHT/4, 0);
+	Draw_Line_d(0, -2*PLATFORM_WIDTH/3);
+	Moveto_d(PLATFORM_HEIGHT/4, 2*PLATFORM_WIDTH/3);
 	Draw_Line_d(0, platform_ground_length);
 
 	for (i = 0; i < MAX_PLATFORMS; i++)
