@@ -11,17 +11,12 @@ void init_character(
 	struct character *ch,
 	signed int y,
 	signed int x,
-	signed int h,
-	signed int w,
-	unsigned int scale,
 	signed int move_speed,
-	unsigned int treshold,
-	unsigned int max_frames,
-	const signed char* const *shapes,
+	const struct character_anim *anim,
 	struct object **head
 	)
 {
-	init_object(&ch->obj, y, x, h, w, scale, shapes[0], head);
+	init_object(&ch->obj, y, x, anim->h, anim->w, anim->scale, anim->shapes[0], head);
 
 	ch->dir 			= DIR_LEFT;
 	ch->move_speed	= move_speed;
@@ -30,12 +25,11 @@ void init_character(
 	ch->dx = 0;
 
 	ch->counter		= 0;
-	ch->treshold		= treshold;
+	ch->treshold		= anim->treshold;
 	ch->base_frame	= 0;
 	ch->frame			= 0;
-	ch->max_frames	= max_frames;
 
-	ch->shapes = shapes;
+	ch->anim = anim;
 }
 
 void deinit_character(
@@ -44,50 +38,6 @@ void deinit_character(
 	)
 {
 	deinit_object(&ch->obj, head);
-}
-
-void set_dir_character(
-	struct character *ch,
-	unsigned int dir
-	)
-{
-#if 0
-	ch->dir = dir;
-
-	switch (dir)
-	{
-		case DIR_LEFT:
-			ch->dy = 0;
-			ch->dx = -ch->move_speed;
-			break;
-
-		case DIR_RIGHT:
-			ch->dy =  0;
-			ch->dx =  ch->move_speed;
-			break;
-
-		case DIR_NONE:
-		default:
-			ch->dy =  0;
-			ch->dx =  0;
-			break;
-	}
-#endif
-
-	if (dir < DIR_NONE)
-	{
-		ch->base_frame = dir << 1;
-	}
-}
-
-void set_animation_character(
-	struct character *ch,
-	unsigned int base_frame,
-	unsigned int max_frames
-	)
-{
-	ch->base_frame = base_frame;
-	ch->max_frames = max_frames;
 }
 
 unsigned int animate_character(
@@ -100,7 +50,7 @@ unsigned int animate_character(
 		ch->counter = 0;
 		if (ch->dir < DIR_NONE)
 		{
-			if (++ch->frame >= ch->max_frames)
+			if (++ch->frame >= ch->anim->max_frames)
 			{
 				ch->frame = 0;
 				loop = 1;

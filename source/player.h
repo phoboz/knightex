@@ -8,7 +8,6 @@
 #define PLAYER_SCALE			0x18/6
 #define PLAYER_SPEED			4
 #define PLAYER_TRESHOLD		4
-#define PLAYER_MAX_FRAMES		4
 #define PLAYER_GRAVITY			6
 #define PLAYER_LIFT			1
 
@@ -28,6 +27,7 @@
 struct player
 {
 	struct character ch;
+	unsigned int control_dir;
 	unsigned int state;
 	unsigned int state_counter;
 	unsigned int speed_counter;
@@ -46,6 +46,10 @@ unsigned int move_player(
 	);
 
 void draw_player(
+	struct player *player
+	);
+
+struct enemy* interaction_enemies_player(
 	struct player *player
 	);
 

@@ -16,14 +16,18 @@
 #include <vectrex.h>
 #include "controller.h"
 #include "ayfxPlayer.h"
-#include "player.h"
 #include "platform.h"
+#include "player.h"
+#include "enemy.h"
 #include "flap_snd.h"
 #include "walk_snd.h"
 #include "brake_snd.h"
 
+#define MAX_ENEMIES	8
+
 struct player player_1;
 unsigned int player_1_status;
+struct enemy enemies[MAX_ENEMIES];
 
 // ---------------------------------------------------------------------------
 // cold reset: the vectrex logo is shown, all ram data is cleared
@@ -37,12 +41,23 @@ unsigned int player_1_status;
 
 int main(void)
 {
+	unsigned int i;
+
 	enable_controller_1_x();
 	enable_controller_1_y();
 	disable_controller_2_x();
 	disable_controller_2_y();
 
+	for (i = 0; i < MAX_ENEMIES; i++)
+	{
+		give_object(&enemies[i].ch.obj, &enemy_free_list);
+	}
+
 	init_player(&player_1, 0, 0, DIR_RIGHT);
+	init_enemy(&enemies[0], -32, -48, DIR_RIGHT, &enemy_races[ENEMY_RACE_OSTRICH]);
+	init_enemy(&enemies[1], -32, 48, DIR_LEFT, &enemy_races[ENEMY_RACE_OSTRICH]);
+	init_enemy(&enemies[2], 32, 48, DIR_RIGHT, &enemy_races[ENEMY_RACE_OSTRICH]);
+	init_enemy(&enemies[3], 32, -48, DIR_LEFT, &enemy_races[ENEMY_RACE_OSTRICH]);
 
 	while(1)
 	{
@@ -50,6 +65,8 @@ int main(void)
 		check_buttons();
 
 		player_1_status = move_player(&player_1);
+		move_enemies();
+		interaction_enemies_player(&player_1);
 
 		if (!sfx_status_1)
 		{
@@ -94,6 +111,7 @@ int main(void)
 		draw_platforms();
 
 		draw_player(&player_1);
+		draw_enemies();
 	};
 	
 	// if return value is <= 0, then a warm reset will be performed,
