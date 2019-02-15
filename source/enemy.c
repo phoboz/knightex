@@ -18,7 +18,7 @@ static const struct character_anim enemy_anims[] =
 	{
 		12,						// h
 		6,						// w
-		0x18/6,					// scale
+		0x18/OSTRICH_SCALE,		// scale
 		4,						// treshold
 		OSTRICH_LEFT,
 		OSTRICH_RIGHT,

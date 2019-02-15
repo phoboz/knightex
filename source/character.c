@@ -73,7 +73,7 @@ unsigned int move_character(
 	if (ch->obj.y <= CHARACTER_MIN_Y)
 	{
 		ch->obj.y = CHARACTER_MIN_Y;
-		stopped = 1;
+		stopped = 2;
 	}
 
 	if (ch->obj.y >= CHARACTER_MAX_Y)

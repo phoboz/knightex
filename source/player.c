@@ -7,8 +7,8 @@
 #include "controller.h"
 #include "draw.h"
 #include "platform.h"
-#include "ostrich.h"
 #include "enemy.h"
+#include "ostrich.h"
 #include "player.h"
 
 // ---------------------------------------------------------------------------
@@ -293,7 +293,10 @@ unsigned int move_player(
 	}
 
 	hit_platform(&player->ch.obj, &player->ch.dy, &player->ch.dx);
-	move_character(&player->ch);
+	if (move_character(&player->ch) == 2)
+	{
+		player->state = PLAYER_STATE_DEAD;
+	}
 
 	return status;
 }
