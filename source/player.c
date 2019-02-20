@@ -9,6 +9,7 @@
 #include "platform.h"
 #include "enemy.h"
 #include "ostrich.h"
+#include "knight.h"
 #include "player.h"
 
 // ---------------------------------------------------------------------------
@@ -315,6 +316,14 @@ void draw_player(
 				player->ch.obj.x,
 				OBJECT_MOVE_SCALE,
 				player->ch.obj.scale
+				);
+
+			draw_synced_list_c(
+				knight[player->ch.dir],
+				player->ch.obj.y,
+				player->ch.obj.x,
+				OBJECT_MOVE_SCALE,
+				0x18/KNIGHT_SCALE
 				);
 		}
 	}

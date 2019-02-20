@@ -1,10 +1,23 @@
 #ifndef _PLATFORM_H
 #define _PLATFORM_H
 
+#define PLATFORM_HALF_RES
+#define PLATFORM_1_4
+
 #define MAX_PLATFORMS		7
 
 #define PLATFORM_HEIGHT	 8
+#define PLATFORM_WIDTH0	24
+
+#ifndef PLATFORM_HALF_RES
 #define PLATFORM_WIDTH		24
+#else
+#ifndef PLATFORM_1_4
+#define PLATFORM_WIDTH		48
+#else
+#define PLATFORM_WIDTH		96
+#endif
+#endif
 
 #define PLATFORM_GROUND_Y	-80
 

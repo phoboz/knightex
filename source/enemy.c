@@ -7,6 +7,7 @@
 #include "draw.h"
 #include "platform.h"
 #include "ostrich.h"
+#include "knight.h"
 #include "enemy.h"
 
 // ---------------------------------------------------------------------------
@@ -16,9 +17,9 @@ extern const signed char* const spiral[];
 static const struct character_anim enemy_anims[] =
 {
 	{
-		12,						// h
-		6,						// w
-		0x18/OSTRICH_SCALE,		// scale
+		10,						// h
+		4,						// w
+		0x08/OSTRICH_SCALE,		// scale
 		4,						// treshold
 		OSTRICH_LEFT,
 		OSTRICH_RIGHT,
@@ -199,6 +200,14 @@ void draw_enemies(void)
 				enemy->ch.obj.x,
 				OBJECT_MOVE_SCALE,
 				enemy->ch.obj.scale
+				);
+
+			draw_synced_list_c(
+				knight[enemy->ch.dir],
+				enemy->ch.obj.y,
+				enemy->ch.obj.x,
+				OBJECT_MOVE_SCALE,
+				0x18/KNIGHT_SCALE
 				);
 		}
 		else if (enemy->state == ENEMY_STATE_SPAWN)

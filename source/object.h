@@ -57,12 +57,12 @@ __INLINE unsigned int hit_object(
 
 	if (obj1->active && obj2->active)
 	{
-		obj1_y1 = obj1->y;// - obj1->h_2;
+		obj1_y1 = obj1->y - obj1->h_2;
 		obj1_x1 = obj1->x - obj1->w_2;
 		obj1_y2 = obj1->y + obj1->h_2;
 		obj1_x2 = obj1->x + obj1->w_2;
 
-		obj2_y1 = obj2->y;// - obj2->h_2;
+		obj2_y1 = obj2->y - obj2->h_2;
 		obj2_x1 = obj2->x - obj2->w_2;
 		obj2_y2 = obj2->y + obj2->h_2;
 		obj2_x2 = obj2->x + obj2->w_2;

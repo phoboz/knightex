@@ -1,7 +1,7 @@
 #ifndef _OSTRICH_H
 #define _OSTRICH_H
 
-#define OSTRICH_SCALE				6
+#define OSTRICH_SCALE				8
 
 #define OSTRICH_LEFT				0
 #define OSTRICH_FLAP_LEFT			1
