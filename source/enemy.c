@@ -19,7 +19,6 @@ static const struct character_anim enemy_anims[] =
 	{
 		10,						// h
 		4,						// w
-		0x08/OSTRICH_SCALE,		// scale
 		4,						// treshold
 		OSTRICH_LEFT,
 		OSTRICH_RIGHT,
@@ -197,7 +196,7 @@ void draw_enemies(void)
 			// ZERO
 			dp_VIA_cntl=0xcc;
 
-						signed int y = enemy->ch.obj.y;
+			signed int y = enemy->ch.obj.y;
 			signed int x = enemy->ch.obj.x;
 			
 			
@@ -209,7 +208,7 @@ void draw_enemies(void)
             	dp_VIA_port_b++;			// mux disable, dac only to x
             	dp_VIA_port_a = x;			// dac -> x
             	dp_VIA_t1_cnt_hi=0;		// start timer
-			dp_VIA_t1_cnt_lo =1;//player->ch.obj.scale;
+			dp_VIA_t1_cnt_lo = ENEMY_DRAW_SCALE;
             	while ((dp_VIA_int_flags & 0x40) == 0); // wait till timer finishes
 
 			draw_vlp_1(enemy->ch.anim->shapes[enemy->ch.base_frame + enemy->ch.frame]);
@@ -236,7 +235,7 @@ void draw_enemies(void)
             	dp_VIA_port_b++;			// mux disable, dac only to x
             	dp_VIA_port_a = x;			// dac -> x
             	dp_VIA_t1_cnt_hi=0;		// start timer
-			dp_VIA_t1_cnt_lo =2;//player->ch.obj.scale;
+			dp_VIA_t1_cnt_lo = KNIGHT_DRAW_SCALE;
             	while ((dp_VIA_int_flags & 0x40) == 0); // wait till timer finishes
 			draw_vlp_2(knight[enemy->ch.dir]);			
 			

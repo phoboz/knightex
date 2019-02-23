@@ -13,7 +13,6 @@ struct object
 	signed int y, x;
 	signed int h, w;
 	signed int h_2, w_2;
-	unsigned int scale;
 	const signed char *shape;
 
 	struct object *prev, *next;
@@ -35,7 +34,6 @@ void init_object(
 	signed int x,
 	signed int h,
 	signed int w,
-	unsigned int scale,
 	const signed char *shape,
 	struct object **head
 	);

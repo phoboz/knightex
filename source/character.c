@@ -16,7 +16,7 @@ void init_character(
 	struct object **head
 	)
 {
-	init_object(&ch->obj, y, x, anim->h, anim->w, anim->scale, anim->shapes[0], head);
+	init_object(&ch->obj, y, x, anim->h, anim->w, anim->shapes[0], head);
 
 	ch->dir 			= DIR_LEFT;
 	ch->move_speed	= move_speed;

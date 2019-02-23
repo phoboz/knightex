@@ -12,7 +12,6 @@ struct character_anim
 {
 	signed int h;
 	signed int w;
-	unsigned int scale;
 	unsigned int treshold;
 	unsigned int frame_left;
 	unsigned int frame_right;

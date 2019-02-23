@@ -23,7 +23,7 @@
 #include "walk_snd.h"
 #include "brake_snd.h"
 
-#define MAX_ENEMIES	8
+#define MAX_ENEMIES	16
 
 struct player player_1;
 unsigned int player_1_status;

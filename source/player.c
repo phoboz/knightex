@@ -18,7 +18,6 @@ static const struct character_anim player_anim =
 {
 	PLAYER_HEIGHT,
 	PLAYER_WIDTH,
-	PLAYER_SCALE,
 	PLAYER_TRESHOLD,
 	OSTRICH_LEFT,
 	OSTRICH_RIGHT,
@@ -323,7 +322,7 @@ void draw_player(
             	dp_VIA_port_b++;			// mux disable, dac only to x
             	dp_VIA_port_a = x;			// dac -> x
             	dp_VIA_t1_cnt_hi=0;		// start timer
-			dp_VIA_t1_cnt_lo =1;//player->ch.obj.scale;
+			dp_VIA_t1_cnt_lo = PLAYER_DRAW_SCALE;
             	while ((dp_VIA_int_flags & 0x40) == 0); // wait till timer finishes
 
 			draw_vlp_1(player->ch.anim->shapes[player->ch.base_frame + player->ch.frame]);
@@ -347,7 +346,7 @@ void draw_player(
             	dp_VIA_port_b++;			// mux disable, dac only to x
             	dp_VIA_port_a = x;			// dac -> x
             	dp_VIA_t1_cnt_hi=0;		// start timer
-			dp_VIA_t1_cnt_lo =2;//player->ch.obj.scale;
+			dp_VIA_t1_cnt_lo = KNIGHT_DRAW_SCALE;
             	while ((dp_VIA_int_flags & 0x40) == 0); // wait till timer finishes
 			draw_vlp_2(knight[player->ch.dir]);
 /*

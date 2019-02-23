@@ -5,7 +5,7 @@
 
 #define PLAYER_HEIGHT			10
 #define PLAYER_WIDTH			4
-#define PLAYER_SCALE			0x08/OSTRICH_SCALE
+#define PLAYER_DRAW_SCALE		1
 #define PLAYER_SPEED			4
 #define PLAYER_TRESHOLD		4
 #define PLAYER_GRAVITY			6

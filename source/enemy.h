@@ -3,6 +3,8 @@
 
 #include "character.h"
 
+#define ENEMY_DRAW_SCALE	1
+
 #define ENEMY_TYPE_JOUSTER	0
 
 #define ENEMY_STATE_SPAWN	0
