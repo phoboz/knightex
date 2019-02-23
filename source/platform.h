@@ -19,7 +19,7 @@
 #endif
 #endif
 
-#define PLATFORM_GROUND_Y	-80
+#define PLATFORM_GROUND_Y		-80
 
 struct object;
 

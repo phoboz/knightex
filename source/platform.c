@@ -359,16 +359,10 @@ unsigned int hit_platform(
 				{
 					new_dx = *dx;
 				}
-#if 0
-				else if (obj->x - obj->w_2 + *dx < platform_x2)
+				else
 				{
-					new_dx = platform_x2 - (obj->x - obj->w_2);
+					new_dx = -*dx;
 				}
-				else if (obj->x + obj->w_2 + *dx >= platform_x1)
-				{
-					new_dx = platform_x1 - (obj->x + obj->w_2);
-				}
-#endif
 
 				if (*dy < 0)
 				{
