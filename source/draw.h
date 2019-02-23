@@ -30,6 +30,9 @@ void draw_synced_list_c_nm1(
 
 #define ZERO_DELAY 5
 
+__NO_INLINE void draw_vlp_1(const signed char *x);
+
+__NO_INLINE void draw_vlp_2(const signed char *x);
 
 
 __INLINE void draw_synced_list_c(

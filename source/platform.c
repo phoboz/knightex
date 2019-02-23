@@ -29,18 +29,18 @@ static const unsigned int platform01_data[] =
 #ifndef PLATFORM_HALF_RES
   0x03, 0x09,
   0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b10000000, // forward
-  0b00000000, 0b00110001, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, // backward
+  0b00000000, 0b00110001, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111110, // backward
   0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11011000, 0b00000000, 0b00000000  // forward
 #else
 #ifndef PLATFORM_1_4
   0x03, 0x05,
   0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b10000000, // forward
-  0b00000000, 0b00001111, 0b11111111, 0b11111111, 0b11111111, // backward
+  0b00000000, 0b00001111, 0b11111111, 0b11111111, 0b11111110, // backward
   0b00100011, 0b00011101, 0b11111110, 0b10000000, 0b00000000  // forward
 #else
   0x03, 0x03,
   0b11111111, 0b11111111, 0b10000000, // forward
-  0b00000000, 0b00111111, 0b11111111, // backward
+  0b00000000, 0b00111111, 0b11111110, // backward
   0b11111111, 0b11111000, 0b00000000  // forward
 #endif
 #endif
@@ -95,18 +95,18 @@ static const unsigned int platform04_data[] =
 #ifndef PLATFORM_HALF_RES
   0x03, 0x10,
   0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11110000, // forward
-  0b00000000, 0b00001111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111000, 0b00000000, 0b00000000, 0b00000111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, // backward
+  0b00000000, 0b00001111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111000, 0b00000000, 0b00000000, 0b00000111, 0b11111111, 0b11111111, 0b11111111, 0b11111110, // backward
   0b00000000, 0b00000000, 0b00000000, 0b00011111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111110, 0b00000000, 0b00000000  // forward
 #else
 #ifndef PLATFORM_1_4
   0x03, 0x08,
   0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111100, // forward
-  0b00000011, 0b11111111, 0b11111111, 0b11111111, 0b11100000, 0b00000001, 0b11111111, 0b11111111, // backward
+  0b00000011, 0b11111111, 0b11111111, 0b11111111, 0b11100000, 0b00000001, 0b11111111, 0b11111110, // backward
   0b00000000, 0b00000111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b00000000  // forward
 #else
   0x03, 0x04,
   0b11111111, 0b11111111, 0b11111111, 0b11111110, // forward
-  0b00011111, 0b11111111, 0b10000001, 0b11111111, // backward
+  0b00011111, 0b11111111, 0b10000001, 0b11111110, // backward
   0b00000001, 0b11111111, 0b11111111, 0b11110000  // forward
 #endif
 #endif
@@ -182,10 +182,10 @@ static const struct platform_def platform_defs[]=
 {
 	// format
 	//	y,	x,		w,		data
-	{	64,	-120,	0x09*3+9,	platform01_data	},
+	{	64,	-127,	0x09*3+9,	platform01_data	},
 	{	52,	-40,		0x16*3+9,	platform02_data	},
 	{	64,	84,		0x0c*3,	platform03_data	},
-	{	0,	-120,	0x10*3+9,	platform04_data	},
+	{	0,	-127,	0x10*3+9,	platform04_data	},
 	{	-28,	-26,		0x12*3+9,	platform05_data	},
 	{	4,	42,		0x0f*3+6,	platform06_data	},
 	{	0,	90,		0x0c*3,	platform07_data	}
@@ -222,7 +222,7 @@ __INLINE void draw_platform(
 	signed int index
 	)
 {
-	Reset0Ref();
+//	Reset0Ref();
 	Vec_Text_Height	= -PLATFORM_HEIGHT;
 	Vec_Text_Width	=  PLATFORM_WIDTH;
 	Moveto_d(platform_defs[index].y, platform_defs[index].x);
@@ -233,9 +233,9 @@ void draw_platforms(void)
 {
 	unsigned int i;
 	signed int index;
+	VIA_t1_cnt_lo = OBJECT_MOVE_SCALE;
 
 	Reset0Ref();
-	VIA_t1_cnt_lo = OBJECT_MOVE_SCALE;
 	Moveto_d(PLATFORM_GROUND_Y, -platform_ground_length);
 	Draw_Line_d(0, platform_ground_length);
 	Moveto_d(-PLATFORM_HEIGHT/4, 0);
@@ -243,6 +243,7 @@ void draw_platforms(void)
 	Moveto_d(PLATFORM_HEIGHT/4, 2*PLATFORM_WIDTH0/3);
 	Draw_Line_d(0, platform_ground_length);
 
+	Reset0Ref();
 	for (i = 0; i < MAX_PLATFORMS; i++)
 	{
 		index = platform_indices[i];

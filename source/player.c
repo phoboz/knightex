@@ -302,6 +302,7 @@ unsigned int move_player(
 	return status;
 }
 
+
 void draw_player(
 	struct player *player
 	)
@@ -309,7 +310,24 @@ void draw_player(
 	if (player->ch.obj.active)
 	{
 		if (player->state != PLAYER_STATE_DEAD)
-		{
+		{			
+			signed int y = player->ch.obj.y;
+			signed int x = player->ch.obj.x;
+			
+			
+			dp_VIA_t1_cnt_lo = OBJECT_MOVE_SCALE;
+            	dp_VIA_port_a = y;			// y pos to dac
+            	dp_VIA_cntl = 0xce;	// disable zero, disable all blank
+            	dp_VIA_port_b = 0;			// mux enable, dac to -> integrator y (and x)
+            	dp_VIA_shift_reg = 0;		// all output is BLANK
+            	dp_VIA_port_b++;			// mux disable, dac only to x
+            	dp_VIA_port_a = x;			// dac -> x
+            	dp_VIA_t1_cnt_hi=0;		// start timer
+			dp_VIA_t1_cnt_lo =1;//player->ch.obj.scale;
+            	while ((dp_VIA_int_flags & 0x40) == 0); // wait till timer finishes
+
+			draw_vlp_1(player->ch.anim->shapes[player->ch.base_frame + player->ch.frame]);
+/*			
 			draw_synced_list_c(
 				player->ch.anim->shapes[player->ch.base_frame + player->ch.frame],
 				player->ch.obj.y,
@@ -317,17 +335,37 @@ void draw_player(
 				OBJECT_MOVE_SCALE,
 				player->ch.obj.scale
 				);
-
-			draw_synced_list_c(
+*/
+			// ZERO
+			dp_VIA_cntl=0xcc;
+			
+			dp_VIA_t1_cnt_lo = OBJECT_MOVE_SCALE;
+            	dp_VIA_port_a = y;			// y pos to dac
+            	dp_VIA_cntl = 0xce;	// disable zero, disable all blank
+            	dp_VIA_port_b = 0;			// mux enable, dac to -> integrator y (and x)
+            	dp_VIA_shift_reg = 0;		// all output is BLANK
+            	dp_VIA_port_b++;			// mux disable, dac only to x
+            	dp_VIA_port_a = x;			// dac -> x
+            	dp_VIA_t1_cnt_hi=0;		// start timer
+			dp_VIA_t1_cnt_lo =2;//player->ch.obj.scale;
+            	while ((dp_VIA_int_flags & 0x40) == 0); // wait till timer finishes
+			draw_vlp_2(knight[player->ch.dir]);
+/*
+				draw_synced_list_c(
 				knight[player->ch.dir],
 				player->ch.obj.y,
 				player->ch.obj.x,
 				OBJECT_MOVE_SCALE,
 				0x18/KNIGHT_SCALE
 				);
+*/			
 		}
 	}
 }
+
+
+
+
 
 struct enemy* interaction_enemies_player(
 	struct player *player

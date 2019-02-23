@@ -194,6 +194,30 @@ void draw_enemies(void)
 	{
 		if (enemy->state == ENEMY_STATE_MOVE || enemy->state == ENEMY_STATE_STOP)
 		{
+			// ZERO
+			dp_VIA_cntl=0xcc;
+
+						signed int y = enemy->ch.obj.y;
+			signed int x = enemy->ch.obj.x;
+			
+			
+			dp_VIA_t1_cnt_lo = OBJECT_MOVE_SCALE;
+            	dp_VIA_port_a = y;			// y pos to dac
+            	dp_VIA_cntl = 0xce;	// disable zero, disable all blank
+            	dp_VIA_port_b = 0;			// mux enable, dac to -> integrator y (and x)
+            	dp_VIA_shift_reg = 0;		// all output is BLANK
+            	dp_VIA_port_b++;			// mux disable, dac only to x
+            	dp_VIA_port_a = x;			// dac -> x
+            	dp_VIA_t1_cnt_hi=0;		// start timer
+			dp_VIA_t1_cnt_lo =1;//player->ch.obj.scale;
+            	while ((dp_VIA_int_flags & 0x40) == 0); // wait till timer finishes
+
+			draw_vlp_1(enemy->ch.anim->shapes[enemy->ch.base_frame + enemy->ch.frame]);
+			
+			// ZERO
+			dp_VIA_cntl=0xcc;
+			
+/*						
 			draw_synced_list_c(
 				enemy->ch.anim->shapes[enemy->ch.base_frame + enemy->ch.frame],
 				enemy->ch.obj.y,
@@ -201,7 +225,22 @@ void draw_enemies(void)
 				OBJECT_MOVE_SCALE,
 				enemy->ch.obj.scale
 				);
+*/			
+			
 
+			dp_VIA_t1_cnt_lo = OBJECT_MOVE_SCALE;
+            	dp_VIA_port_a = y;			// y pos to dac
+            	dp_VIA_cntl = 0xce;	// disable zero, disable all blank
+            	dp_VIA_port_b = 0;			// mux enable, dac to -> integrator y (and x)
+            	dp_VIA_shift_reg = 0;		// all output is BLANK
+            	dp_VIA_port_b++;			// mux disable, dac only to x
+            	dp_VIA_port_a = x;			// dac -> x
+            	dp_VIA_t1_cnt_hi=0;		// start timer
+			dp_VIA_t1_cnt_lo =2;//player->ch.obj.scale;
+            	while ((dp_VIA_int_flags & 0x40) == 0); // wait till timer finishes
+			draw_vlp_2(knight[enemy->ch.dir]);			
+			
+/*
 			draw_synced_list_c(
 				knight[enemy->ch.dir],
 				enemy->ch.obj.y,
@@ -209,6 +248,7 @@ void draw_enemies(void)
 				OBJECT_MOVE_SCALE,
 				0x18/KNIGHT_SCALE
 				);
+*/			
 		}
 		else if (enemy->state == ENEMY_STATE_SPAWN)
 		{

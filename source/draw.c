@@ -8,6 +8,61 @@
 #define ZERO_DELAY 5
 #endif
 
+__NO_INLINE void draw_vlp_1(const signed char *x)
+{
+asm("\t\n\
+Draw_VLp_1:                    \t\n\
+    LDD     1,X                \t\n\
+    STA     *_dp_VIA_port_a    \t\n\
+    CLR     *_dp_VIA_port_b    \t\n\
+    LDA     ,X                 \t\n\
+    INC     *_dp_VIA_port_b    \t\n\
+    STB     *_dp_VIA_port_a    \t\n\
+    LDb     #0                 \t\n\
+    STA     *_dp_VIA_shift_reg \t\n\
+    STB     *_dp_VIA_t1_cnt_hi \t\n\
+    LDA     ,X                 \t\n\
+    BGT     Draw_Done_1        \t\n\
+    LEAX    3,X                \t\n\
+    STB     *_dp_VIA_shift_reg \t\n\
+    BRA     Draw_VLp_1         \t\n\
+Draw_Done_1:                   \t\n\
+    NOP                        \t\n\
+    STB     *_dp_VIA_shift_reg \t\n\
+    ");
+	if (x==0)  
+	{
+	} // prevent compiler warning "unused variable"
+}
+__NO_INLINE void draw_vlp_2(const signed char *x)
+{
+asm("\t\n\
+Draw_VLp_2:                    \t\n\
+    LDD     1,X                \t\n\
+    STA     *_dp_VIA_port_a    \t\n\
+    CLR     *_dp_VIA_port_b    \t\n\
+    LDA     ,X                 \t\n\
+    INC     *_dp_VIA_port_b    \t\n\
+    STB     *_dp_VIA_port_a    \t\n\
+    LDb     #0                 \t\n\
+    STA     *_dp_VIA_shift_reg \t\n\
+    STB     *_dp_VIA_t1_cnt_hi \t\n\
+    LDA     ,X                 \t\n\
+    BGT     Draw_Done_2        \t\n\
+    LEAX    3,X                \t\n\
+    CLR     *_dp_VIA_shift_reg \t\n\
+    BRA     Draw_VLp_2         \t\n\
+Draw_Done_2:                   \t\n\
+    NOP                        \t\n\
+    NOP                        \t\n\
+    STB     *_dp_VIA_shift_reg \t\n\
+    ");
+	if (x==0)  
+	{
+	} // prevent compiler warning "unused variable"
+}
+
+
 void reset0ref(void)
 {
 	dp_VIA_cntl = (unsigned int)0xcc;			// enable zero, enable all blank

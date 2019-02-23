@@ -1,492 +1,493 @@
-                              1  .module rasterDraw.s
+                              1  .module rasterdraw.pre.s
                               2  .area .text
-                              3 .setdp 0xd000,_DATA
-                              4 ;***************************************************************************
-                              5 ; DEFINE SECTION
-                              6 ;***************************************************************************
-                              7 ; load vectrex bios routine definitions
-                              8 ; include line ->                     INCLUDE  "VECTREX.I"                  ; vectrex function includes
-                              9 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                             10 ; this file contains includes for vectrex BIOS functions and variables      ;
-                             11 ; it was written by Bruce Tomlin, slighte changed by Malban                 ;
-                             12 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                              3 
+                              4 ; expects width strength to be = to the default bios location Vec_Text_Width
+                              5 ; expects height strength to be = to the default bios location Vec_Text_Height
+                              6 ; address of raster data is expected in U
+                              7 ; print is done to current screen location
+                              8 ; 
+                              9 ; uses bios ram-locations  Vec_Counter_1,  Vec_Counter_2,  Vec_Counter_3
+                             10 ; as temporary storages
+                             11 
+                             12 ; include line ->                     INCLUDE  "VECTREX.I"                  ; vectrex function includes
                              13 
-                     0001    14 INCLUDE_I = 1
-                             15 
-                     C800    16 Vec_Snd_Shadow  =     0xC800   ;Shadow of sound chip registers (15 bytes)
-                     C80F    17 Vec_Btn_State   =     0xC80F   ;Current state of all joystick buttons
-                     C810    18 Vec_Prev_Btns   =     0xC810   ;Previous state of all joystick buttons
-                     C811    19 Vec_Buttons     =     0xC811   ;Current toggle state of all buttons
-                     C812    20 Vec_Button_1_1  =     0xC812   ;Current toggle state of stick 1 button 1
-                     C813    21 Vec_Button_1_2  =     0xC813   ;Current toggle state of stick 1 button 2
-                     C814    22 Vec_Button_1_3  =     0xC814   ;Current toggle state of stick 1 button 3
-                     C815    23 Vec_Button_1_4  =     0xC815   ;Current toggle state of stick 1 button 4
-                     C816    24 Vec_Button_2_1  =     0xC816   ;Current toggle state of stick 2 button 1
-                     C817    25 Vec_Button_2_2  =     0xC817   ;Current toggle state of stick 2 button 2
-                     C818    26 Vec_Button_2_3  =     0xC818   ;Current toggle state of stick 2 button 3
-                     C819    27 Vec_Button_2_4  =     0xC819   ;Current toggle state of stick 2 button 4
-                     C81A    28 Vec_Joy_Resltn  =     0xC81A   ;Joystick A/D resolution (0x80=min 0x00=max)
-                     C81B    29 Vec_Joy_1_X     =     0xC81B   ;Joystick 1 left/right
-                     C81C    30 Vec_Joy_1_Y     =     0xC81C   ;Joystick 1 up/down
-                     C81D    31 Vec_Joy_2_X     =     0xC81D   ;Joystick 2 left/right
-                     C81E    32 Vec_Joy_2_Y     =     0xC81E   ;Joystick 2 up/down
-                     C81F    33 Vec_Joy_Mux     =     0xC81F   ;Joystick enable/mux flags (4 bytes)
-                     C81F    34 Vec_Joy_Mux_1_X =     0xC81F   ;Joystick 1 X enable/mux flag (=1)
-                     C820    35 Vec_Joy_Mux_1_Y =     0xC820   ;Joystick 1 Y enable/mux flag (=3)
-                     C821    36 Vec_Joy_Mux_2_X =     0xC821   ;Joystick 2 X enable/mux flag (=5)
-                     C822    37 Vec_Joy_Mux_2_Y =     0xC822   ;Joystick 2 Y enable/mux flag (=7)
-                     C823    38 Vec_Misc_Count  =     0xC823   ;Misc counter/flag byte, zero when not in use
-                     C824    39 Vec_0Ref_Enable =     0xC824   ;Check0Ref enable flag
-                     C825    40 Vec_Loop_Count  =     0xC825   ;Loop counter word (incremented in Wait_Recal)
-                     C827    41 Vec_Brightness  =     0xC827   ;Default brightness
-                     C828    42 Vec_Dot_Dwell   =     0xC828   ;Dot dwell time?
-                     C829    43 Vec_Pattern     =     0xC829   ;Dot pattern (bits)
-                     C82A    44 Vec_Text_HW     =     0xC82A   ;Default text height and width
-                     C82A    45 Vec_Text_Height =     0xC82A   ;Default text height
-                     C82B    46 Vec_Text_Width  =     0xC82B   ;Default text width
-                     C82C    47 Vec_Str_Ptr     =     0xC82C   ;Temporary string pointer for Print_Str
-                     C82E    48 Vec_Counters    =     0xC82E   ;Six bytes of counters
-                     C82E    49 Vec_Counter_1   =     0xC82E   ;First  counter byte
-                     C82F    50 Vec_Counter_2   =     0xC82F   ;Second counter byte
-                     C830    51 Vec_Counter_3   =     0xC830   ;Third  counter byte
-                     C831    52 Vec_Counter_4   =     0xC831   ;Fourth counter byte
-                     C832    53 Vec_Counter_5   =     0xC832   ;Fifth  counter byte
-                     C833    54 Vec_Counter_6   =     0xC833   ;Sixth  counter byte
-                     C834    55 Vec_RiseRun_Tmp =     0xC834   ;Temp storage word for rise/run
-                     C836    56 Vec_Angle       =     0xC836   ;Angle for rise/run and rotation calculations
-                     C837    57 Vec_Run_Index   =     0xC837   ;Index pair for run
-                             58 ;                       0xC839   ;Pointer to copyright string during startup
-                     C839    59 Vec_Rise_Index  =     0xC839   ;Index pair for rise
-                             60 ;                       0xC83B   ;High score cold-start flag (=0 if valid)
-                     C83B    61 Vec_RiseRun_Len =     0xC83B   ;length for rise/run
-                             62 ;                       0xC83C   ;temp byte
-                     C83D    63 Vec_Rfrsh       =     0xC83D   ;Refresh time (divided by 1.5MHz)
-                     C83D    64 Vec_Rfrsh_lo    =     0xC83D   ;Refresh time low byte
-                     C83E    65 Vec_Rfrsh_hi    =     0xC83E   ;Refresh time high byte
-                     C83F    66 Vec_Music_Work  =     0xC83F   ;Music work buffer (14 bytes, backwards?)
-                     C842    67 Vec_Music_Wk_A  =     0xC842   ;        register 10
-                             68 ;                       0xC843   ;        register 9
-                             69 ;                       0xC844   ;        register 8
-                     C845    70 Vec_Music_Wk_7  =     0xC845   ;        register 7
-                     C846    71 Vec_Music_Wk_6  =     0xC846   ;        register 6
-                     C847    72 Vec_Music_Wk_5  =     0xC847   ;        register 5
-                             73 ;                       0xC848   ;        register 4
-                             74 ;                       0xC849   ;        register 3
-                             75 ;                       0xC84A   ;        register 2
-                     C84B    76 Vec_Music_Wk_1  =     0xC84B   ;        register 1
-                             77 ;                       0xC84C   ;        register 0
-                     C84D    78 Vec_Freq_Table  =     0xC84D   ;Pointer to note-to-frequency table (normally 0xFC8D)
-                     C84F    79 Vec_Max_Players =     0xC84F   ;Maximum number of players for Select_Game
-                     C850    80 Vec_Max_Games   =     0xC850   ;Maximum number of games for Select_Game
-                     C84F    81 Vec_ADSR_Table  =     0xC84F   ;Storage for first music header word (ADSR table)
-                     C851    82 Vec_Twang_Table =     0xC851   ;Storage for second music header word ('twang' table)
-                     C853    83 Vec_Music_Ptr   =     0xC853   ;Music data pointer
-                     C853    84 Vec_Expl_ChanA  =     0xC853   ;Used by Explosion_Snd - bit for first channel used?
-                     C854    85 Vec_Expl_Chans  =     0xC854   ;Used by Explosion_Snd - bits for all channels used?
-                     C855    86 Vec_Music_Chan  =     0xC855   ;Current sound channel number for Init_Music
-                     C856    87 Vec_Music_Flag  =     0xC856   ;Music active flag (0x00=off 0x01=start 0x80=on)
-                     C857    88 Vec_Duration    =     0xC857   ;Duration counter for Init_Music
-                     C858    89 Vec_Music_Twang =     0xC858   ;3 word 'twang' table used by Init_Music
-                     C858    90 Vec_Expl_1      =     0xC858   ;Four bytes copied from Explosion_Snd's U-reg parameters
-                     C859    91 Vec_Expl_2      =     0xC859   ;
-                     C85A    92 Vec_Expl_3      =     0xC85A   ;
-                     C85B    93 Vec_Expl_4      =     0xC85B   ;
-                     C85C    94 Vec_Expl_Chan   =     0xC85C   ;Used by Explosion_Snd - channel number in use?
-                     C85D    95 Vec_Expl_ChanB  =     0xC85D   ;Used by Explosion_Snd - bit for second channel used?
-                     C85E    96 Vec_ADSR_Timers =     0xC85E   ;ADSR timers for each sound channel (3 bytes)
-                     C861    97 Vec_Music_Freq  =     0xC861   ;Storage for base frequency of each channel (3 words)
-                             98 ;                       0xC85E   ;Scratch 'score' storage for Display_Option (7 bytes)
-                     C867    99 Vec_Expl_Flag   =     0xC867   ;Explosion_Snd initialization flag?
-                            100 ;               0xC868...0xC876   ;Unused?
-                     C877   101 Vec_Expl_Timer  =     0xC877   ;Used by Explosion_Snd
-                            102 ;                       0xC878   ;Unused?
-                     C879   103 Vec_Num_Players =     0xC879   ;Number of players selected in Select_Game
-                     C87A   104 Vec_Num_Game    =     0xC87A   ;Game number selected in Select_Game
-                     C87B   105 Vec_Seed_Ptr    =     0xC87B   ;Pointer to 3-byte random number seed (=0xC87D)
-                     C87D   106 Vec_Random_Seed =     0xC87D   ;Default 3-byte random number seed
-                            107                                 ;
-                            108 ;    0xC880 - 0xCBEA is user RAM  ;
-                            109                                 ;
-                     CBEA   110 Vec_Default_Stk =     0xCBEA   ;Default top-of-stack
-                     CBEB   111 Vec_High_Score  =     0xCBEB   ;High score storage (7 bytes)
-                     CBF2   112 Vec_SWI3_Vector =     0xCBF2   ;SWI2/SWI3 interrupt vector (3 bytes)
-                     CBF2   113 Vec_SWI2_Vector =     0xCBF2   ;SWI2/SWI3 interrupt vector (3 bytes)
-                     CBF5   114 Vec_FIRQ_Vector =     0xCBF5   ;FIRQ interrupt vector (3 bytes)
-                     CBF8   115 Vec_IRQ_Vector  =     0xCBF8   ;IRQ interrupt vector (3 bytes)
-                     CBFB   116 Vec_SWI_Vector  =     0xCBFB   ;SWI/NMI interrupt vector (3 bytes)
-                     CBFB   117 Vec_NMI_Vector  =     0xCBFB   ;SWI/NMI interrupt vector (3 bytes)
-                     CBFE   118 Vec_Cold_Flag   =     0xCBFE   ;Cold start flag (warm start if = 0x7321)
-                            119                                 ;
-                     D000   120 VIA_port_b      =     0xD000   ;VIA port B data I/O register
-                            121 ;       0 sample/hold (0=enable  mux 1=disable mux)
-                            122 ;       1 mux sel 0
-                            123 ;       2 mux sel 1
-                            124 ;       3 sound BC1
-                            125 ;       4 sound BDIR
-                            126 ;       5 comparator input
-                            127 ;       6 external device (slot pin 35) initialized to input
-                            128 ;       7 /RAMP
-                     D001   129 VIA_port_a      =     0xD001   ;VIA port A data I/O register (handshaking)
-                     D002   130 VIA_DDR_b       =     0xD002   ;VIA port B data direction register (0=input 1=output)
-                     D003   131 VIA_DDR_a       =     0xD003   ;VIA port A data direction register (0=input 1=output)
-                     D004   132 VIA_t1_cnt_lo   =     0xD004   ;VIA timer 1 count register lo (scale factor)
-                     D005   133 VIA_t1_cnt_hi   =     0xD005   ;VIA timer 1 count register hi
-                     D006   134 VIA_t1_lch_lo   =     0xD006   ;VIA timer 1 latch register lo
-                     D007   135 VIA_t1_lch_hi   =     0xD007   ;VIA timer 1 latch register hi
-                     D008   136 VIA_t2_lo       =     0xD008   ;VIA timer 2 count/latch register lo (refresh)
-                     D009   137 VIA_t2_hi       =     0xD009   ;VIA timer 2 count/latch register hi
-                     D00A   138 VIA_shift_reg   =     0xD00A   ;VIA shift register
-                     D00B   139 VIA_aux_cntl    =     0xD00B   ;VIA auxiliary control register
-                            140 ;       0 PA latch enable
-                            141 ;       1 PB latch enable
-                            142 ;       2 \                     110=output to CB2 under control of phase 2 clock
-                            143 ;       3  > shift register control     (110 is the only mode used by the Vectrex ROM)
-                            144 ;       4 /
-                            145 ;       5 0=t2 one shot                 1=t2 free running
-                            146 ;       6 0=t1 one shot                 1=t1 free running
-                            147 ;       7 0=t1 disable PB7 output       1=t1 enable PB7 output
-                     D00C   148 VIA_cntl        =     0xD00C   ;VIA control register
-                            149 ;       0 CA1 control     CA1 -> SW7    0=IRQ on low 1=IRQ on high
-                            150 ;       1 \
-                            151 ;       2  > CA2 control  CA2 -> /ZERO  110=low 111=high
-                            152 ;       3 /
-                            153 ;       4 CB1 control     CB1 -> NC     0=IRQ on low 1=IRQ on high
-                            154 ;       5 \
-                            155 ;       6  > CB2 control  CB2 -> /BLANK 110=low 111=high
-                            156 ;       7 /
-                     D00D   157 VIA_int_flags   =     0xD00D   ;VIA interrupt flags register
-                            158 ;               bit                             cleared by
-                            159 ;       0 CA2 interrupt flag            reading or writing port A I/O
-                            160 ;       1 CA1 interrupt flag            reading or writing port A I/O
-                            161 ;       2 shift register interrupt flag reading or writing shift register
-                            162 ;       3 CB2 interrupt flag            reading or writing port B I/O
-                            163 ;       4 CB1 interrupt flag            reading or writing port A I/O
-                            164 ;       5 timer 2 interrupt flag        read t2 low or write t2 high
-                            165 ;       6 timer 1 interrupt flag        read t1 count low or write t1 high
-                            166 ;       7 IRQ status flag               write logic 0 to IER or IFR bit
-                     D00E   167 VIA_int_enable  =     0xD00E   ;VIA interrupt enable register
-                            168 ;       0 CA2 interrupt enable
-                            169 ;       1 CA1 interrupt enable
-                            170 ;       2 shift register interrupt enable
-                            171 ;       3 CB2 interrupt enable
-                            172 ;       4 CB1 interrupt enable
-                            173 ;       5 timer 2 interrupt enable
-                            174 ;       6 timer 1 interrupt enable
-                            175 ;       7 IER set/clear control
-                     D00F   176 VIA_port_a_nohs =     0xD00F   ;VIA port A data I/O register (no handshaking)
-                            177 
-                     F000   178 Cold_Start      =     0xF000   ;
-                     F06C   179 Warm_Start      =     0xF06C   ;
-                     F14C   180 Init_VIA        =     0xF14C   ;
-                     F164   181 Init_OS_RAM     =     0xF164   ;
-                     F18B   182 Init_OS         =     0xF18B   ;
-                     F192   183 Wait_Recal      =     0xF192   ;
-                     F1A2   184 Set_Refresh     =     0xF1A2   ;
-                     F1AA   185 DP_to_D0        =     0xF1AA   ;
-                     F1AF   186 DP_to_C8        =     0xF1AF   ;
-                     F1B4   187 Read_Btns_Mask  =     0xF1B4   ;
-                     F1BA   188 Read_Btns       =     0xF1BA   ;
-                     F1F5   189 Joy_Analog      =     0xF1F5   ;
-                     F1F8   190 Joy_Digital     =     0xF1F8   ;
-                     F256   191 Sound_Byte      =     0xF256   ;
-                     F259   192 Sound_Byte_x    =     0xF259   ;
-                     F25B   193 Sound_Byte_raw  =     0xF25B   ;
-                     F272   194 Clear_Sound     =     0xF272   ;
-                     F27D   195 Sound_Bytes     =     0xF27D   ;
-                     F284   196 Sound_Bytes_x   =     0xF284   ;
-                     F289   197 Do_Sound        =     0xF289   ;
-                     F28C   198 Do_Sound_x      =     0xF28C   ;
-                     F29D   199 Intensity_1F    =     0xF29D   ;
-                     F2A1   200 Intensity_3F    =     0xF2A1   ;
-                     F2A5   201 Intensity_5F    =     0xF2A5   ;
-                     F2A9   202 Intensity_7F    =     0xF2A9   ;
-                     F2AB   203 Intensity_a     =     0xF2AB   ;
-                     F2BE   204 Dot_ix_b        =     0xF2BE   ;
-                     F2C1   205 Dot_ix          =     0xF2C1   ;
-                     F2C3   206 Dot_d           =     0xF2C3   ;
-                     F2C5   207 Dot_here        =     0xF2C5   ;
-                     F2D5   208 Dot_List        =     0xF2D5   ;
-                     F2DE   209 Dot_List_Reset  =     0xF2DE   ;
-                     F2E6   210 Recalibrate     =     0xF2E6   ;
-                     F2F2   211 Moveto_x_7F     =     0xF2F2   ;
-                     F2FC   212 Moveto_d_7F     =     0xF2FC   ;
-                     F308   213 Moveto_ix_FF    =     0xF308   ;
-                     F30C   214 Moveto_ix_7F    =     0xF30C   ;
-                     F30E   215 Moveto_ix_b     =     0xF30E   ;
-                     F310   216 Moveto_ix       =     0xF310   ;
-                     F312   217 Moveto_d        =     0xF312   ;
-                     F34A   218 Reset0Ref_D0    =     0xF34A   ;
-                     F34F   219 Check0Ref       =     0xF34F   ;
-                     F354   220 Reset0Ref       =     0xF354   ;
-                     F35B   221 Reset_Pen       =     0xF35B   ;
-                     F36B   222 Reset0Int       =     0xF36B   ;
-                     F373   223 Print_Str_hwyx  =     0xF373   ;
-                     F378   224 Print_Str_yx    =     0xF378   ;
-                     F37A   225 Print_Str_d     =     0xF37A   ;
-                     F385   226 Print_List_hw   =     0xF385   ;
-                     F38A   227 Print_List      =     0xF38A   ;
-                     F38C   228 Print_List_chk  =     0xF38C   ;
-                     F391   229 Print_Ships_x   =     0xF391   ;
-                     F393   230 Print_Ships     =     0xF393   ;
-                     F3AD   231 Mov_Draw_VLc_a  =     0xF3AD   ;count y x y x ...
-                     F3B1   232 Mov_Draw_VL_b   =     0xF3B1   ;y x y x ...
-                     F3B5   233 Mov_Draw_VLcs   =     0xF3B5   ;count scale y x y x ...
-                     F3B7   234 Mov_Draw_VL_ab  =     0xF3B7   ;y x y x ...
-                     F3B9   235 Mov_Draw_VL_a   =     0xF3B9   ;y x y x ...
-                     F3BC   236 Mov_Draw_VL     =     0xF3BC   ;y x y x ...
-                     F3BE   237 Mov_Draw_VL_d   =     0xF3BE   ;y x y x ...
-                     F3CE   238 Draw_VLc        =     0xF3CE   ;count y x y x ...
-                     F3D2   239 Draw_VL_b       =     0xF3D2   ;y x y x ...
-                     F3D6   240 Draw_VLcs       =     0xF3D6   ;count scale y x y x ...
-                     F3D8   241 Draw_VL_ab      =     0xF3D8   ;y x y x ...
-                     F3DA   242 Draw_VL_a       =     0xF3DA   ;y x y x ...
-                     F3DD   243 Draw_VL         =     0xF3DD   ;y x y x ...
-                     F3DF   244 Draw_Line_d     =     0xF3DF   ;y x y x ...
-                     F404   245 Draw_VLp_FF     =     0xF404   ;pattern y x pattern y x ... 0x01
-                     F408   246 Draw_VLp_7F     =     0xF408   ;pattern y x pattern y x ... 0x01
-                     F40C   247 Draw_VLp_scale  =     0xF40C   ;scale pattern y x pattern y x ... 0x01
-                     F40E   248 Draw_VLp_b      =     0xF40E   ;pattern y x pattern y x ... 0x01
-                     F410   249 Draw_VLp        =     0xF410   ;pattern y x pattern y x ... 0x01
-                     F434   250 Draw_Pat_VL_a   =     0xF434   ;y x y x ...
-                     F437   251 Draw_Pat_VL     =     0xF437   ;y x y x ...
-                     F439   252 Draw_Pat_VL_d   =     0xF439   ;y x y x ...
-                     F46E   253 Draw_VL_mode    =     0xF46E   ;mode y x mode y x ... 0x01
-                     F495   254 Print_Str       =     0xF495   ;
-                     F511   255 Random_3        =     0xF511   ;
-                     F517   256 Random          =     0xF517   ;
-                     F533   257 Init_Music_Buf  =     0xF533   ;
-                     F53F   258 Clear_x_b       =     0xF53F   ;
-                     F542   259 Clear_C8_RAM    =     0xF542   ;never used by GCE carts?
-                     F545   260 Clear_x_256     =     0xF545   ;
-                     F548   261 Clear_x_d       =     0xF548   ;
-                     F550   262 Clear_x_b_80    =     0xF550   ;
-                     F552   263 Clear_x_b_a     =     0xF552   ;
-                     F55A   264 Dec_3_Counters  =     0xF55A   ;
-                     F55E   265 Dec_6_Counters  =     0xF55E   ;
-                     F563   266 Dec_Counters    =     0xF563   ;
-                     F56D   267 Delay_3         =     0xF56D   ;30 cycles
-                     F571   268 Delay_2         =     0xF571   ;25 cycles
-                     F575   269 Delay_1         =     0xF575   ;20 cycles
-                     F579   270 Delay_0         =     0xF579   ;12 cycles
-                     F57A   271 Delay_b         =     0xF57A   ;5*B + 10 cycles
-                     F57D   272 Delay_RTS       =     0xF57D   ;5 cycles
-                     F57E   273 Bitmask_a       =     0xF57E   ;
-                     F584   274 Abs_a_b         =     0xF584   ;
-                     F58B   275 Abs_b           =     0xF58B   ;
-                     F593   276 Rise_Run_Angle  =     0xF593   ;
-                     F5D9   277 Get_Rise_Idx    =     0xF5D9   ;
-                     F5DB   278 Get_Run_Idx     =     0xF5DB   ;
-                     F5EF   279 Get_Rise_Run    =     0xF5EF   ;
-                     F5FF   280 Rise_Run_X      =     0xF5FF   ;
-                     F601   281 Rise_Run_Y      =     0xF601   ;
-                     F603   282 Rise_Run_Len    =     0xF603   ;
-                            283 
-                     F610   284 Rot_VL_ab       =     0xF610   ;
-                     F616   285 Rot_VL          =     0xF616   ;
-                     F61F   286 Rot_VL_Mode   =     0xF61F   ;
-                     F62B   287 Rot_VL_M_dft     =     0xF62B   ;
-                            288 ;Rot_VL_dft      EQU     0xF637   ;
-                            289 
-                            290 
-                            291 ;Rot_VL_ab       EQU     0xF610   ;
-                            292 ;Rot_VL          EQU     0xF616   ;
-                            293 ;Rot_VL_Mode_a   EQU     0xF61F   ;
-                            294 ;Rot_VL_Mode     EQU     0xF62B   ;
-                            295 ;Rot_VL_dft      EQU     0xF637   ;
-                            296 
-                     F65B   297 Xform_Run_a     =     0xF65B   ;
-                     F65D   298 Xform_Run       =     0xF65D   ;
-                     F661   299 Xform_Rise_a    =     0xF661   ;
-                     F663   300 Xform_Rise      =     0xF663   ;
-                     F67F   301 Move_Mem_a_1    =     0xF67F   ;
-                     F683   302 Move_Mem_a      =     0xF683   ;
-                     F687   303 Init_Music_chk  =     0xF687   ;
-                     F68D   304 Init_Music      =     0xF68D   ;
-                     F692   305 Init_Music_x    =     0xF692   ;
-                     F7A9   306 Select_Game     =     0xF7A9   ;
-                     F84F   307 Clear_Score     =     0xF84F   ;
-                     F85E   308 Add_Score_a     =     0xF85E   ;
-                     F87C   309 Add_Score_d     =     0xF87C   ;
-                     F8B7   310 Strip_Zeros     =     0xF8B7   ;
-                     F8C7   311 Compare_Score   =     0xF8C7   ;
-                     F8D8   312 New_High_Score  =     0xF8D8   ;
-                     F8E5   313 Obj_Will_Hit_u  =     0xF8E5   ;
-                     F8F3   314 Obj_Will_Hit    =     0xF8F3   ;
-                     F8FF   315 Obj_Hit         =     0xF8FF   ;
-                     F92E   316 Explosion_Snd   =     0xF92E   ;
-                     FF9F   317 Draw_Grid_VL    =     0xFF9F   ;
-                            318                                 ;
-                     FD0D   319 music1  = 0xFD0D               ;
-                     FD1D   320 music2  = 0xFD1D               ;
-                     FD81   321 music3  = 0xFD81               ;
-                     FDD3   322 music4  = 0xFDD3               ;
-                     FE38   323 music5  = 0xFE38               ;
-                     FE76   324 music6  = 0xFE76               ;
-                     FEC6   325 music7  = 0xFEC6               ;
-                     FEF8   326 music8  = 0xFEF8               ;
-                     FF26   327 music9  = 0xFF26               ;
-                     FF44   328 musica  = 0xFF44               ;
-                     FF62   329 musicb  = 0xFF62               ;
-                     FF7A   330 musicc  = 0xFF7A               ;
-                     FF8F   331 musicd  = 0xFF8F               ;
-                     F9F4   332 Char_Table = 0xF9F4
-                     FBD4   333 Char_Table_End = 0xFBD4
-                            334 
-                            335 ; expects width strength to be = to the default bios location Vec_Text_Width
-                            336 ; expects height strength to be = to the default bios location Vec_Text_Height
-                            337 ; address of raster data is expected in U
-                            338 ; print is done to current screen location
-                            339 ; 
-                            340 ; uses bios ram-locations  Vec_Counter_1,  Vec_Counter_2,  Vec_Counter_3
-                            341 ; as temporary storages
-                            342 
-                            343 ; Warning - direct line found!
-                            344 ;                    direct 0xd0 
-                            345  .globl exit_raster_early
-   0000                     346 exit_raster_early: 
-   0000 86 98         [ 2]  347                     lda #0x98                              ; EXIT routine 
-   0002 97 0B         [ 4]  348                     sta *VIA_aux_cntl                     ; T1->PB7 enabled 
-   0004 7E F3 54      [ 4]  349                     jmp Reset0Ref                         ; Reset the zero reference 
-                            350 
-                            351  .globl draw_raster_image
-   0007                     352 draw_raster_image: 
-   0007 A6 C0         [ 6]  353                     lda ,u+ 
-   0009 B7 C8 2E      [ 5]  354                     sta Vec_Counter_1                     ; height counter 
-   000C A6 C0         [ 6]  355                     lda ,u+ 
-   000E B7 C8 2F      [ 5]  356                     sta Vec_Counter_2                     ; width counter 
-   0011 B7 C8 30      [ 5]  357                     sta Vec_Counter_3                     ; width counter (work) 
-                            358 ; setup VIA raster routine
-                            359 ; step 1
-                            360 ; reset X, Y integrator offset values 
-                            361 ; setup rampin with auxControl 
-   0014 CC 18 83      [ 3]  362                     ldd #0x1883                            ; a = 0x18, b = 0x83 disable RAMP, muxsel=false, channel 1 (integrators offsets) 
-   0017 0F 01         [ 6]  363                     clr *VIA_port_a                       ; Clear D/A output 
-   0019 97 0B         [ 4]  364                     sta *VIA_aux_cntl                     ; 0x18: T1 OneSHotMode WITHOUT Ramp control, Shift out under System clock 
-   001B D7 00         [ 4]  365                     stb *VIA_port_b                       ; set mux to channel 1, 
-   001D 0A 00         [ 6]  366                     dec *VIA_port_b                       ; set "b" setting to orb 
-   001F CC 80 81      [ 3]  367                     ldd #0x8081                            ; a = 0x80, b = 0x81 prepare next orb configuration 
-   0022 12            [ 2]  368  nop ; Wait a moment 
-   0023 0C 00         [ 6]  369                     inc *VIA_port_b                       ; Disable mux 
-                            370 ; step 2
-                            371 ; VIA_ORA is 0
-                            372 ; integrator y = 0
-   0025 D7 00         [ 4]  373                     stb *VIA_port_b                       ; disable RAMP, set mux to channel 0 (muxsel = false) 
-   0027 97 00         [ 4]  374                     sta *VIA_port_b                       ; enable mux 
-   0029 7D C8 00      [ 7]  375                     tst 0xC800                             ; I think this is a delay only 
-   002C 0C 00         [ 6]  376                     inc *VIA_port_b                       ; disable mux 
-                            377 ; step 3
-                            378 ; output each line!
-                            379  .globl nextForwardLine
-   002E                     380 nextForwardLine: 
-   002E B6 C8 2B      [ 5]  381                     lda Vec_Text_Width                    ; get width 
-   0031 97 01         [ 4]  382                     sta *VIA_port_a                       ; Send it to the D/A 
-   0033 86 01         [ 2]  383                     lda #0x01                              ; a = 0x01 
-   0035 97 00         [ 4]  384                     sta *VIA_port_b                       ; Enable RAMP, disable mux 
-                            385 ; output is ongoing! (RAMP is enabled)
-   0037 F6 C8 30      [ 5]  386                     ldb Vec_Counter_3                     ; [5] 
-   003A 12            [ 2]  387  nop ; [2] wait 
-   003B 12            [ 2]  388  nop ; [2] wait 
-                            389  .globl oneShiftOutForward
-   003C                     390 oneShiftOutForward: 
-   003C A6 C0         [ 6]  391                     lda ,u+                               ; [6] get bitmap (shiftreg-data) from raster table 
-   003E 97 0A         [ 4]  392                     sta *VIA_shift_reg                    ; [4] This loop needs to have exactly 18 cycles (8*2+2) 
-                            393                                                           ; one complete shiftreg output takes 16 cycles (8*2) + 2 cycles since VIA needs some rest 
-   0040 20 00         [ 3]  394                     bra dummy1                            ; [3] 
-                            395 
-                            396  .globl dummy1
-   0042                     397 dummy1: 
-   0042 5A            [ 2]  398                     decb                                  ; [2] 
-   0043 26 F7         [ 3]  399                     bne oneShiftOutForward                ; [3] go back if not done for line 
-   0045 86 81         [ 2]  400                     lda #0x81                              ; [2] 
-   0047 12            [ 2]  401  nop ; [2] delay 2 to finish last shiftout 
-   0048 97 00         [ 4]  402                     sta *VIA_port_b                       ; [4] disable RAMP, disable mux 
-   004A D7 01         [ 4]  403                     stb *VIA_port_a                       ; dac = 0 
-   004C 7A C8 2E      [ 7]  404                     dec Vec_Counter_1                     ; check for last row 
-   004F 27 AF         [ 3]  405                     beq exit_raster_early                 ; branch if last row 
-                            406 ; prepare going backwards next rasterline
-                            407                                                           ; 0 ref - avoids woble on large images 
-   0051 86 83         [ 2]  408                     lda #0x83                              ; ramp still off, mux sel = 1, mux disable 
-   0053 97 00         [ 4]  409                     sta *VIA_port_b                       ; put to orb 
-   0055 0A 00         [ 6]  410                     dec *VIA_port_b                       ; mux enable 
-   0057 B6 C8 2A      [ 5]  411                     lda Vec_Text_Height                   ; get height to a 
-   005A 0A 00         [ 6]  412                     dec *VIA_port_b                       ; mux disable 
-   005C 0A 00         [ 6]  413                     dec *VIA_port_b                       ; enable mux 
-   005E 97 01         [ 4]  414                     sta *VIA_port_a                       ; put y speed to  dac 
-   0060 70 C8 2B      [ 7]  415                     neg Vec_Text_Width                    ; for the way back take the "negative" x-direction 
-   0063 0C 00         [ 6]  416                     inc *VIA_port_b                       ; disable mux 
-   0065 0F 01         [ 6]  417                     clr *VIA_port_a                       ; x should not be integrating! 
-   0067 86 01         [ 2]  418                     lda #0x01                              ; a= enable ramp, disable mux 
-   0069 97 00         [ 4]  419                     sta *VIA_port_b                       ; set it to orb 
-                            420 ; now we are going down a little bit
-   006B 12            [ 2]  421  nop ; ? 
-   006C 12            [ 2]  422  nop ; ? 
-   006D 86 81         [ 2]  423                     lda #0x81                              ; disable ramp, disable mux (muxsel = Y) 
-   006F 97 00         [ 4]  424                     sta *VIA_port_b                       ; set it to orb 
-   0071 0F 01         [ 6]  425                     clr *VIA_port_a                       ; clear D/A, (Y integration = 0) 
-   0073 0A 00         [ 6]  426                     dec *VIA_port_b                       ; enable mux 
-   0075 B6 C8 2F      [ 5]  427                     lda Vec_Counter_2                     ; width of one line 
-   0078 B7 C8 30      [ 5]  428                     sta Vec_Counter_3                     ; reset output counter 
-   007B 0C 00         [ 6]  429                     inc *VIA_port_b                       ; disable mux 
-                            430 
-                            431 ;                     bra dummy3 ; if bra is done, cycles for forward and backword are exactly the same
+                             14 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                             15 ; this file contains includes for vectrex BIOS functions and variables      ;
+                             16 ; it was written by Bruce Tomlin, slighte changed by Malban                 ;
+                             17 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                             18 
+                     0001    19 INCLUDE_I = 1
+                             20 
+                     C800    21 Vec_Snd_Shadow  =     0xC800   ;Shadow of sound chip registers (15 bytes)
+                     C80F    22 Vec_Btn_State   =     0xC80F   ;Current state of all joystick buttons
+                     C810    23 Vec_Prev_Btns   =     0xC810   ;Previous state of all joystick buttons
+                     C811    24 Vec_Buttons     =     0xC811   ;Current toggle state of all buttons
+                     C812    25 Vec_Button_1_1  =     0xC812   ;Current toggle state of stick 1 button 1
+                     C813    26 Vec_Button_1_2  =     0xC813   ;Current toggle state of stick 1 button 2
+                     C814    27 Vec_Button_1_3  =     0xC814   ;Current toggle state of stick 1 button 3
+                     C815    28 Vec_Button_1_4  =     0xC815   ;Current toggle state of stick 1 button 4
+                     C816    29 Vec_Button_2_1  =     0xC816   ;Current toggle state of stick 2 button 1
+                     C817    30 Vec_Button_2_2  =     0xC817   ;Current toggle state of stick 2 button 2
+                     C818    31 Vec_Button_2_3  =     0xC818   ;Current toggle state of stick 2 button 3
+                     C819    32 Vec_Button_2_4  =     0xC819   ;Current toggle state of stick 2 button 4
+                     C81A    33 Vec_Joy_Resltn  =     0xC81A   ;Joystick A/D resolution (0x80=min 0x00=max)
+                     C81B    34 Vec_Joy_1_X     =     0xC81B   ;Joystick 1 left/right
+                     C81C    35 Vec_Joy_1_Y     =     0xC81C   ;Joystick 1 up/down
+                     C81D    36 Vec_Joy_2_X     =     0xC81D   ;Joystick 2 left/right
+                     C81E    37 Vec_Joy_2_Y     =     0xC81E   ;Joystick 2 up/down
+                     C81F    38 Vec_Joy_Mux     =     0xC81F   ;Joystick enable/mux flags (4 bytes)
+                     C81F    39 Vec_Joy_Mux_1_X =     0xC81F   ;Joystick 1 X enable/mux flag (=1)
+                     C820    40 Vec_Joy_Mux_1_Y =     0xC820   ;Joystick 1 Y enable/mux flag (=3)
+                     C821    41 Vec_Joy_Mux_2_X =     0xC821   ;Joystick 2 X enable/mux flag (=5)
+                     C822    42 Vec_Joy_Mux_2_Y =     0xC822   ;Joystick 2 Y enable/mux flag (=7)
+                     C823    43 Vec_Misc_Count  =     0xC823   ;Misc counter/flag byte, zero when not in use
+                     C824    44 Vec_0Ref_Enable =     0xC824   ;Check0Ref enable flag
+                     C825    45 Vec_Loop_Count  =     0xC825   ;Loop counter word (incremented in Wait_Recal)
+                     C827    46 Vec_Brightness  =     0xC827   ;Default brightness
+                     C828    47 Vec_Dot_Dwell   =     0xC828   ;Dot dwell time?
+                     C829    48 Vec_Pattern     =     0xC829   ;Dot pattern (bits)
+                     C82A    49 Vec_Text_HW     =     0xC82A   ;Default text height and width
+                     C82A    50 Vec_Text_Height =     0xC82A   ;Default text height
+                     C82B    51 Vec_Text_Width  =     0xC82B   ;Default text width
+                     C82C    52 Vec_Str_Ptr     =     0xC82C   ;Temporary string pointer for Print_Str
+                     C82E    53 Vec_Counters    =     0xC82E   ;Six bytes of counters
+                     C82E    54 Vec_Counter_1   =     0xC82E   ;First  counter byte
+                     C82F    55 Vec_Counter_2   =     0xC82F   ;Second counter byte
+                     C830    56 Vec_Counter_3   =     0xC830   ;Third  counter byte
+                     C831    57 Vec_Counter_4   =     0xC831   ;Fourth counter byte
+                     C832    58 Vec_Counter_5   =     0xC832   ;Fifth  counter byte
+                     C833    59 Vec_Counter_6   =     0xC833   ;Sixth  counter byte
+                     C834    60 Vec_RiseRun_Tmp =     0xC834   ;Temp storage word for rise/run
+                     C836    61 Vec_Angle       =     0xC836   ;Angle for rise/run and rotation calculations
+                     C837    62 Vec_Run_Index   =     0xC837   ;Index pair for run
+                             63 ;                       0xC839   ;Pointer to copyright string during startup
+                     C839    64 Vec_Rise_Index  =     0xC839   ;Index pair for rise
+                             65 ;                       0xC83B   ;High score cold-start flag (=0 if valid)
+                     C83B    66 Vec_RiseRun_Len =     0xC83B   ;length for rise/run
+                             67 ;                       0xC83C   ;temp byte
+                     C83D    68 Vec_Rfrsh       =     0xC83D   ;Refresh time (divided by 1.5MHz)
+                     C83D    69 Vec_Rfrsh_lo    =     0xC83D   ;Refresh time low byte
+                     C83E    70 Vec_Rfrsh_hi    =     0xC83E   ;Refresh time high byte
+                     C83F    71 Vec_Music_Work  =     0xC83F   ;Music work buffer (14 bytes, backwards?)
+                     C842    72 Vec_Music_Wk_A  =     0xC842   ;        register 10
+                             73 ;                       0xC843   ;        register 9
+                             74 ;                       0xC844   ;        register 8
+                     C845    75 Vec_Music_Wk_7  =     0xC845   ;        register 7
+                     C846    76 Vec_Music_Wk_6  =     0xC846   ;        register 6
+                     C847    77 Vec_Music_Wk_5  =     0xC847   ;        register 5
+                             78 ;                       0xC848   ;        register 4
+                             79 ;                       0xC849   ;        register 3
+                             80 ;                       0xC84A   ;        register 2
+                     C84B    81 Vec_Music_Wk_1  =     0xC84B   ;        register 1
+                             82 ;                       0xC84C   ;        register 0
+                     C84D    83 Vec_Freq_Table  =     0xC84D   ;Pointer to note-to-frequency table (normally 0xFC8D)
+                     C84F    84 Vec_Max_Players =     0xC84F   ;Maximum number of players for Select_Game
+                     C850    85 Vec_Max_Games   =     0xC850   ;Maximum number of games for Select_Game
+                     C84F    86 Vec_ADSR_Table  =     0xC84F   ;Storage for first music header word (ADSR table)
+                     C851    87 Vec_Twang_Table =     0xC851   ;Storage for second music header word ('twang' table)
+                     C853    88 Vec_Music_Ptr   =     0xC853   ;Music data pointer
+                     C853    89 Vec_Expl_ChanA  =     0xC853   ;Used by Explosion_Snd - bit for first channel used?
+                     C854    90 Vec_Expl_Chans  =     0xC854   ;Used by Explosion_Snd - bits for all channels used?
+                     C855    91 Vec_Music_Chan  =     0xC855   ;Current sound channel number for Init_Music
+                     C856    92 Vec_Music_Flag  =     0xC856   ;Music active flag (0x00=off 0x01=start 0x80=on)
+                     C857    93 Vec_Duration    =     0xC857   ;Duration counter for Init_Music
+                     C858    94 Vec_Music_Twang =     0xC858   ;3 word 'twang' table used by Init_Music
+                     C858    95 Vec_Expl_1      =     0xC858   ;Four bytes copied from Explosion_Snd's U-reg parameters
+                     C859    96 Vec_Expl_2      =     0xC859   ;
+                     C85A    97 Vec_Expl_3      =     0xC85A   ;
+                     C85B    98 Vec_Expl_4      =     0xC85B   ;
+                     C85C    99 Vec_Expl_Chan   =     0xC85C   ;Used by Explosion_Snd - channel number in use?
+                     C85D   100 Vec_Expl_ChanB  =     0xC85D   ;Used by Explosion_Snd - bit for second channel used?
+                     C85E   101 Vec_ADSR_Timers =     0xC85E   ;ADSR timers for each sound channel (3 bytes)
+                     C861   102 Vec_Music_Freq  =     0xC861   ;Storage for base frequency of each channel (3 words)
+                            103 ;                       0xC85E   ;Scratch 'score' storage for Display_Option (7 bytes)
+                     C867   104 Vec_Expl_Flag   =     0xC867   ;Explosion_Snd initialization flag?
+                            105 ;               0xC868...0xC876   ;Unused?
+                     C877   106 Vec_Expl_Timer  =     0xC877   ;Used by Explosion_Snd
+                            107 ;                       0xC878   ;Unused?
+                     C879   108 Vec_Num_Players =     0xC879   ;Number of players selected in Select_Game
+                     C87A   109 Vec_Num_Game    =     0xC87A   ;Game number selected in Select_Game
+                     C87B   110 Vec_Seed_Ptr    =     0xC87B   ;Pointer to 3-byte random number seed (=0xC87D)
+                     C87D   111 Vec_Random_Seed =     0xC87D   ;Default 3-byte random number seed
+                            112                                 ;
+                            113 ;    0xC880 - 0xCBEA is user RAM  ;
+                            114                                 ;
+                     CBEA   115 Vec_Default_Stk =     0xCBEA   ;Default top-of-stack
+                     CBEB   116 Vec_High_Score  =     0xCBEB   ;High score storage (7 bytes)
+                     CBF2   117 Vec_SWI3_Vector =     0xCBF2   ;SWI2/SWI3 interrupt vector (3 bytes)
+                     CBF2   118 Vec_SWI2_Vector =     0xCBF2   ;SWI2/SWI3 interrupt vector (3 bytes)
+                     CBF5   119 Vec_FIRQ_Vector =     0xCBF5   ;FIRQ interrupt vector (3 bytes)
+                     CBF8   120 Vec_IRQ_Vector  =     0xCBF8   ;IRQ interrupt vector (3 bytes)
+                     CBFB   121 Vec_SWI_Vector  =     0xCBFB   ;SWI/NMI interrupt vector (3 bytes)
+                     CBFB   122 Vec_NMI_Vector  =     0xCBFB   ;SWI/NMI interrupt vector (3 bytes)
+                     CBFE   123 Vec_Cold_Flag   =     0xCBFE   ;Cold start flag (warm start if = 0x7321)
+                            124                                 ;
+                     D000   125 VIA_port_b      =     0xD000   ;VIA port B data I/O register
+                            126 ;       0 sample/hold (0=enable  mux 1=disable mux)
+                            127 ;       1 mux sel 0
+                            128 ;       2 mux sel 1
+                            129 ;       3 sound BC1
+                            130 ;       4 sound BDIR
+                            131 ;       5 comparator input
+                            132 ;       6 external device (slot pin 35) initialized to input
+                            133 ;       7 /RAMP
+                     D001   134 VIA_port_a      =     0xD001   ;VIA port A data I/O register (handshaking)
+                     D002   135 VIA_DDR_b       =     0xD002   ;VIA port B data direction register (0=input 1=output)
+                     D003   136 VIA_DDR_a       =     0xD003   ;VIA port A data direction register (0=input 1=output)
+                     D004   137 VIA_t1_cnt_lo   =     0xD004   ;VIA timer 1 count register lo (scale factor)
+                     D005   138 VIA_t1_cnt_hi   =     0xD005   ;VIA timer 1 count register hi
+                     D006   139 VIA_t1_lch_lo   =     0xD006   ;VIA timer 1 latch register lo
+                     D007   140 VIA_t1_lch_hi   =     0xD007   ;VIA timer 1 latch register hi
+                     D008   141 VIA_t2_lo       =     0xD008   ;VIA timer 2 count/latch register lo (refresh)
+                     D009   142 VIA_t2_hi       =     0xD009   ;VIA timer 2 count/latch register hi
+                     D00A   143 VIA_shift_reg   =     0xD00A   ;VIA shift register
+                     D00B   144 VIA_aux_cntl    =     0xD00B   ;VIA auxiliary control register
+                            145 ;       0 PA latch enable
+                            146 ;       1 PB latch enable
+                            147 ;       2 \                     110=output to CB2 under control of phase 2 clock
+                            148 ;       3  > shift register control     (110 is the only mode used by the Vectrex ROM)
+                            149 ;       4 /
+                            150 ;       5 0=t2 one shot                 1=t2 free running
+                            151 ;       6 0=t1 one shot                 1=t1 free running
+                            152 ;       7 0=t1 disable PB7 output       1=t1 enable PB7 output
+                     D00C   153 VIA_cntl        =     0xD00C   ;VIA control register
+                            154 ;       0 CA1 control     CA1 -> SW7    0=IRQ on low 1=IRQ on high
+                            155 ;       1 \
+                            156 ;       2  > CA2 control  CA2 -> /ZERO  110=low 111=high
+                            157 ;       3 /
+                            158 ;       4 CB1 control     CB1 -> NC     0=IRQ on low 1=IRQ on high
+                            159 ;       5 \
+                            160 ;       6  > CB2 control  CB2 -> /BLANK 110=low 111=high
+                            161 ;       7 /
+                     D00D   162 VIA_int_flags   =     0xD00D   ;VIA interrupt flags register
+                            163 ;               bit                             cleared by
+                            164 ;       0 CA2 interrupt flag            reading or writing port A I/O
+                            165 ;       1 CA1 interrupt flag            reading or writing port A I/O
+                            166 ;       2 shift register interrupt flag reading or writing shift register
+                            167 ;       3 CB2 interrupt flag            reading or writing port B I/O
+                            168 ;       4 CB1 interrupt flag            reading or writing port A I/O
+                            169 ;       5 timer 2 interrupt flag        read t2 low or write t2 high
+                            170 ;       6 timer 1 interrupt flag        read t1 count low or write t1 high
+                            171 ;       7 IRQ status flag               write logic 0 to IER or IFR bit
+                     D00E   172 VIA_int_enable  =     0xD00E   ;VIA interrupt enable register
+                            173 ;       0 CA2 interrupt enable
+                            174 ;       1 CA1 interrupt enable
+                            175 ;       2 shift register interrupt enable
+                            176 ;       3 CB2 interrupt enable
+                            177 ;       4 CB1 interrupt enable
+                            178 ;       5 timer 2 interrupt enable
+                            179 ;       6 timer 1 interrupt enable
+                            180 ;       7 IER set/clear control
+                     D00F   181 VIA_port_a_nohs =     0xD00F   ;VIA port A data I/O register (no handshaking)
+                            182 
+                     F000   183 Cold_Start      =     0xF000   ;
+                     F06C   184 Warm_Start      =     0xF06C   ;
+                     F14C   185 Init_VIA        =     0xF14C   ;
+                     F164   186 Init_OS_RAM     =     0xF164   ;
+                     F18B   187 Init_OS         =     0xF18B   ;
+                     F192   188 Wait_Recal      =     0xF192   ;
+                     F1A2   189 Set_Refresh     =     0xF1A2   ;
+                     F1AA   190 DP_to_D0        =     0xF1AA   ;
+                     F1AF   191 DP_to_C8        =     0xF1AF   ;
+                     F1B4   192 Read_Btns_Mask  =     0xF1B4   ;
+                     F1BA   193 Read_Btns       =     0xF1BA   ;
+                     F1F5   194 Joy_Analog      =     0xF1F5   ;
+                     F1F8   195 Joy_Digital     =     0xF1F8   ;
+                     F256   196 Sound_Byte      =     0xF256   ;
+                     F259   197 Sound_Byte_x    =     0xF259   ;
+                     F25B   198 Sound_Byte_raw  =     0xF25B   ;
+                     F272   199 Clear_Sound     =     0xF272   ;
+                     F27D   200 Sound_Bytes     =     0xF27D   ;
+                     F284   201 Sound_Bytes_x   =     0xF284   ;
+                     F289   202 Do_Sound        =     0xF289   ;
+                     F28C   203 Do_Sound_x      =     0xF28C   ;
+                     F29D   204 Intensity_1F    =     0xF29D   ;
+                     F2A1   205 Intensity_3F    =     0xF2A1   ;
+                     F2A5   206 Intensity_5F    =     0xF2A5   ;
+                     F2A9   207 Intensity_7F    =     0xF2A9   ;
+                     F2AB   208 Intensity_a     =     0xF2AB   ;
+                     F2BE   209 Dot_ix_b        =     0xF2BE   ;
+                     F2C1   210 Dot_ix          =     0xF2C1   ;
+                     F2C3   211 Dot_d           =     0xF2C3   ;
+                     F2C5   212 Dot_here        =     0xF2C5   ;
+                     F2D5   213 Dot_List        =     0xF2D5   ;
+                     F2DE   214 Dot_List_Reset  =     0xF2DE   ;
+                     F2E6   215 Recalibrate     =     0xF2E6   ;
+                     F2F2   216 Moveto_x_7F     =     0xF2F2   ;
+                     F2FC   217 Moveto_d_7F     =     0xF2FC   ;
+                     F308   218 Moveto_ix_FF    =     0xF308   ;
+                     F30C   219 Moveto_ix_7F    =     0xF30C   ;
+                     F30E   220 Moveto_ix_b     =     0xF30E   ;
+                     F310   221 Moveto_ix       =     0xF310   ;
+                     F312   222 Moveto_d        =     0xF312   ;
+                     F34A   223 Reset0Ref_D0    =     0xF34A   ;
+                     F34F   224 Check0Ref       =     0xF34F   ;
+                     F354   225 Reset0Ref       =     0xF354   ;
+                     F35B   226 Reset_Pen       =     0xF35B   ;
+                     F36B   227 Reset0Int       =     0xF36B   ;
+                     F373   228 Print_Str_hwyx  =     0xF373   ;
+                     F378   229 Print_Str_yx    =     0xF378   ;
+                     F37A   230 Print_Str_d     =     0xF37A   ;
+                     F385   231 Print_List_hw   =     0xF385   ;
+                     F38A   232 Print_List      =     0xF38A   ;
+                     F38C   233 Print_List_chk  =     0xF38C   ;
+                     F391   234 Print_Ships_x   =     0xF391   ;
+                     F393   235 Print_Ships     =     0xF393   ;
+                     F3AD   236 Mov_Draw_VLc_a  =     0xF3AD   ;count y x y x ...
+                     F3B1   237 Mov_Draw_VL_b   =     0xF3B1   ;y x y x ...
+                     F3B5   238 Mov_Draw_VLcs   =     0xF3B5   ;count scale y x y x ...
+                     F3B7   239 Mov_Draw_VL_ab  =     0xF3B7   ;y x y x ...
+                     F3B9   240 Mov_Draw_VL_a   =     0xF3B9   ;y x y x ...
+                     F3BC   241 Mov_Draw_VL     =     0xF3BC   ;y x y x ...
+                     F3BE   242 Mov_Draw_VL_d   =     0xF3BE   ;y x y x ...
+                     F3CE   243 Draw_VLc        =     0xF3CE   ;count y x y x ...
+                     F3D2   244 Draw_VL_b       =     0xF3D2   ;y x y x ...
+                     F3D6   245 Draw_VLcs       =     0xF3D6   ;count scale y x y x ...
+                     F3D8   246 Draw_VL_ab      =     0xF3D8   ;y x y x ...
+                     F3DA   247 Draw_VL_a       =     0xF3DA   ;y x y x ...
+                     F3DD   248 Draw_VL         =     0xF3DD   ;y x y x ...
+                     F3DF   249 Draw_Line_d     =     0xF3DF   ;y x y x ...
+                     F404   250 Draw_VLp_FF     =     0xF404   ;pattern y x pattern y x ... 0x01
+                     F408   251 Draw_VLp_7F     =     0xF408   ;pattern y x pattern y x ... 0x01
+                     F40C   252 Draw_VLp_scale  =     0xF40C   ;scale pattern y x pattern y x ... 0x01
+                     F40E   253 Draw_VLp_b      =     0xF40E   ;pattern y x pattern y x ... 0x01
+                     F410   254 Draw_VLp        =     0xF410   ;pattern y x pattern y x ... 0x01
+                     F434   255 Draw_Pat_VL_a   =     0xF434   ;y x y x ...
+                     F437   256 Draw_Pat_VL     =     0xF437   ;y x y x ...
+                     F439   257 Draw_Pat_VL_d   =     0xF439   ;y x y x ...
+                     F46E   258 Draw_VL_mode    =     0xF46E   ;mode y x mode y x ... 0x01
+                     F495   259 Print_Str       =     0xF495   ;
+                     F511   260 Random_3        =     0xF511   ;
+                     F517   261 Random          =     0xF517   ;
+                     F533   262 Init_Music_Buf  =     0xF533   ;
+                     F53F   263 Clear_x_b       =     0xF53F   ;
+                     F542   264 Clear_C8_RAM    =     0xF542   ;never used by GCE carts?
+                     F545   265 Clear_x_256     =     0xF545   ;
+                     F548   266 Clear_x_d       =     0xF548   ;
+                     F550   267 Clear_x_b_80    =     0xF550   ;
+                     F552   268 Clear_x_b_a     =     0xF552   ;
+                     F55A   269 Dec_3_Counters  =     0xF55A   ;
+                     F55E   270 Dec_6_Counters  =     0xF55E   ;
+                     F563   271 Dec_Counters    =     0xF563   ;
+                     F56D   272 Delay_3         =     0xF56D   ;30 cycles
+                     F571   273 Delay_2         =     0xF571   ;25 cycles
+                     F575   274 Delay_1         =     0xF575   ;20 cycles
+                     F579   275 Delay_0         =     0xF579   ;12 cycles
+                     F57A   276 Delay_b         =     0xF57A   ;5*B + 10 cycles
+                     F57D   277 Delay_RTS       =     0xF57D   ;5 cycles
+                     F57E   278 Bitmask_a       =     0xF57E   ;
+                     F584   279 Abs_a_b         =     0xF584   ;
+                     F58B   280 Abs_b           =     0xF58B   ;
+                     F593   281 Rise_Run_Angle  =     0xF593   ;
+                     F5D9   282 Get_Rise_Idx    =     0xF5D9   ;
+                     F5DB   283 Get_Run_Idx     =     0xF5DB   ;
+                     F5EF   284 Get_Rise_Run    =     0xF5EF   ;
+                     F5FF   285 Rise_Run_X      =     0xF5FF   ;
+                     F601   286 Rise_Run_Y      =     0xF601   ;
+                     F603   287 Rise_Run_Len    =     0xF603   ;
+                            288 
+                     F610   289 Rot_VL_ab       =     0xF610   ;
+                     F616   290 Rot_VL          =     0xF616   ;
+                     F61F   291 Rot_VL_Mode   =     0xF61F   ;
+                     F62B   292 Rot_VL_M_dft     =     0xF62B   ;
+                            293 ;Rot_VL_dft      EQU     0xF637   ;
+                            294 
+                            295 
+                            296 ;Rot_VL_ab       EQU     0xF610   ;
+                            297 ;Rot_VL          EQU     0xF616   ;
+                            298 ;Rot_VL_Mode_a   EQU     0xF61F   ;
+                            299 ;Rot_VL_Mode     EQU     0xF62B   ;
+                            300 ;Rot_VL_dft      EQU     0xF637   ;
+                            301 
+                     F65B   302 Xform_Run_a     =     0xF65B   ;
+                     F65D   303 Xform_Run       =     0xF65D   ;
+                     F661   304 Xform_Rise_a    =     0xF661   ;
+                     F663   305 Xform_Rise      =     0xF663   ;
+                     F67F   306 Move_Mem_a_1    =     0xF67F   ;
+                     F683   307 Move_Mem_a      =     0xF683   ;
+                     F687   308 Init_Music_chk  =     0xF687   ;
+                     F68D   309 Init_Music      =     0xF68D   ;
+                     F692   310 Init_Music_x    =     0xF692   ;
+                     F7A9   311 Select_Game     =     0xF7A9   ;
+                     F84F   312 Clear_Score     =     0xF84F   ;
+                     F85E   313 Add_Score_a     =     0xF85E   ;
+                     F87C   314 Add_Score_d     =     0xF87C   ;
+                     F8B7   315 Strip_Zeros     =     0xF8B7   ;
+                     F8C7   316 Compare_Score   =     0xF8C7   ;
+                     F8D8   317 New_High_Score  =     0xF8D8   ;
+                     F8E5   318 Obj_Will_Hit_u  =     0xF8E5   ;
+                     F8F3   319 Obj_Will_Hit    =     0xF8F3   ;
+                     F8FF   320 Obj_Hit         =     0xF8FF   ;
+                     F92E   321 Explosion_Snd   =     0xF92E   ;
+                     FF9F   322 Draw_Grid_VL    =     0xFF9F   ;
+                            323                                 ;
+                     FD0D   324 music1  = 0xFD0D               ;
+                     FD1D   325 music2  = 0xFD1D               ;
+                     FD81   326 music3  = 0xFD81               ;
+                     FDD3   327 music4  = 0xFDD3               ;
+                     FE38   328 music5  = 0xFE38               ;
+                     FE76   329 music6  = 0xFE76               ;
+                     FEC6   330 music7  = 0xFEC6               ;
+                     FEF8   331 music8  = 0xFEF8               ;
+                     FF26   332 music9  = 0xFF26               ;
+                     FF44   333 musica  = 0xFF44               ;
+                     FF62   334 musicb  = 0xFF62               ;
+                     FF7A   335 musicc  = 0xFF7A               ;
+                     FF8F   336 musicd  = 0xFF8F               ;
+                     F9F4   337 Char_Table = 0xF9F4
+                     FBD4   338 Char_Table_End = 0xFBD4
+                            339 
+                     0040   340 WIDTH               =      0x40 
+                     000A   341 HEIGHT              =      10 
+                     FFC0   342 XPOS                =      -0x40 
+                     000A   343 YPOS                =      10 
+                            344 
+                            345  .setdp 0xd000,_DATA
+                            346 ; Warning - direct line found!
+                            347 ;                    direct 0xd0 
+                            348  .globl exit_raster_early
+   0000                     349 exit_raster_early: 
+   0000 86 98         [ 2]  350                     lda #0x98                              ; EXIT routine 
+   0002 97 0B         [ 4]  351                     sta *VIA_aux_cntl                     ; T1->PB7 enabled 
+   0004 7E F3 54      [ 4]  352                     jmp Reset0Ref                         ; Reset the zero reference 
+                            353 
+                            354  .globl draw_raster_image
+   0007                     355 draw_raster_image: 
+   0007 EC C1         [ 8]  356                     ldd ,u++ 
+   0009 B7 C8 2E      [ 5]  357                     sta Vec_Counter_1                     ; height counter 
+   000C F7 C8 2F      [ 5]  358                     stb Vec_Counter_2                     ; width counter 
+   000F F7 C8 30      [ 5]  359                     stb Vec_Counter_3                     ; width counter (work) 
+                            360 ; setup VIA raster routine
+                            361 ; step 1
+                            362 ; reset X, Y integrator offset values 
+                            363 ; setup rampin with auxControl 
+   0012 CC 18 80      [ 3]  364                     ldd #0x1880                            ; a = 0x18, b = 0x83 disable RAMP, muxsel=false, channel 1 (integrators offsets) 
+   0015 0F 01         [ 6]  365                     clr *VIA_port_a                       ; Clear D/A output 
+                            366 
+                            367 ;                    stb <VIA_port_b                       ; = mux to channel 1, 
+                            368 ;                    dec <VIA_port_b                       ; = "b" setting to orb 
+                            369 ;                    ldd #0x8081                            ; a = 0x80, b = 0x81 prepare next orb configuration 
+                            370 ;                    nop                                   ; Wait a moment 
+                            371 ;                    inc <VIA_port_b                       ; Disable mux 
+                            372 ; step 2
+                            373 ; VIA_ORA is 0
+                            374 ; integrator y = 0
+   0017 D7 00         [ 4]  375                     stb *VIA_port_b                       ; disable RAMP, set mux to channel 0 (muxsel = int y) 
+   0019 97 0B         [ 4]  376                     sta *VIA_aux_cntl                     ; 0x18: T1 OneSHotMode WITHOUT Ramp control, Shift out under System clock 
+   001B 0C 00         [ 6]  377                     inc *VIA_port_b                       ; disable mux 
+                            378 ; step 3
+                            379 ; output each line!
+                            380  .globl nextForwardLine
+   001D                     381 nextForwardLine: 
+   001D B6 C8 2B      [ 5]  382                     lda Vec_Text_Width                    ; get width 
+   0020 97 01         [ 4]  383                     sta *VIA_port_a                       ; Send it to the D/A 
+   0022 86 01         [ 2]  384                     lda #0x01                              ; a = 0x01 
+   0024 97 00         [ 4]  385                     sta *VIA_port_b                       ; Enable RAMP, disable mux 
+                            386 ; output is ongoing! (RAMP is enabled)
+   0026 F6 C8 30      [ 5]  387                     ldb Vec_Counter_3                     ; [5] 
+   0029 12            [ 2]  388  nop ; [2] wait 
+   002A 12            [ 2]  389  nop ; [2] wait 
+                            390  .globl oneShiftOutForward
+   002B                     391 oneShiftOutForward: 
+   002B A6 C0         [ 6]  392                     lda ,u+                               ; [6] get bitmap (shiftreg-data) from raster table 
+   002D 97 0A         [ 4]  393                     sta *VIA_shift_reg                    ; [4] This loop needs to have exactly 18 cycles (8*2+2) 
+                            394                                                           ; one complete shiftreg output takes 16 cycles (8*2) + 2 cycles since VIA needs some rest 
+   002F 20 00         [ 3]  395                     bra dummy1                            ; [3] 
+                            396 
+                            397  .globl dummy1
+   0031                     398 dummy1: 
+   0031 5A            [ 2]  399                     decb                                  ; [2] 
+   0032 26 F7         [ 3]  400                     bne oneShiftOutForward                ; [3] go back if not done for line 
+   0034 86 81         [ 2]  401                     lda #0x81                              ; [2] 
+   0036 12            [ 2]  402  nop ; [2] delay 2 to finish last shiftout 
+   0037 97 00         [ 4]  403                     sta *VIA_port_b                       ; [4] disable RAMP, disable mux 
+                            404     ;                stb <VIA_port_a                       ; dac = 0 
+   0039 7A C8 2E      [ 7]  405                     dec Vec_Counter_1                     ; check for last row 
+   003C 27 C2         [ 3]  406                     beq exit_raster_early                 ; branch if last row 
+                            407 ; prepare going backwards next rasterline
+                            408                                                           ; 0 ref - avoids woble on large images 
+                            409 ;                    lda #0x83                              ; ramp still off, mux sel = 1, mux disable 
+                            410 ;                    sta <VIA_port_b                       ; put to orb 
+                            411 ;                    dec <VIA_port_b                       ; mux enable 
+   003E B6 C8 2A      [ 5]  412                     lda Vec_Text_Height                   ; get height to a 
+                            413 ;                    dec <VIA_port_b                       ; mux disable 
+   0041 97 01         [ 4]  414                     sta *VIA_port_a                       ; put y speed to  dac 
+   0043 0A 00         [ 6]  415                     dec *VIA_port_b                       ; enable mux 
+                            416 
+   0045 70 C8 2B      [ 7]  417                     neg Vec_Text_Width                    ; for the way back take the "negative" x-direction 
+   0048 0C 00         [ 6]  418                     inc *VIA_port_b                       ; disable mux 
+   004A D7 01         [ 4]  419                     stb *VIA_port_a                       ; x should not be integrating! 
+   004C 86 01         [ 2]  420                     lda #0x01                              ; a= enable ramp, disable mux 
+   004E 97 00         [ 4]  421                     sta *VIA_port_b                       ; set it to orb 
+                            422 ; now we are going down a little bit
+   0050 F6 C8 2F      [ 5]  423                     ldb Vec_Counter_2                     ; width of one line 
+                            424 
+   0053 86 80         [ 2]  425                     lda #0x80;1                              ; disable ramp, disable mux (muxsel = Y) 
+   0055 97 00         [ 4]  426                     sta *VIA_port_b                       ; set it to orb 
+                            427 
+                            428                     ;clr <VIA_port_a                       ; clear D/A, (Y integration = 0) 
+                            429                  ;   dec <VIA_port_b                       ; enable mux 
+   0057 F7 C8 30      [ 5]  430                     stb Vec_Counter_3                     ; reset output counter 
+   005A 0C 00         [ 6]  431                     inc *VIA_port_b                       ; disable mux 
                             432 
-                            433  .globl dummy3
-   007D                     434 dummy3: 
-   007D B6 C8 2B      [ 5]  435                     lda Vec_Text_Width                    ; get x speed (going back) 
-   0080 97 01         [ 4]  436                     sta *VIA_port_a                       ; send it to the D/A 
-   0082 86 01         [ 2]  437                     lda #0x01                              ; a = 0x01 
-   0084 97 00         [ 4]  438                     sta *VIA_port_b                       ; enable RAMP, disable mux 
-                            439 ; output is ongoing! (RAMP is enabled)
-   0086 F6 C8 30      [ 5]  440                     ldb Vec_Counter_3                     ; [5] 
-   0089 12            [ 2]  441  nop ; [2] 
-   008A 12            [ 2]  442  nop ; [2] 
-                            443  .globl oneShiftOutBackward
-   008B                     444 oneShiftOutBackward: 
-   008B A6 C0         [ 6]  445                     lda ,u+                               ; [6] get bitmap from raster table 
-   008D 97 0A         [ 4]  446                     sta *VIA_shift_reg                    ; [4] this loop needs to have exactly 18 cycles (8*2+2) 
-   008F 20 00         [ 3]  447                     bra dummy2                            ; [3] 
-                            448 
-                            449  .globl dummy2
-   0091                     450 dummy2: 
-   0091 5A            [ 2]  451                     decb                                  ; [2] 
-   0092 26 F7         [ 3]  452                     bne oneShiftOutBackward               ; [3] go back if not finished 
-   0094 86 81         [ 2]  453                     lda #0x81                              ; [2] 
-   0096 12            [ 2]  454  nop ; [2] delay 2 to finish last shiftout 
-   0097 97 00         [ 4]  455                     sta *VIA_port_b                       ; [4] disable RAMP, disable mux 
-   0099 D7 01         [ 4]  456                     stb *VIA_port_a                       ; dac = 0 
-   009B 7A C8 2E      [ 7]  457                     dec Vec_Counter_1                     ; check for last row 
-   009E 27 2F         [ 3]  458                     beq exit_raster_late                  ; branch if last row 
-                            459 ; prepare going forward next rasterline
-                            460                                                           ; 0 ref - avoids woble on large images 
-   00A0 86 83         [ 2]  461                     lda #0x83                              ; ramp still off, mux sel = 1, mux disable 
-   00A2 97 00         [ 4]  462                     sta *VIA_port_b                       ; put to orb 
-   00A4 0A 00         [ 6]  463                     dec *VIA_port_b                       ; mux enable 
-   00A6 B6 C8 2A      [ 5]  464                     lda Vec_Text_Height                   ; get height to a 
-   00A9 0A 00         [ 6]  465                     dec *VIA_port_b                       ; mux disable 
-   00AB 0A 00         [ 6]  466                     dec *VIA_port_b                       ; enable mux 
-   00AD 97 01         [ 4]  467                     sta *VIA_port_a                       ; put it to dac 
-   00AF 70 C8 2B      [ 7]  468                     neg Vec_Text_Width                    ; for the way back take the "negative" x-direction 
-   00B2 0C 00         [ 6]  469                     inc *VIA_port_b                       ; disable mux 
-   00B4 0F 01         [ 6]  470                     clr *VIA_port_a                       ; x should not be integrating! 
-   00B6 86 01         [ 2]  471                     lda #0x01                              ; a= enable ramp, disable mux 
-   00B8 97 00         [ 4]  472                     sta *VIA_port_b                       ; set it to orb 
-                            473 ; now we are going down a little bit
-   00BA 12            [ 2]  474  nop ; ? 
-   00BB 12            [ 2]  475  nop ; ? 
-   00BC 86 81         [ 2]  476                     lda #0x81                              ; disable ramp, disable mux (muxsel = Y) 
-   00BE 97 00         [ 4]  477                     sta *VIA_port_b                       ; set it to orb 
-   00C0 0F 01         [ 6]  478                     clr *VIA_port_a                       ; clear D/A, (Y integration = 0) 
-   00C2 0A 00         [ 6]  479                     dec *VIA_port_b                       ; enable mux 
-   00C4 B6 C8 2F      [ 5]  480                     lda Vec_Counter_2                     ; width of one line 
-   00C7 B7 C8 30      [ 5]  481                     sta Vec_Counter_3                     ; reset output counter 
-   00CA 0C 00         [ 6]  482                     inc *VIA_port_b                       ; disable mux 
-   00CC 7E 00 2E      [ 4]  483                     jmp nextForwardLine                   ; go back for next scan line 
-                            484 
-                            485  .globl exit_raster_late
-   00CF                     486 exit_raster_late: 
-   00CF 86 98         [ 2]  487                     lda #0x98                              ; EXIT routine 
-   00D1 97 0B         [ 4]  488                     sta *VIA_aux_cntl                     ; T1->PB7 enabled 
-   00D3 7E F3 54      [ 4]  489                     jmp Reset0Ref                         ; Reset the zero reference 
+                            433 ;                     bra dummy3 ; if bra is done, cycles for forward and backword are exactly the same
+                            434 
+                            435  .globl dummy3
+   005C                     436 dummy3: 
+   005C B6 C8 2B      [ 5]  437                     lda Vec_Text_Width                    ; get x speed (going back) 
+   005F 97 01         [ 4]  438                     sta *VIA_port_a                       ; send it to the D/A 
+   0061 86 01         [ 2]  439                     lda #0x01                              ; a = 0x01 
+   0063 97 00         [ 4]  440                     sta *VIA_port_b                       ; enable RAMP, disable mux 
+                            441 ; output is ongoing! (RAMP is enabled)
+   0065 F6 C8 30      [ 5]  442                     ldb Vec_Counter_3                     ; [5] 
+   0068 12            [ 2]  443  nop ; [2] 
+   0069 12            [ 2]  444  nop ; [2] 
+                            445  .globl oneShiftOutBackward
+   006A                     446 oneShiftOutBackward: 
+   006A A6 C0         [ 6]  447                     lda ,u+                               ; [6] get bitmap from raster table 
+   006C 97 0A         [ 4]  448                     sta *VIA_shift_reg                    ; [4] this loop needs to have exactly 18 cycles (8*2+2) 
+   006E 20 00         [ 3]  449                     bra dummy2                            ; [3] 
+                            450 
+                            451  .globl dummy2
+   0070                     452 dummy2: 
+   0070 5A            [ 2]  453                     decb                                  ; [2] 
+   0071 26 F7         [ 3]  454                     bne oneShiftOutBackward               ; [3] go back if not finished 
+   0073 86 83         [ 2]  455                     lda #0x83                              ; [2] 
+   0075 12            [ 2]  456  nop ; [2] delay 2 to finish last shiftout 
+   0076 97 00         [ 4]  457                     sta *VIA_port_b                       ; [4] disable RAMP, disable mux 
+   0078 D7 01         [ 4]  458                     stb *VIA_port_a                       ; dac = 0 
+   007A 7A C8 2E      [ 7]  459                     dec Vec_Counter_1                     ; check for last row 
+   007D 27 25         [ 3]  460                     beq exit_raster_late                  ; branch if last row 
+                            461 ; prepare going forward next rasterline
+                            462                                                           ; 0 ref - avoids woble on large images 
+                            463 ;                    lda #0x83                              ; ramp still off, mux sel = 1, mux disable 
+                            464 ;                    sta <VIA_port_b                       ; put to orb 
+   007F 0A 00         [ 6]  465                     dec *VIA_port_b                       ; mux enable 
+   0081 B6 C8 2A      [ 5]  466                     lda Vec_Text_Height                   ; get height to a 
+   0084 0A 00         [ 6]  467                     dec *VIA_port_b                       ; mux disable 
+   0086 97 01         [ 4]  468                     sta *VIA_port_a                       ; put it to dac 
+   0088 0A 00         [ 6]  469                     dec *VIA_port_b                       ; enable mux 
+                            470 
+   008A 70 C8 2B      [ 7]  471                     neg Vec_Text_Width                    ; for the way back take the "negative" x-direction 
+   008D 0C 00         [ 6]  472                     inc *VIA_port_b                       ; disable mux 
+   008F D7 01         [ 4]  473                     stb *VIA_port_a                       ; x should not be integrating! 
+   0091 86 01         [ 2]  474                     lda #0x01                              ; a= enable ramp, disable mux 
+   0093 97 00         [ 4]  475                     sta *VIA_port_b                       ; set it to orb 
+                            476 ; now we are going down a little bit
+   0095 F6 C8 2F      [ 5]  477                     ldb Vec_Counter_2                     ; width of one line 
+   0098 86 80         [ 2]  478                     lda #0x80;1                              ; disable ramp, disable mux (muxsel = Y) 
+   009A 97 00         [ 4]  479                     sta *VIA_port_b                       ; set it to orb 
+                            480 ;                    clr <VIA_port_a                       ; clear D/A, (Y integration = 0) 
+                            481        ;             dec <VIA_port_b                       ; enable mux 
+   009C F7 C8 30      [ 5]  482                     stb Vec_Counter_3                     ; reset output counter 
+   009F 0C 00         [ 6]  483                     inc *VIA_port_b                       ; disable mux 
+   00A1 7E 00 1D      [ 4]  484                     jmp nextForwardLine                   ; go back for next scan line 
+                            485 
+                            486  .globl exit_raster_late
+   00A4                     487 exit_raster_late: 
+   00A4 86 98         [ 2]  488                     lda #0x98                              ; EXIT routine 
+   00A6 97 0B         [ 4]  489                     sta *VIA_aux_cntl                     ; T1->PB7 enabled 
+   00A8 7E F3 54      [ 4]  490                     jmp Reset0Ref                         ; Reset the zero reference 
 ASxxxx Assembler V05.00  (Motorola 6809), page 1.
 Hexidecimal [16-Bits]
 
@@ -494,87 +495,76 @@ Symbol Table
 
     .__.$$$.       =   2710 L   |     .__.ABS.       =   0000 G
     .__.CPU.       =   0000 L   |     .__.H$L.       =   0001 L
-  2 A$rasterDraw$3     0000 GR  |   2 A$rasterDraw$3     0000 GR
-  2 A$rasterDraw$3     0002 GR  |   2 A$rasterDraw$3     0004 GR
-  2 A$rasterDraw$3     0007 GR  |   2 A$rasterDraw$3     0009 GR
-  2 A$rasterDraw$3     000C GR  |   2 A$rasterDraw$3     000E GR
-  2 A$rasterDraw$3     0011 GR  |   2 A$rasterDraw$3     0014 GR
-  2 A$rasterDraw$3     0017 GR  |   2 A$rasterDraw$3     0019 GR
-  2 A$rasterDraw$3     001B GR  |   2 A$rasterDraw$3     001D GR
-  2 A$rasterDraw$3     001F GR  |   2 A$rasterDraw$3     0022 GR
-  2 A$rasterDraw$3     0023 GR  |   2 A$rasterDraw$3     0025 GR
-  2 A$rasterDraw$3     0027 GR  |   2 A$rasterDraw$3     0029 GR
-  2 A$rasterDraw$3     002C GR  |   2 A$rasterDraw$3     002E GR
-  2 A$rasterDraw$3     0031 GR  |   2 A$rasterDraw$3     0033 GR
-  2 A$rasterDraw$3     0035 GR  |   2 A$rasterDraw$3     0037 GR
-  2 A$rasterDraw$3     003A GR  |   2 A$rasterDraw$3     003B GR
-  2 A$rasterDraw$3     003C GR  |   2 A$rasterDraw$3     003E GR
-  2 A$rasterDraw$3     0040 GR  |   2 A$rasterDraw$3     0042 GR
-  2 A$rasterDraw$3     0043 GR  |   2 A$rasterDraw$4     0045 GR
-  2 A$rasterDraw$4     0047 GR  |   2 A$rasterDraw$4     0048 GR
-  2 A$rasterDraw$4     004A GR  |   2 A$rasterDraw$4     004C GR
-  2 A$rasterDraw$4     004F GR  |   2 A$rasterDraw$4     0051 GR
-  2 A$rasterDraw$4     0053 GR  |   2 A$rasterDraw$4     0055 GR
-  2 A$rasterDraw$4     0057 GR  |   2 A$rasterDraw$4     005A GR
-  2 A$rasterDraw$4     005C GR  |   2 A$rasterDraw$4     005E GR
-  2 A$rasterDraw$4     0060 GR  |   2 A$rasterDraw$4     0063 GR
-  2 A$rasterDraw$4     0065 GR  |   2 A$rasterDraw$4     0067 GR
-  2 A$rasterDraw$4     0069 GR  |   2 A$rasterDraw$4     006B GR
-  2 A$rasterDraw$4     006C GR  |   2 A$rasterDraw$4     006D GR
-  2 A$rasterDraw$4     006F GR  |   2 A$rasterDraw$4     0071 GR
-  2 A$rasterDraw$4     0073 GR  |   2 A$rasterDraw$4     0075 GR
-  2 A$rasterDraw$4     0078 GR  |   2 A$rasterDraw$4     007B GR
-  2 A$rasterDraw$4     007D GR  |   2 A$rasterDraw$4     0080 GR
-  2 A$rasterDraw$4     0082 GR  |   2 A$rasterDraw$4     0084 GR
-  2 A$rasterDraw$4     0086 GR  |   2 A$rasterDraw$4     0089 GR
-  2 A$rasterDraw$4     008A GR  |   2 A$rasterDraw$4     008B GR
-  2 A$rasterDraw$4     008D GR  |   2 A$rasterDraw$4     008F GR
-  2 A$rasterDraw$4     0091 GR  |   2 A$rasterDraw$4     0092 GR
-  2 A$rasterDraw$4     0094 GR  |   2 A$rasterDraw$4     0096 GR
-  2 A$rasterDraw$4     0097 GR  |   2 A$rasterDraw$4     0099 GR
-  2 A$rasterDraw$4     009B GR  |   2 A$rasterDraw$4     009E GR
-  2 A$rasterDraw$4     00A0 GR  |   2 A$rasterDraw$4     00A2 GR
-  2 A$rasterDraw$4     00A4 GR  |   2 A$rasterDraw$4     00A6 GR
-  2 A$rasterDraw$4     00A9 GR  |   2 A$rasterDraw$4     00AB GR
-  2 A$rasterDraw$4     00AD GR  |   2 A$rasterDraw$4     00AF GR
-  2 A$rasterDraw$4     00B2 GR  |   2 A$rasterDraw$4     00B4 GR
-  2 A$rasterDraw$4     00B6 GR  |   2 A$rasterDraw$4     00B8 GR
-  2 A$rasterDraw$4     00BA GR  |   2 A$rasterDraw$4     00BB GR
-  2 A$rasterDraw$4     00BC GR  |   2 A$rasterDraw$4     00BE GR
-  2 A$rasterDraw$4     00C0 GR  |   2 A$rasterDraw$4     00C2 GR
-  2 A$rasterDraw$4     00C4 GR  |   2 A$rasterDraw$4     00C7 GR
-  2 A$rasterDraw$4     00CA GR  |   2 A$rasterDraw$4     00CC GR
-  2 A$rasterDraw$4     00CF GR  |   2 A$rasterDraw$4     00D1 GR
-  2 A$rasterDraw$4     00D3 GR  |     Abs_a_b        =   F584 
-    Abs_b          =   F58B     |     Add_Score_a    =   F85E 
-    Add_Score_d    =   F87C     |     Bitmask_a      =   F57E 
-    Char_Table     =   F9F4     |     Char_Table_End =   FBD4 
-    Check0Ref      =   F34F     |     Clear_C8_RAM   =   F542 
-    Clear_Score    =   F84F     |     Clear_Sound    =   F272 
-    Clear_x_256    =   F545     |     Clear_x_b      =   F53F 
-    Clear_x_b_80   =   F550     |     Clear_x_b_a    =   F552 
-    Clear_x_d      =   F548     |     Cold_Start     =   F000 
-    Compare_Score  =   F8C7     |     DP_to_C8       =   F1AF 
-    DP_to_D0       =   F1AA     |     Dec_3_Counters =   F55A 
-    Dec_6_Counters =   F55E     |     Dec_Counters   =   F563 
-    Delay_0        =   F579     |     Delay_1        =   F575 
-    Delay_2        =   F571     |     Delay_3        =   F56D 
-    Delay_RTS      =   F57D     |     Delay_b        =   F57A 
-    Do_Sound       =   F289     |     Do_Sound_x     =   F28C 
-    Dot_List       =   F2D5     |     Dot_List_Reset =   F2DE 
-    Dot_d          =   F2C3     |     Dot_here       =   F2C5 
-    Dot_ix         =   F2C1     |     Dot_ix_b       =   F2BE 
-    Draw_Grid_VL   =   FF9F     |     Draw_Line_d    =   F3DF 
-    Draw_Pat_VL    =   F437     |     Draw_Pat_VL_a  =   F434 
-    Draw_Pat_VL_d  =   F439     |     Draw_VL        =   F3DD 
-    Draw_VL_a      =   F3DA     |     Draw_VL_ab     =   F3D8 
-    Draw_VL_b      =   F3D2     |     Draw_VL_mode   =   F46E 
-    Draw_VLc       =   F3CE     |     Draw_VLcs      =   F3D6 
-    Draw_VLp       =   F410     |     Draw_VLp_7F    =   F408 
-    Draw_VLp_FF    =   F404     |     Draw_VLp_b     =   F40E 
-    Draw_VLp_scale =   F40C     |     Explosion_Snd  =   F92E 
-    Get_Rise_Idx   =   F5D9     |     Get_Rise_Run   =   F5EF 
-    Get_Run_Idx    =   F5DB     |     INCLUDE_I      =   0001 
+  2 A$rasterDraw.p     0000 GR  |   2 A$rasterDraw.p     0000 GR
+  2 A$rasterDraw.p     0002 GR  |   2 A$rasterDraw.p     0004 GR
+  2 A$rasterDraw.p     0007 GR  |   2 A$rasterDraw.p     0009 GR
+  2 A$rasterDraw.p     000C GR  |   2 A$rasterDraw.p     000F GR
+  2 A$rasterDraw.p     0012 GR  |   2 A$rasterDraw.p     0015 GR
+  2 A$rasterDraw.p     0017 GR  |   2 A$rasterDraw.p     0019 GR
+  2 A$rasterDraw.p     001B GR  |   2 A$rasterDraw.p     001D GR
+  2 A$rasterDraw.p     0020 GR  |   2 A$rasterDraw.p     0022 GR
+  2 A$rasterDraw.p     0024 GR  |   2 A$rasterDraw.p     0026 GR
+  2 A$rasterDraw.p     0029 GR  |   2 A$rasterDraw.p     002A GR
+  2 A$rasterDraw.p     002B GR  |   2 A$rasterDraw.p     002D GR
+  2 A$rasterDraw.p     002F GR  |   2 A$rasterDraw.p     0031 GR
+  2 A$rasterDraw.p     0032 GR  |   2 A$rasterDraw.p     0034 GR
+  2 A$rasterDraw.p     0036 GR  |   2 A$rasterDraw.p     0037 GR
+  2 A$rasterDraw.p     0039 GR  |   2 A$rasterDraw.p     003C GR
+  2 A$rasterDraw.p     003E GR  |   2 A$rasterDraw.p     0041 GR
+  2 A$rasterDraw.p     0043 GR  |   2 A$rasterDraw.p     0045 GR
+  2 A$rasterDraw.p     0048 GR  |   2 A$rasterDraw.p     004A GR
+  2 A$rasterDraw.p     004C GR  |   2 A$rasterDraw.p     004E GR
+  2 A$rasterDraw.p     0050 GR  |   2 A$rasterDraw.p     0053 GR
+  2 A$rasterDraw.p     0055 GR  |   2 A$rasterDraw.p     0057 GR
+  2 A$rasterDraw.p     005A GR  |   2 A$rasterDraw.p     005C GR
+  2 A$rasterDraw.p     005F GR  |   2 A$rasterDraw.p     0061 GR
+  2 A$rasterDraw.p     0063 GR  |   2 A$rasterDraw.p     0065 GR
+  2 A$rasterDraw.p     0068 GR  |   2 A$rasterDraw.p     0069 GR
+  2 A$rasterDraw.p     006A GR  |   2 A$rasterDraw.p     006C GR
+  2 A$rasterDraw.p     006E GR  |   2 A$rasterDraw.p     0070 GR
+  2 A$rasterDraw.p     0071 GR  |   2 A$rasterDraw.p     0073 GR
+  2 A$rasterDraw.p     0075 GR  |   2 A$rasterDraw.p     0076 GR
+  2 A$rasterDraw.p     0078 GR  |   2 A$rasterDraw.p     007A GR
+  2 A$rasterDraw.p     007D GR  |   2 A$rasterDraw.p     007F GR
+  2 A$rasterDraw.p     0081 GR  |   2 A$rasterDraw.p     0084 GR
+  2 A$rasterDraw.p     0086 GR  |   2 A$rasterDraw.p     0088 GR
+  2 A$rasterDraw.p     008A GR  |   2 A$rasterDraw.p     008D GR
+  2 A$rasterDraw.p     008F GR  |   2 A$rasterDraw.p     0091 GR
+  2 A$rasterDraw.p     0093 GR  |   2 A$rasterDraw.p     0095 GR
+  2 A$rasterDraw.p     0098 GR  |   2 A$rasterDraw.p     009A GR
+  2 A$rasterDraw.p     009C GR  |   2 A$rasterDraw.p     009F GR
+  2 A$rasterDraw.p     00A1 GR  |   2 A$rasterDraw.p     00A4 GR
+  2 A$rasterDraw.p     00A6 GR  |   2 A$rasterDraw.p     00A8 GR
+    Abs_a_b        =   F584     |     Abs_b          =   F58B 
+    Add_Score_a    =   F85E     |     Add_Score_d    =   F87C 
+    Bitmask_a      =   F57E     |     Char_Table     =   F9F4 
+    Char_Table_End =   FBD4     |     Check0Ref      =   F34F 
+    Clear_C8_RAM   =   F542     |     Clear_Score    =   F84F 
+    Clear_Sound    =   F272     |     Clear_x_256    =   F545 
+    Clear_x_b      =   F53F     |     Clear_x_b_80   =   F550 
+    Clear_x_b_a    =   F552     |     Clear_x_d      =   F548 
+    Cold_Start     =   F000     |     Compare_Score  =   F8C7 
+    DP_to_C8       =   F1AF     |     DP_to_D0       =   F1AA 
+    Dec_3_Counters =   F55A     |     Dec_6_Counters =   F55E 
+    Dec_Counters   =   F563     |     Delay_0        =   F579 
+    Delay_1        =   F575     |     Delay_2        =   F571 
+    Delay_3        =   F56D     |     Delay_RTS      =   F57D 
+    Delay_b        =   F57A     |     Do_Sound       =   F289 
+    Do_Sound_x     =   F28C     |     Dot_List       =   F2D5 
+    Dot_List_Reset =   F2DE     |     Dot_d          =   F2C3 
+    Dot_here       =   F2C5     |     Dot_ix         =   F2C1 
+    Dot_ix_b       =   F2BE     |     Draw_Grid_VL   =   FF9F 
+    Draw_Line_d    =   F3DF     |     Draw_Pat_VL    =   F437 
+    Draw_Pat_VL_a  =   F434     |     Draw_Pat_VL_d  =   F439 
+    Draw_VL        =   F3DD     |     Draw_VL_a      =   F3DA 
+    Draw_VL_ab     =   F3D8     |     Draw_VL_b      =   F3D2 
+    Draw_VL_mode   =   F46E     |     Draw_VLc       =   F3CE 
+    Draw_VLcs      =   F3D6     |     Draw_VLp       =   F410 
+    Draw_VLp_7F    =   F408     |     Draw_VLp_FF    =   F404 
+    Draw_VLp_b     =   F40E     |     Draw_VLp_scale =   F40C 
+    Explosion_Snd  =   F92E     |     Get_Rise_Idx   =   F5D9 
+    Get_Rise_Run   =   F5EF     |     Get_Run_Idx    =   F5DB 
+    HEIGHT         =   000A     |     INCLUDE_I      =   0001 
     Init_Music     =   F68D     |     Init_Music_Buf =   F533 
     Init_Music_chk =   F687     |     Init_Music_x   =   F692 
     Init_OS        =   F18B     |     Init_OS_RAM    =   F164 
@@ -661,20 +651,22 @@ Symbol Table
     Vec_Snd_Shadow =   C800     |     Vec_Str_Ptr    =   C82C 
     Vec_Text_HW    =   C82A     |     Vec_Text_Heigh =   C82A 
     Vec_Text_Width =   C82B     |     Vec_Twang_Tabl =   C851 
-    Wait_Recal     =   F192     |     Warm_Start     =   F06C 
+    WIDTH          =   0040     |     Wait_Recal     =   F192 
+    Warm_Start     =   F06C     |     XPOS           =   FFC0 
     Xform_Rise     =   F663     |     Xform_Rise_a   =   F661 
     Xform_Run      =   F65D     |     Xform_Run_a    =   F65B 
-  2 draw_raster_im     0007 GR  |   2 dummy1             0042 GR
-  2 dummy2             0091 GR  |   2 dummy3             007D GR
-  2 exit_raster_ea     0000 GR  |   2 exit_raster_la     00CF GR
-    music1         =   FD0D     |     music2         =   FD1D 
-    music3         =   FD81     |     music4         =   FDD3 
-    music5         =   FE38     |     music6         =   FE76 
-    music7         =   FEC6     |     music8         =   FEF8 
-    music9         =   FF26     |     musica         =   FF44 
-    musicb         =   FF62     |     musicc         =   FF7A 
-    musicd         =   FF8F     |   2 nextForwardLin     002E GR
-  2 oneShiftOutBac     008B GR  |   2 oneShiftOutFor     003C GR
+    YPOS           =   000A     |   2 draw_raster_im     0007 GR
+  2 dummy1             0031 GR  |   2 dummy2             0070 GR
+  2 dummy3             005C GR  |   2 exit_raster_ea     0000 GR
+  2 exit_raster_la     00A4 GR  |     music1         =   FD0D 
+    music2         =   FD1D     |     music3         =   FD81 
+    music4         =   FDD3     |     music5         =   FE38 
+    music6         =   FE76     |     music7         =   FEC6 
+    music8         =   FEF8     |     music9         =   FF26 
+    musica         =   FF44     |     musicb         =   FF62 
+    musicc         =   FF7A     |     musicd         =   FF8F 
+  2 nextForwardLin     001D GR  |   2 oneShiftOutBac     006A GR
+  2 oneShiftOutFor     002B GR
 
 ASxxxx Assembler V05.00  (Motorola 6809), page 2.
 Hexidecimal [16-Bits]
@@ -683,7 +675,7 @@ Area Table
 
 [_CSEG]
    0 _CODE            size    0   flags C080
-   2 .text            size   D6   flags  100
+   2 .text            size   AB   flags  100
 [_DSEG]
    1 _DATA            size    0   flags C0C0
 
