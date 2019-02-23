@@ -10,8 +10,7 @@
 #define BLOW_UP KNIGHT_SCALE
 
 const signed char knight_0[]=
-{	(signed char) +0, +12*BLOW_UP, +1*BLOW_UP, // sync and move to y, x
-	(signed char) +0, +1*BLOW_UP, +0*BLOW_UP, // additional sync move to y, x
+{	(signed char) +0, +10*BLOW_UP, +1*BLOW_UP, // sync and move to y, x
 	(signed char) -1, -1*BLOW_UP, -3*BLOW_UP, // draw, y, x
 	(signed char) -1, +1*BLOW_UP, -12*BLOW_UP, // draw, y, x
 	(signed char) -1, +1*BLOW_UP, +11*BLOW_UP, // draw, y, x
@@ -20,8 +19,7 @@ const signed char knight_0[]=
 	(signed char) +2 // endmarker 
 };
 const signed char knight_1[]=
-{	(signed char) +0, +12*BLOW_UP, -1*BLOW_UP, // sync and move to y, x
-	(signed char) +0, +1*BLOW_UP, +0*BLOW_UP, // additional sync move to y, x
+{	(signed char) +0, +10*BLOW_UP, -1*BLOW_UP, // sync and move to y, x
 	(signed char) -1, -1*BLOW_UP, +3*BLOW_UP, // draw, y, x
 	(signed char) -1, +1*BLOW_UP, +12*BLOW_UP, // draw, y, x
 	(signed char) -1, +1*BLOW_UP, -11*BLOW_UP, // draw, y, x
