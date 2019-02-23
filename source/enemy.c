@@ -8,6 +8,7 @@
 #include "platform.h"
 #include "ostrich.h"
 #include "knight.h"
+#include "egg.h"
 #include "enemy.h"
 
 // ---------------------------------------------------------------------------
@@ -102,30 +103,45 @@ void move_enemies(void)
 	{
 		if (enemy->state == ENEMY_STATE_MOVE)
 		{
-			switch (enemy->race->type)
+			if (enemy->race->type == ENEMY_TYPE_JOUSTER)
 			{
-				case ENEMY_TYPE_JOUSTER:
-					animate_character(&enemy->ch);
+				animate_character(&enemy->ch);
 	
-					if (!hit_platform(&enemy->ch.obj, &enemy->ch.dy, &enemy->ch.dx))
+				if (!hit_platform(&enemy->ch.obj, &enemy->ch.dy, &enemy->ch.dx))
+				{
+					move_character(&enemy->ch);
+				}
+				else
+				{
+					if (enemy->ch.dir == DIR_LEFT)
 					{
-						move_character(&enemy->ch);
+						set_dir_enemy(enemy, DIR_RIGHT);
 					}
-					else
+					else if (enemy->ch.dir == DIR_RIGHT)
 					{
-						if (enemy->ch.dir == DIR_LEFT)
-						{
-							set_dir_enemy(enemy, DIR_RIGHT);
-						}
-						else if (enemy->ch.dir == DIR_RIGHT)
-						{
-							set_dir_enemy(enemy, DIR_LEFT);
-						}
+						set_dir_enemy(enemy, DIR_LEFT);
 					}
-					break;
-
-				default:
-					break;
+				}
+			}
+		}
+		else if (enemy->state == ENEMY_STATE_EGG)
+		{
+			if (enemy->ch.dy != 0)
+			{
+				move_character(&enemy->ch);
+				if (hit_over_platform(&enemy->ch.obj, &enemy->ch.dy, enemy->ch.dx))
+				{
+					enemy->ch.dy = 0;
+					enemy->ch.dx = 0;
+				}
+			}
+			else
+			{
+				if (++enemy->state_counter >= ENEMY_EGG_TRESHOLD)
+				{
+					enemy->state = ENEMY_STATE_KNIGHT;
+					enemy->state_counter = 0;
+				}
 			}
 		}
 		else if (enemy->state == ENEMY_STATE_SPAWN)
@@ -155,7 +171,7 @@ void move_enemies(void)
 				enemy->state_counter = 0;
 			}
 		}
-		else if (enemy->state == ENEMY_STATE_DYING)
+		else if (enemy->state == ENEMY_STATE_REMOVE)
 		{
 			rem_enemy = enemy;
 		}
@@ -163,7 +179,6 @@ void move_enemies(void)
 
 		if (rem_enemy != 0)
 		{
-			rem_enemy->state = ENEMY_STATE_DEAD;
 			rem_enemy->state_counter = 0;
 			deinit_enemy(rem_enemy);
 			rem_enemy = 0;
@@ -177,7 +192,8 @@ unsigned int hit_enemy(
 {
 	unsigned int result = 0;
 
-	enemy->state = ENEMY_STATE_DYING;
+	enemy->ch.dy = -1;
+	enemy->state = ENEMY_STATE_EGG;
 	enemy->state_counter = 0;
 	result = 1;
 
@@ -197,8 +213,7 @@ void draw_enemies(void)
 			dp_VIA_cntl=0xcc;
 
 			signed int y = enemy->ch.obj.y;
-			signed int x = enemy->ch.obj.x;
-			
+			signed int x = enemy->ch.obj.x;			
 			
 			dp_VIA_t1_cnt_lo = OBJECT_MOVE_SCALE;
             	dp_VIA_port_a = y;			// y pos to dac
@@ -249,6 +264,47 @@ void draw_enemies(void)
 				);
 */			
 		}
+		else if (enemy->state == ENEMY_STATE_EGG)
+		{
+			// ZERO
+			dp_VIA_cntl=0xcc;
+
+			signed int y = enemy->ch.obj.y - enemy->ch.obj.h_2;
+			signed int x = enemy->ch.obj.x;			
+			
+			dp_VIA_t1_cnt_lo = OBJECT_MOVE_SCALE;
+            	dp_VIA_port_a = y;			// y pos to dac
+            	dp_VIA_cntl = 0xce;	// disable zero, disable all blank
+            	dp_VIA_port_b = 0;			// mux enable, dac to -> integrator y (and x)
+            	dp_VIA_shift_reg = 0;		// all output is BLANK
+            	dp_VIA_port_b++;			// mux disable, dac only to x
+            	dp_VIA_port_a = x;			// dac -> x
+            	dp_VIA_t1_cnt_hi=0;		// start timer
+			dp_VIA_t1_cnt_lo = ENEMY_DRAW_SCALE;
+            	while ((dp_VIA_int_flags & 0x40) == 0); // wait till timer finishes
+
+			draw_vlp_1(egg);
+		}
+		else if (enemy->state == ENEMY_STATE_KNIGHT)
+		{
+			signed int y = enemy->ch.obj.y - enemy->ch.obj.h_2;;
+			signed int x = enemy->ch.obj.x;			
+
+			// ZERO
+			dp_VIA_cntl=0xcc;
+
+			dp_VIA_t1_cnt_lo = OBJECT_MOVE_SCALE;
+            	dp_VIA_port_a = y;			// y pos to dac
+            	dp_VIA_cntl = 0xce;	// disable zero, disable all blank
+            	dp_VIA_port_b = 0;			// mux enable, dac to -> integrator y (and x)
+            	dp_VIA_shift_reg = 0;		// all output is BLANK
+            	dp_VIA_port_b++;			// mux disable, dac only to x
+            	dp_VIA_port_a = x;			// dac -> x
+            	dp_VIA_t1_cnt_hi=0;		// start timer
+			dp_VIA_t1_cnt_lo = KNIGHT_DRAW_SCALE;
+            	while ((dp_VIA_int_flags & 0x40) == 0); // wait till timer finishes
+			draw_vlp_2(knight[2]);
+		}
 		else if (enemy->state == ENEMY_STATE_SPAWN)
 		{
 			draw_synced_list_c(
@@ -259,6 +315,7 @@ void draw_enemies(void)
 				0x01 + (enemy->state_counter >> 2)
 				);
 		}
+
 		enemy = (struct enemy *) enemy->ch.obj.next;
 	}
 }
