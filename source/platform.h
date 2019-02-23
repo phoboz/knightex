@@ -6,7 +6,7 @@
 
 #define MAX_PLATFORMS		7
 
-#define PLATFORM_HEIGHT	 8
+#define PLATFORM_HEIGHT	10
 #define PLATFORM_WIDTH0	24
 
 #ifndef PLATFORM_HALF_RES

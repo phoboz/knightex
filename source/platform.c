@@ -11,7 +11,7 @@
 struct platform_def
 {
 	signed int y, x;
-	signed int w;
+	signed int x0, x1;
 	const unsigned int * const data;
 };
 
@@ -181,14 +181,14 @@ static const unsigned int platform07_data[] =
 static const struct platform_def platform_defs[]=
 {
 	// format
-	//	y,	x,		w,		data
-	{	64,	-127,	0x09*3+9,	platform01_data	},
-	{	52,	-40,		0x16*3+9,	platform02_data	},
-	{	64,	84,		0x0c*3,	platform03_data	},
-	{	0,	-127,	0x10*3+9,	platform04_data	},
-	{	-28,	-26,		0x12*3+9,	platform05_data	},
-	{	4,	42,		0x0f*3+6,	platform06_data	},
-	{	0,	90,		0x0c*3,	platform07_data	}
+	//	y,	x,		x0,		x1,				data
+	{	64,	-127,	-127,	-127+0x09*3+9,	platform01_data	},
+	{	52,	-40,		-40+6,	-40+0x16*3+14,	platform02_data	},
+	{	64,	84,		84+6,	84+0x0c*3,		platform03_data	},
+	{	0,	-127,	-127,	-127+0x10*3+9,	platform04_data	},
+	{	-28,	-26,		-26+6,	-26+0x12*3+9,		platform05_data	},
+	{	4,	42,		42+6,	42+0x0f*3+9,		platform06_data	},
+	{	0,	90,		90+6,	90+0x0c*3,		platform07_data	}
 };
 
 static signed int platform_indices[MAX_PLATFORMS] =
@@ -276,7 +276,7 @@ unsigned int hit_over_platform(
 			if (y >= def->y && y + *dy <= def->y)
 			{
 				x = obj->x - obj->w_2 + dx;
-				if (x > def->x && x < def->x + def->w)
+				if (x > def->x0 && x < def->x1)
 				{
 					new_dy = def->y - y;
 					if (new_dy > min_dy)
@@ -287,7 +287,7 @@ unsigned int hit_over_platform(
 				}
 
 				x = obj->x + obj->w_2 + dx;
-				if (x > def->x && x < def->x + def->w)
+				if (x > def->x0 && x < def->x1)
 				{
 					new_dy = def->y - y;
 					if (new_dy > min_dy)
@@ -349,9 +349,9 @@ unsigned int hit_platform(
 		{
 			def = &platform_defs[index];
 			platform_y1 = def->y - PLATFORM_HEIGHT/2;
-			platform_x1 = def->x;
+			platform_x1 = def->x0;
 			platform_y2 = def->y;
-			platform_x2 = def->x + def->w;
+			platform_x2 = def->x1;
 			if (obj_y1 < platform_y2 && obj_y2 > platform_y1 &&
 				obj_x1 < platform_x2 && obj_x2 > platform_x1)
 			{
