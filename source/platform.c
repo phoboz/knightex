@@ -218,17 +218,6 @@ void disable_platform(
 	platform_indices[index] = -1;
 }
 
-__INLINE void draw_platform(
-	signed int index
-	)
-{
-//	Reset0Ref();
-	Vec_Text_Height	= -PLATFORM_HEIGHT;
-	Vec_Text_Width	=  PLATFORM_WIDTH;
-	Moveto_d(platform_defs[index].y, platform_defs[index].x);
-	rasterDraw(platform_defs[index].data);
-}
-
 void draw_platforms(void)
 {
 	unsigned int i;
@@ -244,12 +233,15 @@ void draw_platforms(void)
 	Draw_Line_d(0, platform_ground_length);
 
 	Reset0Ref();
+	Vec_Text_Height = -PLATFORM_HEIGHT;
+	Vec_Text_Width = PLATFORM_WIDTH;
 	for (i = 0; i < MAX_PLATFORMS; i++)
 	{
 		index = platform_indices[i];
 		if (index >= 0 && index < MAX_PLATFORMS)
 		{
-			draw_platform(index);
+			Moveto_d(platform_defs[index].y, platform_defs[index].x);
+			rasterDraw(platform_defs[index].data);
 		}
 	}
 }
