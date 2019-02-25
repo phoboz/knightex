@@ -271,6 +271,7 @@ unsigned int move_player(
 						player->ch.base_frame = player->ch.anim->frame_brake_right;
 						player->ch.frame = 0;
 					}
+					player->state = PLAYER_STATE_BRAKE;
 					status |= PLAYER_STATUS_BRAKE;
 				}
 				else
@@ -301,6 +302,21 @@ unsigned int move_player(
 				}
 				player->ch.frame = 0;
 				player->state = PLAYER_STATE_NORMAL;
+			}
+			break;
+
+		case PLAYER_STATE_BRAKE:
+			if (!brake)
+			{
+				if (player->ch.dir == DIR_LEFT)
+				{
+					player->ch.base_frame = player->ch.anim->frame_walk_left;
+				}
+				else if (player->ch.dir == DIR_RIGHT)
+				{
+					player->ch.base_frame = player->ch.anim->frame_walk_right;
+				}
+				player->state = PLAYER_STATE_WALK;
 			}
 			break;
 
