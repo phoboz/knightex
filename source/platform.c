@@ -252,12 +252,11 @@ unsigned int hit_over_platform(
 	)
 {
 	unsigned int i;
-	signed int y, x, new_dy, min_dy, index;
+	signed int y, x, new_dy, index;
 	const struct platform_def *def;
 	unsigned int result = 0;
 
 	y = obj->y - obj->h_2;
-	min_dy = *dy;
 	for (i = 0; i < MAX_PLATFORMS; i++)
 	{
 		index = platform_indices[i];
@@ -270,22 +269,16 @@ unsigned int hit_over_platform(
 				if (x > def->x0 && x < def->x1)
 				{
 					new_dy = def->y - y;
-					if (new_dy > min_dy)
-					{
-						min_dy = new_dy;
-					}
 					result = 1;
+					break;
 				}
 
 				x = obj->x + obj->w_2 + dx;
 				if (x > def->x0 && x < def->x1)
 				{
 					new_dy = def->y - y;
-					if (new_dy > min_dy)
-					{
-						min_dy = new_dy;
-					}
 					result = 1;
+					break;
 				}
 			}
 		}
@@ -293,7 +286,7 @@ unsigned int hit_over_platform(
 
 	if (result)
 	{
-		*dy = min_dy;
+		*dy = new_dy;
 	}
 	else if (y >= PLATFORM_GROUND_Y && y + *dy <= PLATFORM_GROUND_Y)
 	{
