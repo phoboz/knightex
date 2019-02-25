@@ -318,6 +318,27 @@ unsigned int move_player(
 				}
 				player->state = PLAYER_STATE_WALK;
 			}
+
+			if (button_1_4_pressed())
+			{
+				player->ch.dy = PLAYER_LIFT;
+				player->ch.base_frame = 1;
+				player->state = PLAYER_STATE_FLAP;
+				status |= PLAYER_STATUS_FLAP;
+			}
+			else if (!hit_over_platform(&player->ch.obj, &player->ch.dy, player->ch.dx))
+			{
+				if (player->ch.base_frame == player->ch.anim->frame_walk_left)
+				{
+					player->ch.base_frame = player->ch.anim->frame_left;
+				}
+				else if (player->ch.base_frame == player->ch.anim->frame_walk_right)
+				{
+					player->ch.base_frame = player->ch.anim->frame_right;
+				}
+				player->ch.frame = 0;
+				player->state = PLAYER_STATE_NORMAL;
+			}
 			break;
 
 		default:
