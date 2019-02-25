@@ -3,7 +3,6 @@
 // ***************************************************************************
 
 #include <vectrex.h>
-#include <macro.h>
 #include "rasterDraw.h"
 #include "object.h"
 #include "platform.h"
@@ -178,14 +177,6 @@ static const unsigned int platform07_data[] =
 #endif
 };
 
-static const unsigned int platform08_data[] =
-{
-  0x03, 0x0E,
-  0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111000, // forward
-  0b00000001, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11100000, 0b00000001, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111000, // backward
-  0b00000000, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11110000, 0b00000000  // forward
-};
-
 static const struct platform_def platform_defs[]=
 {
 	// format
@@ -196,8 +187,7 @@ static const struct platform_def platform_defs[]=
 	{	0,	-127,	-127,	-127+0x10*3+9,	platform04_data	},
 	{	-28,	-26,		-26+6,	-26+0x12*3+9,		platform05_data	},
 	{	4,	42,		42+6,	42+0x0f*3+9,		platform06_data	},
-	{	0,	90,		90+6,	90+0x0c*3,		platform07_data	},
-	{	-80,	-96,		-40+6,	-40+0x0e*3+14,	platform08_data	}
+	{	0,	90,		90+6,	90+0x0c*3,		platform07_data	}
 };
 
 static signed int platform_indices[MAX_PLATFORMS] =
@@ -241,7 +231,6 @@ void draw_platforms(void)
 	Moveto_d(PLATFORM_HEIGHT/4, 2*PLATFORM_WIDTH0/3);
 	Draw_Line_d(0, platform_ground_length);
 
-
 	Reset0Ref();
 	Vec_Text_Height = -PLATFORM_HEIGHT;
 	Vec_Text_Width = PLATFORM_WIDTH;
@@ -254,22 +243,6 @@ void draw_platforms(void)
 			rasterDraw(platform_defs[index].data);
 		}
 	}
-
-#if 0
-	Reset0Ref();
-	Moveto_d(PLATFORM_GROUND_Y, -platform_ground_length);
-	Draw_Line_d(0, platform_ground_length);
-	Moveto_d(-PLATFORM_HEIGHT/4, 0);
-	Draw_Line_d(0, -2*PLATFORM_WIDTH0/3);
-	Moveto_d(PLATFORM_HEIGHT/4, 2*PLATFORM_WIDTH0/3);
-	Draw_Line_d(0, platform_ground_length);
-
-	Moveto_d(platform_defs[7].y, platform_defs[7].x-32);
-	Draw_Line_d(0, 32);
-	//Moveto_d(platform_defs[7].y, platform_defs[7].x);
-	rasterDraw(platform_defs[7].data);
-#endif
-
 }
 
 unsigned int hit_over_platform(
