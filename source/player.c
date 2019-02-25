@@ -115,13 +115,19 @@ unsigned int move_player(
 		case PLAYER_STATE_NORMAL:
 			if (player->ch.dx < 0)
 			{
-				player->ch.dir = DIR_LEFT;
-				player->ch.base_frame = player->ch.anim->frame_left;
+				if (player->control_dir == DIR_LEFT)
+				{
+					player->ch.dir = DIR_LEFT;
+					player->ch.base_frame = player->ch.anim->frame_left;
+				}
 			}
 			else if (player->ch.dx > 0)
 			{
-				player->ch.dir = DIR_RIGHT;
-				player->ch.base_frame = player->ch.anim->frame_right;
+				if (player->control_dir == DIR_RIGHT)
+				{
+					player->ch.dir = DIR_RIGHT;
+					player->ch.base_frame = player->ch.anim->frame_right;
+				}
 			}
 			else if (player->ch.dx == 0)
 			{
@@ -177,11 +183,17 @@ unsigned int move_player(
 		case PLAYER_STATE_FLAP:
 			if (player->ch.dx < 0)
 			{
-				player->ch.base_frame = player->ch.anim->frame_left;
+				if (player->control_dir == DIR_LEFT)
+				{
+					player->ch.base_frame = player->ch.anim->frame_left;
+				}
 			}
 			else if (player->ch.dx > 0)
 			{
-				player->ch.base_frame = player->ch.anim->frame_right;
+				if (player->control_dir == DIR_RIGHT)
+				{
+					player->ch.base_frame = player->ch.anim->frame_right;
+				}
 			}
 			else if (player->ch.dx == 0)
 			{
@@ -214,15 +226,21 @@ unsigned int move_player(
 
 		case PLAYER_STATE_WALK:
 			player->ch.dy = 0;
-			if (player->ch.dx < 0 && player->control_dir != DIR_LEFT)
+			if (player->ch.dx < 0)
 			{
-				player->ch.dir = DIR_LEFT;
-				player->ch.base_frame = player->ch.anim->frame_walk_left;
+				if (player->control_dir == DIR_LEFT)
+				{
+					player->ch.dir = DIR_LEFT;
+					player->ch.base_frame = player->ch.anim->frame_walk_left;
+				}
 			}
-			else if (player->ch.dx > 0 && player->control_dir != DIR_RIGHT)
+			else if (player->ch.dx > 0)
 			{
-				player->ch.dir = DIR_RIGHT;
-				player->ch.base_frame = player->ch.anim->frame_walk_right;
+				if (player->control_dir == DIR_RIGHT)
+				{
+					player->ch.dir = DIR_RIGHT;
+					player->ch.base_frame = player->ch.anim->frame_walk_right;
+				}
 			}
 			else if (player->ch.dx == 0)
 			{
@@ -243,16 +261,14 @@ unsigned int move_player(
 			{
 				if (brake)
 				{
-					if (player->control_dir == DIR_LEFT)
+					if (player->ch.dir == DIR_LEFT)
 					{
-						player->ch.dir = DIR_RIGHT;
-						player->ch.base_frame = player->ch.anim->frame_brake_right;
+						player->ch.base_frame = player->ch.anim->frame_brake_left;
 						player->ch.frame = 0;
 					}
-					else if (player->control_dir == DIR_RIGHT)
+					else if (player->ch.dir == DIR_RIGHT)
 					{
-						player->ch.dir = DIR_LEFT;
-						player->ch.base_frame = player->ch.anim->frame_brake_left;
+						player->ch.base_frame = player->ch.anim->frame_brake_right;
 						player->ch.frame = 0;
 					}
 					status |= PLAYER_STATUS_BRAKE;
