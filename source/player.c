@@ -167,15 +167,15 @@ unsigned int move_player(
 
 			if (hit_over_platform(&player->ch.obj, &player->ch.dy, player->ch.dx))
 			{
-				player->state = PLAYER_STATE_WALK;
 				if (player->ch.dir == DIR_LEFT)
 				{
-					player->ch.dir = player->ch.anim->frame_walk_left;
+					player->ch.base_frame = player->ch.anim->frame_walk_left;
 				}
 				else if (player->ch.dir == DIR_RIGHT)
 				{
 					player->ch.base_frame = player->ch.anim->frame_walk_right;
 				}
+				player->state = PLAYER_STATE_WALK;
 				status |= PLAYER_STATUS_WALK;
 			}
 			break;
