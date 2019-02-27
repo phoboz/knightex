@@ -54,10 +54,10 @@ int main(void)
 	}
 
 	init_player(&player_1, 0, 0, DIR_RIGHT);
-	init_enemy(&enemies[0], -32, -48, DIR_RIGHT, &enemy_races[ENEMY_RACE_OSTRICH]);
-	init_enemy(&enemies[1], -32, 48, DIR_LEFT, &enemy_races[ENEMY_RACE_OSTRICH]);
-	init_enemy(&enemies[2], 32, 48, DIR_RIGHT, &enemy_races[ENEMY_RACE_OSTRICH]);
-	init_enemy(&enemies[3], 32, -48, DIR_LEFT, &enemy_races[ENEMY_RACE_OSTRICH]);
+	init_enemy(&enemies[0], -32, -48, DIR_RIGHT, &enemy_races[0]);
+	init_enemy(&enemies[1], -32, 48, DIR_LEFT, &enemy_races[0]);
+	init_enemy(&enemies[2], 32, 48, DIR_RIGHT, &enemy_races[0]);
+	init_enemy(&enemies[3], 32, -48, DIR_LEFT, &enemy_races[0]);
 
 	while(1)
 	{

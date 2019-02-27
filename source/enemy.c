@@ -6,7 +6,7 @@
 #include "generic.h"
 #include "draw.h"
 #include "platform.h"
-#include "ostrich.h"
+#include "vulture.h"
 #include "knight.h"
 #include "egg.h"
 #include "enemy.h"
@@ -21,14 +21,14 @@ static const struct character_anim enemy_anims[] =
 		10,						// h
 		4,						// w
 		4,						// treshold
-		OSTRICH_LEFT,
-		OSTRICH_RIGHT,
+		VULTURE_LEFT,
+		VULTURE_RIGHT,
 		2,						// max_frames
-		OSTRICH_WALK_LEFT_START,
-		OSTRICH_WALK_RIGHT_START,
-		OSTRICH_BRAKE_LEFT,
-		OSTRICH_BRAKE_RIGHT,
-		ostrich					// vectorlists
+		VULTURE_WALK_LEFT_START,
+		VULTURE_WALK_RIGHT_START,
+		VULTURE_BRAKE_LEFT,
+		VULTURE_BRAKE_RIGHT,
+		vulture					// vectorlists
 	}
 };
 
