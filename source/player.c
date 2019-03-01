@@ -457,7 +457,12 @@ struct enemy* interaction_enemies_player(
 				{
 					if (hit_object(&player->ch.obj, &enemy->ch.obj))
 					{
-						if (player->ch.obj.y > enemy->ch.obj.y)
+						if (player->ch.obj.y == enemy->ch.obj.y)
+						{
+							player->ch.dx = -player->ch.dx;
+							retreat_enemy(enemy);
+						}
+						else if (player->ch.obj.y > enemy->ch.obj.y)
 						{
 							hit_enemy(enemy);
 						}

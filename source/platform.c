@@ -201,7 +201,7 @@ static signed int platform_indices[MAX_PLATFORMS] =
 	6
 };
 
-signed int platform_ground_length = 127;
+signed int platform_ground_length = 96;
 
 void enable_platform(
 	signed int index

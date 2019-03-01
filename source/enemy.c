@@ -35,7 +35,7 @@ static const struct character_anim enemy_anims[] =
 const struct enemy_race enemy_races[] =
 {
 	/*	type					speed	anim	*/
-	{	ENEMY_TYPE_JOUSTER,	1,		&enemy_anims[0]	}
+	{	ENEMY_TYPE_BOUNCER,	1,		&enemy_anims[0]	}
 };
 
 unsigned int enemy_status = 0;
@@ -103,13 +103,17 @@ void move_enemies(void)
 	{
 		if (enemy->state == ENEMY_STATE_MOVE)
 		{
-			if (enemy->race->type == ENEMY_TYPE_JOUSTER)
+			if (enemy->race->type == ENEMY_TYPE_BOUNCER)
 			{
 				animate_character(&enemy->ch);
 	
 				if (!hit_platform(&enemy->ch.obj, &enemy->ch.dy, &enemy->ch.dx))
 				{
-					move_character(&enemy->ch);
+					if (move_character(&enemy->ch) == 2)
+					{
+						enemy->state_counter = 0;
+						enemy->state = ENEMY_STATE_REMOVE;
+					}
 				}
 				else
 				{
@@ -128,8 +132,12 @@ void move_enemies(void)
 		{
 			if (enemy->ch.dy != 0)
 			{
-				move_character(&enemy->ch);
-				if (hit_over_platform(&enemy->ch.obj, &enemy->ch.dy, enemy->ch.dx))
+				if (move_character(&enemy->ch) == 2)
+				{
+					enemy->state_counter = 0;
+					enemy->state = ENEMY_STATE_REMOVE;
+				}
+				else if (hit_over_platform(&enemy->ch.obj, &enemy->ch.dy, enemy->ch.dx))
 				{
 					enemy->ch.dy = 0;
 					enemy->ch.dx = 0;
@@ -180,24 +188,27 @@ void move_enemies(void)
 		if (rem_enemy != 0)
 		{
 			rem_enemy->state_counter = 0;
+			enemy->state = ENEMY_STATE_REMOVED;
 			deinit_enemy(rem_enemy);
 			rem_enemy = 0;
 		}
 	}
 }
 
-unsigned int hit_enemy(
+void retreat_enemy(
 	struct enemy *enemy
 	)
 {
-	unsigned int result = 0;
+	enemy->ch.dx = -enemy->ch.dx;
+}
 
+void hit_enemy(
+	struct enemy *enemy
+	)
+{
 	enemy->ch.dy = -1;
-	enemy->state = ENEMY_STATE_EGG;
 	enemy->state_counter = 0;
-	result = 1;
-
-	return result;
+	enemy->state = ENEMY_STATE_EGG;
 }
 
 void draw_enemies(void)
