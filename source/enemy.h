@@ -10,10 +10,13 @@
 #define ENEMY_STATE_SPAWN		0
 #define ENEMY_STATE_STOP		1
 #define ENEMY_STATE_MOVE		2
-#define ENEMY_STATE_EGG		4
-#define ENEMY_STATE_KNIGHT		5
-#define ENEMY_STATE_REMOVE		10
-#define ENEMY_STATE_REMOVED		11
+#define ENEMY_STATE_FLAP		3
+#define ENEMY_STATE_BOUNCE		6
+#define ENEMY_STATE_TARGET		7
+#define ENEMY_STATE_EGG		10
+#define ENEMY_STATE_KNIGHT		20
+#define ENEMY_STATE_REMOVE		30
+#define ENEMY_STATE_REMOVED		31
 
 #define ENEMY_SPAWN_TRESHOLD		16
 #define ENEMY_SPAWN_ANIM_TRESHOLD	1
@@ -25,6 +28,10 @@ struct enemy_race
 {
 	unsigned int type;
 	signed int speed;
+	unsigned int flap_treshold;
+	unsigned int gravity_treshold;
+	unsigned int rise_treshold;
+	unsigned int reaction_treshold;
 	const struct character_anim *anim;
 };
 
@@ -33,6 +40,8 @@ struct enemy
 	struct character ch;
 	const struct enemy_race *race;
 	unsigned int state;
+	unsigned int gravity_counter;
+	unsigned int rise_counter;
 	unsigned int spawn_counter;
 	unsigned int state_counter;
 };
