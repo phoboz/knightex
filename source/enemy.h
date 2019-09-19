@@ -28,10 +28,12 @@ struct enemy_race
 {
 	unsigned int type;
 	signed int speed;
+	unsigned int speed_treshold;
 	unsigned int flap_treshold;
 	unsigned int gravity_treshold;
 	unsigned int rise_treshold;
 	unsigned int reaction_treshold;
+	unsigned int bounce_treshold;
 	const struct character_anim *anim;
 };
 
@@ -40,6 +42,8 @@ struct enemy
 	struct character ch;
 	const struct enemy_race *race;
 	unsigned int state;
+	signed int target_speed;
+	unsigned int speed_counter;
 	unsigned int gravity_counter;
 	unsigned int rise_counter;
 	unsigned int spawn_counter;

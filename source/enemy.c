@@ -36,8 +36,8 @@ static const struct character_anim enemy_anims[] =
 
 const struct enemy_race enemy_races[] =
 {
-	/*	type					speed	flap_treshold		gravity_treshold	rise_treshold	reaction_treshold	anim	*/
-	{	ENEMY_TYPE_BOUNCER,	1,		24,				3,				4,			6,				&enemy_anims[0]	}
+	/*	type					speed	speed_treshold	flap_treshold		gravity_treshold	rise_treshold	reaction_treshold	bounce_treshold	anim	*/
+	{	ENEMY_TYPE_BOUNCER,	2,		6,				24,				3,				2,			24,				12,				&enemy_anims[0]	}
 };
 
 unsigned int enemy_status = 0;
@@ -55,13 +55,15 @@ static void set_dir_enemy(
 	{
 		enemy->ch.base_frame = enemy->ch.anim->frame_left;
 		enemy->ch.dy = 0;
-		enemy->ch.dx = -enemy->ch.move_speed;
+		//enemy->ch.dx = -enemy->ch.move_speed;
+		enemy->target_speed = -enemy->ch.move_speed;
 	}
 	else if (dir == DIR_RIGHT)
 	{
 		enemy->ch.base_frame = enemy->ch.anim->frame_right;
 		enemy->ch.dy = 0;
-		enemy->ch.dx = enemy->ch.move_speed;
+		//enemy->ch.dx = enemy->ch.move_speed;
+		enemy->target_speed = enemy->ch.move_speed;
 	}
 }
 
@@ -77,6 +79,7 @@ void init_enemy(
 	init_character(&enemy->ch, y, x, race->speed, race->anim, &enemy_list);
 
 	enemy->race			= race;
+	enemy->speed_counter	= 0;
 	enemy->gravity_counter	= 0;
 	enemy->rise_counter	= 0;
 	enemy->spawn_counter	= 0;
@@ -107,6 +110,19 @@ void move_enemies(void)
 	{
 		if (enemy->state == ENEMY_STATE_MOVE)
 		{
+			if (++enemy->speed_counter == enemy->race->speed_treshold)
+			{
+				enemy->speed_counter = 0;
+				if (enemy->ch.dx < enemy->target_speed)
+				{
+					enemy->ch.dx++;
+				}
+				else if (enemy->ch.dx > enemy->target_speed)
+				{
+					enemy->ch.dx--;
+				}
+			}
+
 			if (++enemy->gravity_counter == enemy->race->gravity_treshold)
 			{
 				enemy->gravity_counter = 0;
@@ -152,6 +168,19 @@ void move_enemies(void)
 		}
 		else if (enemy->state == ENEMY_STATE_FLAP)
 		{
+			if (++enemy->speed_counter == enemy->race->speed_treshold)
+			{
+				enemy->speed_counter = 0;
+				if (enemy->ch.dx < enemy->target_speed)
+				{
+					enemy->ch.dx++;
+				}
+				else if (enemy->ch.dx > enemy->target_speed)
+				{
+					enemy->ch.dx--;
+				}
+			}
+
 			if (++enemy->rise_counter == enemy->race->rise_treshold)
 			{
 				enemy->rise_counter = 0;
@@ -173,13 +202,20 @@ void move_enemies(void)
 					enemy->rise_counter = 0;
 					enemy->ch.dy = 0;
 				}
-			}
 
-			if (++enemy->state_counter == enemy->race->flap_treshold)
+				if (++enemy->state_counter == enemy->race->flap_treshold)
+				{
+					enemy->state_counter = 0;
+					enemy->state = ENEMY_STATE_MOVE;
+					enemy->rise_counter = 0;
+					enemy->ch.dy = 0;
+				}
+			}
+			else
 			{
 				enemy->state_counter = 0;
-				enemy->state = ENEMY_STATE_MOVE;
-				enemy->rise_counter = 0;
+				enemy->state = ENEMY_STATE_BOUNCE;
+				enemy->gravity_counter = 0;
 				enemy->ch.dy = 0;
 			}
 		}
@@ -204,7 +240,7 @@ void move_enemies(void)
 				}
 			}
 
-			if (++enemy->state_counter == enemy->race->reaction_treshold)
+			if (++enemy->state_counter == enemy->race->bounce_treshold)
 			{
 				if (enemy->ch.obj.x < player_1.ch.obj.x)
 				{
@@ -215,7 +251,7 @@ void move_enemies(void)
 					set_dir_enemy(enemy, DIR_LEFT);
 				}
 
-				enemy->state = ENEMY_STATE_MOVE;
+				enemy->state = ENEMY_STATE_FLAP;
 				enemy->state_counter = 0;
 				enemy->gravity_counter = 0;
 				enemy->ch.dy = 0;
