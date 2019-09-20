@@ -22,10 +22,10 @@ static const struct character_anim enemy_anims[] =
 	{
 		10,						// h
 		4,						// w
-		4,						// treshold
+		2,						// treshold
 		VULTURE_LEFT,
 		VULTURE_RIGHT,
-		2,						// max_frames
+		VULTURE_WALK_LEFT_END - VULTURE_WALK_LEFT_START + 1, // max_frames
 		VULTURE_WALK_LEFT_START,
 		VULTURE_WALK_RIGHT_START,
 		VULTURE_BRAKE_LEFT,
@@ -55,14 +55,12 @@ static void set_dir_enemy(
 	{
 		enemy->ch.base_frame = enemy->ch.anim->frame_left;
 		enemy->ch.dy = 0;
-		//enemy->ch.dx = -enemy->ch.move_speed;
 		enemy->target_speed = -enemy->ch.move_speed;
 	}
 	else if (dir == DIR_RIGHT)
 	{
 		enemy->ch.base_frame = enemy->ch.anim->frame_right;
 		enemy->ch.dy = 0;
-		//enemy->ch.dx = enemy->ch.move_speed;
 		enemy->target_speed = enemy->ch.move_speed;
 	}
 }
@@ -135,10 +133,16 @@ void move_enemies(void)
 
 			if (hit_over_platform(&enemy->ch.obj, &enemy->ch.dy, enemy->ch.dx))
 			{
+				if (enemy->ch.dir == DIR_LEFT)
+				{
+					enemy->ch.base_frame = enemy->ch.anim->frame_walk_left;
+				}
+				else if (enemy->ch.dir == DIR_RIGHT)
+				{
+					enemy->ch.base_frame = enemy->ch.anim->frame_walk_right;
+				}
 				enemy->state_counter = 0;
-				enemy->state = ENEMY_STATE_FLAP;
-				enemy->gravity_counter = 0;
-				enemy->ch.dy = 0;
+				enemy->state = ENEMY_STATE_WALK;
 			}
 			else if (!hit_platform(&enemy->ch.obj, &enemy->ch.dy, &enemy->ch.dx))
 			{
@@ -155,15 +159,12 @@ void move_enemies(void)
 						enemy->state = ENEMY_STATE_FLAP;
 					}
 					enemy->state_counter = 0;
-					enemy->gravity_counter = 0;
 				}
 			}
 			else
 			{
 				enemy->state_counter = 0;
 				enemy->state = ENEMY_STATE_BOUNCE;
-				enemy->gravity_counter = 0;
-				enemy->ch.dy = 0;
 			}
 		}
 		else if (enemy->state == ENEMY_STATE_FLAP)
@@ -185,13 +186,13 @@ void move_enemies(void)
 			{
 				enemy->rise_counter = 0;
 				enemy->ch.dy = 1;
+				enemy->ch.frame = 1;
 			}
 			else
 			{
 				enemy->ch.dy = 0;
+				enemy->ch.frame = 0;
 			}
-
-			animate_character(&enemy->ch);
 
 			if (!hit_platform(&enemy->ch.obj, &enemy->ch.dy, &enemy->ch.dx))
 			{
@@ -199,24 +200,20 @@ void move_enemies(void)
 				{
 					enemy->state_counter = 0;
 					enemy->state = ENEMY_STATE_REMOVE;
-					enemy->rise_counter = 0;
-					enemy->ch.dy = 0;
 				}
 
 				if (++enemy->state_counter == enemy->race->flap_treshold)
 				{
+					enemy->ch.frame = 0;
 					enemy->state_counter = 0;
 					enemy->state = ENEMY_STATE_MOVE;
-					enemy->rise_counter = 0;
-					enemy->ch.dy = 0;
 				}
 			}
 			else
 			{
+				enemy->ch.frame = 0;
 				enemy->state_counter = 0;
 				enemy->state = ENEMY_STATE_BOUNCE;
-				enemy->gravity_counter = 0;
-				enemy->ch.dy = 0;
 			}
 		}
 		else if (enemy->state == ENEMY_STATE_BOUNCE)
@@ -253,8 +250,47 @@ void move_enemies(void)
 
 				enemy->state = ENEMY_STATE_FLAP;
 				enemy->state_counter = 0;
-				enemy->gravity_counter = 0;
-				enemy->ch.dy = 0;
+			}
+		}
+		else if (enemy->state == ENEMY_STATE_WALK)
+		{
+			animate_character(&enemy->ch);
+
+			if (++enemy->state_counter == enemy->race->reaction_treshold)
+			{
+				if (enemy->ch.dir == DIR_LEFT)
+				{
+					enemy->ch.base_frame = enemy->ch.anim->frame_left;
+				}
+				else if (enemy->ch.dir == DIR_RIGHT)
+				{
+					enemy->ch.base_frame = enemy->ch.anim->frame_right;
+				}
+				enemy->ch.frame = 0;
+				enemy->state_counter = 0;
+				enemy->state = ENEMY_STATE_FLAP;
+			}
+			else if (!hit_over_platform(&enemy->ch.obj, &enemy->ch.dy, enemy->ch.dx))
+			{
+				if (enemy->ch.dir == DIR_LEFT)
+				{
+					enemy->ch.base_frame = enemy->ch.anim->frame_left;
+				}
+				else if (enemy->ch.dir == DIR_RIGHT)
+				{
+					enemy->ch.base_frame = enemy->ch.anim->frame_right;
+				}
+				enemy->ch.frame = 0;
+				enemy->state_counter = 0;
+				enemy->state = ENEMY_STATE_MOVE;
+			}
+			else if (!hit_platform(&enemy->ch.obj, &enemy->ch.dy, &enemy->ch.dx))
+			{
+				if (move_character(&enemy->ch) == 2)
+				{
+					enemy->state_counter = 0;
+					enemy->state = ENEMY_STATE_REMOVE;
+				}
 			}
 		}
 		else if (enemy->state == ENEMY_STATE_EGG)
@@ -347,7 +383,7 @@ void draw_enemies(void)
 	enemy = (struct enemy *) enemy_list;
 	while (enemy != 0)
 	{
-		if (enemy->state >= ENEMY_STATE_MOVE && enemy->state <= ENEMY_STATE_TARGET)
+		if (enemy->state >= ENEMY_STATE_MOVE && enemy->state <= ENEMY_STATE_WALK)
 		{
 			// ZERO
 			dp_VIA_cntl=0xcc;
