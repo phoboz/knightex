@@ -8,6 +8,7 @@
 #include "platform.h"
 #include "vulture.h"
 #include "knight.h"
+#include "ptery.h"
 #include "egg.h"
 #include "player.h"
 #include "enemy.h"
@@ -19,6 +20,7 @@ extern struct player player_1;
 
 static const struct character_anim enemy_anims[] =
 {
+	/* Vulture */
 	{
 		10,						// h
 		4,						// w
@@ -31,13 +33,29 @@ static const struct character_anim enemy_anims[] =
 		VULTURE_BRAKE_LEFT,
 		VULTURE_BRAKE_RIGHT,
 		vulture					// vectorlists
+	},
+
+	/* Ptery */
+	{
+		8,						// h
+		12,						// w
+		4,						// treshold
+		PTERY_LEFT,
+		PTERY_RIGHT,
+		PTERY_FLAP_LEFT - PTERY_LEFT + 1,
+		PTERY_LEFT,
+		PTERY_RIGHT,
+		PTERY_DIVE_LEFT,
+		PTERY_DIVE_RIGHT,
+		ptery
 	}
 };
 
 const struct enemy_race enemy_races[] =
 {
 	/*	type					speed	speed_treshold	flap_treshold		gravity_treshold	rise_treshold	reaction_treshold	bounce_treshold	anim	*/
-	{	ENEMY_TYPE_BOUNCER,	2,		6,				24,				3,				2,			24,				12,				&enemy_anims[0]	}
+	{	ENEMY_TYPE_BOUNCER,	2,		6,				24,				3,				2,			24,				12,				&enemy_anims[0]	},
+	{	ENEMY_TYPE_PTERY,		3,		2,				255,				4,				4,			56,				0,				&enemy_anims[1]	}
 };
 
 unsigned int enemy_status = 0;
@@ -99,6 +117,7 @@ void deinit_enemy(
 void move_enemies(void)
 {
 	struct enemy *enemy;
+	unsigned int enemy_type;
 	struct enemy *rem_enemy = 0;
 
 	enemy_status = 0;
@@ -106,6 +125,8 @@ void move_enemies(void)
 	enemy = (struct enemy *) enemy_list;
 	while(enemy != 0)
 	{
+		enemy_type = enemy->race->type;
+
 		if (enemy->state == ENEMY_STATE_MOVE)
 		{
 			if (++enemy->speed_counter == enemy->race->speed_treshold)
@@ -131,40 +152,57 @@ void move_enemies(void)
 				enemy->ch.dy = 0;
 			}
 
-			if (hit_over_platform(&enemy->ch.obj, &enemy->ch.dy, enemy->ch.dx))
+			if (enemy_type == ENEMY_TYPE_BOUNCER)
 			{
-				if (enemy->ch.dir == DIR_LEFT)
+				if (hit_over_platform(&enemy->ch.obj, &enemy->ch.dy, enemy->ch.dx))
 				{
-					enemy->ch.base_frame = enemy->ch.anim->frame_walk_left;
+					if (enemy->ch.dir == DIR_LEFT)
+					{
+						enemy->ch.base_frame = enemy->ch.anim->frame_walk_left;
+					}
+					else if (enemy->ch.dir == DIR_RIGHT)
+					{
+						enemy->ch.base_frame = enemy->ch.anim->frame_walk_right;
+					}
+					enemy->state_counter = 0;
+					enemy->state = ENEMY_STATE_WALK;
 				}
-				else if (enemy->ch.dir == DIR_RIGHT)
+				else if (!hit_platform(&enemy->ch.obj, &enemy->ch.dy, &enemy->ch.dx))
 				{
-					enemy->ch.base_frame = enemy->ch.anim->frame_walk_right;
+					if (move_character(&enemy->ch) == 2)
+					{
+						enemy->state_counter = 0;
+						enemy->state = ENEMY_STATE_REMOVE;
+					}
+
+					if (++enemy->state_counter == enemy->race->reaction_treshold)
+					{
+						if (enemy->ch.obj.y < player_1.ch.obj.y)
+						{
+							enemy->state = ENEMY_STATE_FLAP;
+						}
+						enemy->state_counter = 0;
+					}
 				}
-				enemy->state_counter = 0;
-				enemy->state = ENEMY_STATE_WALK;
+				else
+				{
+					enemy->state_counter = 0;
+					enemy->state = ENEMY_STATE_BOUNCE;
+				}
 			}
-			else if (!hit_platform(&enemy->ch.obj, &enemy->ch.dy, &enemy->ch.dx))
+			else if (enemy_type == ENEMY_TYPE_PTERY)
 			{
-				if (move_character(&enemy->ch) == 2)
+				unsigned int ret = move_character(&enemy->ch);
+				if (ret == 2)
 				{
 					enemy->state_counter = 0;
 					enemy->state = ENEMY_STATE_REMOVE;
 				}
-
-				if (++enemy->state_counter == enemy->race->reaction_treshold)
+				else if (ret == 3)
 				{
-					if (enemy->ch.obj.y < player_1.ch.obj.y)
-					{
-						enemy->state = ENEMY_STATE_FLAP;
-					}
 					enemy->state_counter = 0;
+					enemy->state = ENEMY_STATE_STOP;
 				}
-			}
-			else
-			{
-				enemy->state_counter = 0;
-				enemy->state = ENEMY_STATE_BOUNCE;
 			}
 		}
 		else if (enemy->state == ENEMY_STATE_FLAP)
@@ -194,26 +232,43 @@ void move_enemies(void)
 				enemy->ch.frame = 0;
 			}
 
-			if (!hit_platform(&enemy->ch.obj, &enemy->ch.dy, &enemy->ch.dx))
+			if (enemy_type == ENEMY_TYPE_BOUNCER)
 			{
-				if (move_character(&enemy->ch) == 2)
+				if (!hit_platform(&enemy->ch.obj, &enemy->ch.dy, &enemy->ch.dx))
+				{
+					if (move_character(&enemy->ch) == 2)
+					{
+						enemy->state_counter = 0;
+						enemy->state = ENEMY_STATE_REMOVE;
+					}
+
+					if (++enemy->state_counter == enemy->race->flap_treshold)
+					{
+						enemy->ch.frame = 0;
+						enemy->state_counter = 0;
+						enemy->state = ENEMY_STATE_MOVE;
+					}
+				}
+				else
+				{
+					enemy->ch.frame = 0;
+					enemy->state_counter = 0;
+					enemy->state = ENEMY_STATE_BOUNCE;
+				}
+			}
+			else if (enemy_type == ENEMY_TYPE_PTERY)
+			{
+				unsigned int ret = move_character(&enemy->ch);
+				if (ret == 2)
 				{
 					enemy->state_counter = 0;
 					enemy->state = ENEMY_STATE_REMOVE;
 				}
-
-				if (++enemy->state_counter == enemy->race->flap_treshold)
+				else if (ret == 3)
 				{
-					enemy->ch.frame = 0;
 					enemy->state_counter = 0;
-					enemy->state = ENEMY_STATE_MOVE;
+					enemy->state = ENEMY_STATE_STOP;
 				}
-			}
-			else
-			{
-				enemy->ch.frame = 0;
-				enemy->state_counter = 0;
-				enemy->state = ENEMY_STATE_BOUNCE;
 			}
 		}
 		else if (enemy->state == ENEMY_STATE_BOUNCE)
@@ -338,9 +393,25 @@ void move_enemies(void)
 		}
 		else if (enemy->state == ENEMY_STATE_STOP)
 		{
-			if (++enemy->state_counter >= ENEMY_STOP_TRESHOLD)
+			if (++enemy->state_counter >= enemy->race->reaction_treshold)
 			{
-				enemy->state = ENEMY_STATE_MOVE;
+				if (enemy->ch.obj.x < player_1.ch.obj.x)
+				{
+					set_dir_enemy(enemy, DIR_RIGHT);
+				}
+				else if (enemy->ch.obj.x > player_1.ch.obj.x)
+				{
+					set_dir_enemy(enemy, DIR_LEFT);
+				}
+
+				if (enemy->ch.obj.y < player_1.ch.obj.y)
+				{
+					enemy->state = ENEMY_STATE_FLAP;
+				}
+				else
+				{
+					enemy->state = ENEMY_STATE_MOVE;
+				}
 				enemy->state_counter = 0;
 			}
 		}
@@ -403,10 +474,7 @@ void draw_enemies(void)
             	while ((dp_VIA_int_flags & 0x40) == 0); // wait till timer finishes
 
 			draw_vlp_1(enemy->ch.anim->shapes[enemy->ch.base_frame + enemy->ch.frame]);
-			
-			// ZERO
-			dp_VIA_cntl=0xcc;
-			
+						
 /*						
 			draw_synced_list_c(
 				enemy->ch.anim->shapes[enemy->ch.base_frame + enemy->ch.frame],
@@ -418,27 +486,33 @@ void draw_enemies(void)
 */			
 			
 
-			dp_VIA_t1_cnt_lo = OBJECT_MOVE_SCALE;
-            	dp_VIA_port_a = y;			// y pos to dac
-            	dp_VIA_cntl = 0xce;	// disable zero, disable all blank
-            	dp_VIA_port_b = 0;			// mux enable, dac to -> integrator y (and x)
-            	dp_VIA_shift_reg = 0;		// all output is BLANK
-            	dp_VIA_port_b++;			// mux disable, dac only to x
-            	dp_VIA_port_a = x;			// dac -> x
-            	dp_VIA_t1_cnt_hi=0;		// start timer
-			dp_VIA_t1_cnt_lo = KNIGHT_DRAW_SCALE;
-            	while ((dp_VIA_int_flags & 0x40) == 0); // wait till timer finishes
-			draw_vlp_2(knight[enemy->ch.dir]);			
+			if (enemy->race->type < ENEMY_TYPE_PTERY)
+			{
+				// ZERO
+				dp_VIA_cntl=0xcc;
+
+				dp_VIA_t1_cnt_lo = OBJECT_MOVE_SCALE;
+            		dp_VIA_port_a = y;			// y pos to dac
+            		dp_VIA_cntl = 0xce;	// disable zero, disable all blank
+            		dp_VIA_port_b = 0;			// mux enable, dac to -> integrator y (and x)
+            		dp_VIA_shift_reg = 0;		// all output is BLANK
+            		dp_VIA_port_b++;			// mux disable, dac only to x
+            		dp_VIA_port_a = x;			// dac -> x
+            		dp_VIA_t1_cnt_hi=0;		// start timer
+				dp_VIA_t1_cnt_lo = KNIGHT_DRAW_SCALE;
+            		while ((dp_VIA_int_flags & 0x40) == 0); // wait till timer finishes
+				draw_vlp_2(knight[enemy->ch.dir]);			
 			
 /*
-			draw_synced_list_c(
-				knight[enemy->ch.dir],
-				enemy->ch.obj.y,
-				enemy->ch.obj.x,
-				OBJECT_MOVE_SCALE,
-				0x18/KNIGHT_SCALE
-				);
-*/			
+				draw_synced_list_c(
+					knight[enemy->ch.dir],
+					enemy->ch.obj.y,
+					enemy->ch.obj.x,
+					OBJECT_MOVE_SCALE,
+					0x18/KNIGHT_SCALE
+					);
+*/
+			}			
 		}
 		else if (enemy->state == ENEMY_STATE_EGG)
 		{

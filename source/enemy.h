@@ -6,6 +6,7 @@
 #define ENEMY_DRAW_SCALE	1
 
 #define ENEMY_TYPE_BOUNCER		0
+#define ENEMY_TYPE_PTERY		10
 
 #define ENEMY_STATE_SPAWN		0
 #define ENEMY_STATE_STOP		1
@@ -22,7 +23,6 @@
 #define ENEMY_SPAWN_ANIM_TRESHOLD	1
 #define ENEMY_SPAWN_ANIM_FRAMES		8
 #define ENEMY_EGG_TRESHOLD			255
-#define ENEMY_STOP_TRESHOLD			3
 
 struct enemy_race
 {

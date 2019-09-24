@@ -85,11 +85,13 @@ unsigned int move_character(
 	if (ch->obj.x <= CHARACTER_MIN_X)
 	{
 		ch->obj.x = CHARACTER_MAX_X - 1;
+		stopped = 3;
 	}
 
 	if (ch->obj.x >= CHARACTER_MAX_X)
 	{
 		ch->obj.x = CHARACTER_MIN_X + 1;
+		stopped = 3;
 	}
 
 	return stopped;
