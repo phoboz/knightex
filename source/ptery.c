@@ -30,7 +30,8 @@ const signed char ptery_0[]=
 	(signed char) +2 // endmarker 
 };
 const signed char ptery_1[]=
-{	(signed char) +0, +0*BLOW_UP, +12*BLOW_UP, // sync and move to y, x
+{	(signed char) +0, +0*BLOW_UP, +6*BLOW_UP, // sync and move to y, x
+	(signed char) +0, +0*BLOW_UP, +6*BLOW_UP, // sync and move to y, x
 	(signed char) +0, +0*BLOW_UP, +2*BLOW_UP, // additional sync move to y, x
 	(signed char) -1, +2*BLOW_UP, +4*BLOW_UP, // draw, y, x
 	(signed char) -1, +1*BLOW_UP, -7*BLOW_UP, // draw, y, x
@@ -86,7 +87,8 @@ const signed char ptery_3[]=
 	(signed char) +2 // endmarker 
 };
 const signed char ptery_4[]=
-{	(signed char) +0, +0*BLOW_UP, -12*BLOW_UP, // sync and move to y, x
+{	(signed char) +0, +0*BLOW_UP, -6*BLOW_UP, // sync and move to y, x
+	(signed char) +0, +0*BLOW_UP, -6*BLOW_UP, // sync and move to y, x
 	(signed char) +0, +0*BLOW_UP, -2*BLOW_UP, // additional sync move to y, x
 	(signed char) -1, +2*BLOW_UP, -4*BLOW_UP, // draw, y, x
 	(signed char) -1, +1*BLOW_UP, +7*BLOW_UP, // draw, y, x

@@ -1,7 +1,7 @@
 #ifndef _PTERY_H
 #define _PTERY_H
 
-#define PTERY_SCALE		8
+#define PTERY_SCALE		11
 
 #define PTERY_LEFT			0
 #define PTERY_FLAP_LEFT	1

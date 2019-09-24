@@ -39,7 +39,7 @@ static const struct character_anim enemy_anims[] =
 	{
 		8,						// h
 		12,						// w
-		4,						// treshold
+		5,						// treshold
 		PTERY_LEFT,
 		PTERY_RIGHT,
 		PTERY_FLAP_LEFT - PTERY_LEFT + 1,
