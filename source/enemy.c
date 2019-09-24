@@ -24,7 +24,7 @@ static const struct character_anim enemy_anims[] =
 	{
 		10,						// h
 		4,						// w
-		2,						// treshold
+		3,						// treshold
 		VULTURE_LEFT,
 		VULTURE_RIGHT,
 		VULTURE_WALK_LEFT_END - VULTURE_WALK_LEFT_START + 1, // max_frames
@@ -192,6 +192,7 @@ void move_enemies(void)
 			}
 			else if (enemy_type == ENEMY_TYPE_PTERY)
 			{
+				enemy->ch.frame = 2;
 				unsigned int ret = move_character(&enemy->ch);
 				if (ret == 2)
 				{
@@ -200,6 +201,7 @@ void move_enemies(void)
 				}
 				else if (ret == 3)
 				{
+					enemy->ch.frame = 0;
 					enemy->state_counter = 0;
 					enemy->state = ENEMY_STATE_STOP;
 				}
@@ -224,16 +226,16 @@ void move_enemies(void)
 			{
 				enemy->rise_counter = 0;
 				enemy->ch.dy = 1;
-				enemy->ch.frame = 1;
 			}
 			else
 			{
 				enemy->ch.dy = 0;
-				enemy->ch.frame = 0;
 			}
 
 			if (enemy_type == ENEMY_TYPE_BOUNCER)
 			{
+				animate_character_limit(&enemy->ch, 2);
+
 				if (!hit_platform(&enemy->ch.obj, &enemy->ch.dy, &enemy->ch.dx))
 				{
 					if (move_character(&enemy->ch) == 2)
@@ -258,6 +260,8 @@ void move_enemies(void)
 			}
 			else if (enemy_type == ENEMY_TYPE_PTERY)
 			{
+				animate_character(&enemy->ch);
+
 				unsigned int ret = move_character(&enemy->ch);
 				if (ret == 2)
 				{

@@ -46,11 +46,35 @@ unsigned int animate_character(
 {
 	unsigned int loop = 0;
 
-	if (++ch->counter >= ch->treshold) {
+	if (++ch->counter >= ch->treshold)
+	{
 		ch->counter = 0;
 		if (ch->dir < DIR_NONE)
 		{
 			if (++ch->frame >= ch->anim->max_frames)
+			{
+				ch->frame = 0;
+				loop = 1;
+			}
+		}
+	}
+
+	return loop;
+}
+
+unsigned int animate_character_limit(
+	struct character *ch,
+	unsigned int max_frames
+	)
+{
+	unsigned int loop = 0;
+
+	if (++ch->counter >= ch->treshold)
+	{
+		ch->counter = 0;
+		if (ch->dir < DIR_NONE)
+		{
+			if (++ch->frame >= max_frames)
 			{
 				ch->frame = 0;
 				loop = 1;
