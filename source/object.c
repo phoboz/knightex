@@ -7,6 +7,27 @@
 
 // ---------------------------------------------------------------------------
 
+void init_object_0(
+	struct object *obj,
+	signed int y,
+	signed int x,
+	signed int h,
+	signed int w,
+	const signed char *shape
+	)
+{
+	obj->active = 0;
+
+	obj->y = y;
+	obj->x = x;
+	obj->h = h;
+	obj->w = w;
+	obj->h_2 = h >> 1;
+	obj->w_2 = w >> 1;
+
+	obj->shape = shape;
+}
+
 void  give_object(
 	struct object *obj,
 	struct object **head

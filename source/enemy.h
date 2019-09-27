@@ -16,6 +16,7 @@
 #define ENEMY_STATE_WALK		7
 #define ENEMY_STATE_EGG		10
 #define ENEMY_STATE_KNIGHT		20
+#define ENEMY_STATE_CALL_BIRD	25
 #define ENEMY_STATE_REMOVE		30
 #define ENEMY_STATE_REMOVED		31
 
@@ -23,6 +24,12 @@
 #define ENEMY_SPAWN_ANIM_TRESHOLD	1
 #define ENEMY_SPAWN_ANIM_FRAMES		8
 #define ENEMY_EGG_TRESHOLD			255
+#define ENEMY_KNIGHT_TRESHOLD		100
+
+#define ENEMY_MAX_BOUNCES			4
+#define ENEMY_TIME_WINDOW			200
+
+#define ENEMY_CALL_BIRD_DY			18
 
 struct enemy_race
 {
@@ -40,6 +47,7 @@ struct enemy_race
 struct enemy
 {
 	struct character ch;
+	struct character ch_0;
 	const struct enemy_race *race;
 	unsigned int state;
 	signed int target_speed;
@@ -47,6 +55,8 @@ struct enemy
 	unsigned int gravity_counter;
 	unsigned int rise_counter;
 	unsigned int spawn_counter;
+	unsigned int window_counter;
+	unsigned int number_counter;
 	unsigned int state_counter;
 };
 
@@ -60,6 +70,7 @@ void init_enemy(
 	signed int y,
 	signed int x,
 	unsigned int dir,
+	unsigned int state,
 	const struct enemy_race *race
 	);
 

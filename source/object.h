@@ -18,6 +18,15 @@ struct object
 	struct object *prev, *next;
 };
 
+void init_object_0(
+	struct object *obj,
+	signed int y,
+	signed int x,
+	signed int h,
+	signed int w,
+	const signed char *shape
+	);
+
 void give_object(
 	struct object *obj,
 	struct object **head

@@ -36,6 +36,13 @@ struct character
 	const struct character_anim *anim;
 };
 
+void init_character_0(
+	struct character *ch,
+	signed int y,
+	signed int x,
+	signed int move_speed,
+	const struct character_anim *anim
+	);
 
 void init_character(
 	struct character *ch,
@@ -49,6 +56,11 @@ void init_character(
 void deinit_character(
 	struct character *ch,
 	struct object **head
+	);
+
+void set_dir_character(
+	struct character *ch,
+	unsigned int dir
 	);
 
 unsigned int animate_character(

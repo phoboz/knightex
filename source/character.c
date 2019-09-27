@@ -7,6 +7,30 @@
 
 // ---------------------------------------------------------------------------
 
+void init_character_0(
+	struct character *ch,
+	signed int y,
+	signed int x,
+	signed int move_speed,
+	const struct character_anim *anim
+	)
+{
+	init_object_0(&ch->obj, y, x, anim->h, anim->w, anim->shapes[0]);
+
+	ch->dir 			= DIR_LEFT;
+	ch->move_speed	= move_speed;
+
+	ch->dy = 0;
+	ch->dx = 0;
+
+	ch->counter		= 0;
+	ch->treshold		= anim->treshold;
+	ch->base_frame	= 0;
+	ch->frame			= 0;
+
+	ch->anim = anim;
+}
+
 void init_character(
 	struct character *ch,
 	signed int y,
@@ -38,6 +62,25 @@ void deinit_character(
 	)
 {
 	deinit_object(&ch->obj, head);
+}
+
+void set_dir_character(
+	struct character *ch,
+	unsigned int dir
+	)
+{
+	ch->dir = dir;
+
+	if (dir == DIR_LEFT)
+	{
+		ch->base_frame = ch->anim->frame_left;
+		ch->dx = -ch->move_speed;
+	}
+	else if (dir == DIR_RIGHT)
+	{
+		ch->base_frame = ch->anim->frame_right;
+		ch->dx = ch->move_speed;
+	}
 }
 
 unsigned int animate_character(

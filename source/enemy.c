@@ -88,19 +88,23 @@ void init_enemy(
 	signed int y,
 	signed int x,
 	unsigned int dir,
+	unsigned int state,
 	const struct enemy_race *race
 	)
 {
 	take_object(&enemy->ch.obj, &enemy_free_list);
 	init_character(&enemy->ch, y, x, race->speed, race->anim, &enemy_list);
+	init_character_0(&enemy->ch_0, y, x, 1, race->anim);
 
 	enemy->race			= race;
 	enemy->speed_counter	= 0;
 	enemy->gravity_counter	= 0;
 	enemy->rise_counter	= 0;
 	enemy->spawn_counter	= 0;
+	enemy->window_counter	= 0;
+	enemy->number_counter	= 0;
 
-	enemy->state = ENEMY_STATE_SPAWN;
+	enemy->state = state;
 	enemy->state_counter = 0;
 
 	set_dir_enemy(enemy, dir);
@@ -125,6 +129,12 @@ void move_enemies(void)
 	enemy = (struct enemy *) enemy_list;
 	while(enemy != 0)
 	{
+		if (++enemy->window_counter == ENEMY_TIME_WINDOW)
+		{
+			enemy->window_counter = 0;
+			enemy->number_counter = 0;
+		}
+
 		enemy_type = enemy->race->type;
 
 		if (enemy->state == ENEMY_STATE_MOVE)
@@ -187,6 +197,7 @@ void move_enemies(void)
 				else
 				{
 					enemy->state_counter = 0;
+					enemy->number_counter++;
 					enemy->state = ENEMY_STATE_BOUNCE;
 				}
 			}
@@ -255,6 +266,7 @@ void move_enemies(void)
 				{
 					enemy->ch.frame = 0;
 					enemy->state_counter = 0;
+					enemy->number_counter++;
 					enemy->state = ENEMY_STATE_BOUNCE;
 				}
 			}
@@ -298,17 +310,30 @@ void move_enemies(void)
 
 			if (++enemy->state_counter == enemy->race->bounce_treshold)
 			{
-				if (enemy->ch.obj.x < player_1.ch.obj.x)
+				if (enemy->number_counter >= ENEMY_MAX_BOUNCES)
 				{
-					set_dir_enemy(enemy, DIR_RIGHT);
-				}
-				else if (enemy->ch.obj.x > player_1.ch.obj.x)
-				{
-					set_dir_enemy(enemy, DIR_LEFT);
+					enemy->window_counter = 0;
+					enemy->number_counter = 0;
+					if (enemy->ch.dir == DIR_LEFT)
+					{
+						set_dir_enemy(enemy, DIR_RIGHT);
+					}
+					else if (enemy->ch.dir == DIR_RIGHT)
+					{
+						set_dir_enemy(enemy, DIR_LEFT);
+					}
 				}
 
-				enemy->state = ENEMY_STATE_FLAP;
 				enemy->state_counter = 0;
+
+				if (enemy->ch.obj.y > player_1.ch.obj.y)
+				{
+					enemy->state = ENEMY_STATE_MOVE;
+				}
+				else
+				{
+					enemy->state = ENEMY_STATE_FLAP;
+				}
 			}
 		}
 		else if (enemy->state == ENEMY_STATE_WALK)
@@ -375,6 +400,70 @@ void move_enemies(void)
 					enemy->state_counter = 0;
 				}
 			}
+		}
+		else if (enemy->state == ENEMY_STATE_KNIGHT)
+		{
+			if (++enemy->state_counter == ENEMY_KNIGHT_TRESHOLD)
+			{
+				enemy->ch_0.obj.y = enemy->ch.obj.y + ENEMY_CALL_BIRD_DY;
+
+				if (enemy->ch.obj.x < 0)
+				{
+					enemy->ch_0.obj.x = CHARACTER_MIN_X;
+					set_dir_character(&enemy->ch_0, DIR_RIGHT);
+				}
+				else
+				{
+					enemy->ch_0.obj.x = CHARACTER_MAX_X;
+					set_dir_character(&enemy->ch_0, DIR_LEFT);
+				}
+
+				enemy->ch_0.obj.active = 1;
+
+				enemy->state = ENEMY_STATE_CALL_BIRD;
+				enemy->state_counter = 0;
+			}
+		}
+		else if (enemy->state == ENEMY_STATE_CALL_BIRD)
+		{
+			unsigned int match = 0;
+
+			enemy->state_counter = 0;
+
+			if (enemy->ch_0.obj.y > enemy->ch.obj.y)
+			{
+				if (++enemy->gravity_counter == enemy->race->gravity_treshold)
+				{
+					enemy->gravity_counter = 0;
+					enemy->ch_0.dy = -1;
+				}
+				else
+				{
+					enemy->ch_0.dy = 0;
+				}
+			}
+			else
+			{
+				enemy->ch_0.dy = 0;
+				match = 1;
+			}
+
+			if (enemy->ch_0.obj.x < enemy->ch.obj.x)
+			{
+				set_dir_character(&enemy->ch_0, DIR_RIGHT);
+			}
+			else if (enemy->ch_0.obj.x > enemy->ch.obj.x)
+			{
+				set_dir_character(&enemy->ch_0, DIR_LEFT);
+			}
+			else if (match)
+			{
+				enemy->state_counter = 0;
+				set_dir_enemy(enemy, enemy->ch_0.dir);
+				enemy->state = ENEMY_STATE_MOVE;
+			}
+
+			move_character(&enemy->ch_0);
 		}
 		else if (enemy->state == ENEMY_STATE_SPAWN)
 		{
@@ -488,7 +577,6 @@ void draw_enemies(void)
 				enemy->ch.obj.scale
 				);
 */			
-			
 
 			if (enemy->race->type < ENEMY_TYPE_PTERY)
 			{
@@ -558,6 +646,48 @@ void draw_enemies(void)
 			dp_VIA_t1_cnt_lo = KNIGHT_DRAW_SCALE;
             	while ((dp_VIA_int_flags & 0x40) == 0); // wait till timer finishes
 			draw_vlp_2(knight[2]);
+		}
+		else if (enemy->state == ENEMY_STATE_CALL_BIRD)
+		{
+			signed int y = enemy->ch.obj.y - enemy->ch.obj.h_2;;
+			signed int x = enemy->ch.obj.x;			
+
+			// ZERO
+			dp_VIA_cntl=0xcc;
+
+			dp_VIA_t1_cnt_lo = OBJECT_MOVE_SCALE;
+            	dp_VIA_port_a = y;			// y pos to dac
+            	dp_VIA_cntl = 0xce;	// disable zero, disable all blank
+            	dp_VIA_port_b = 0;			// mux enable, dac to -> integrator y (and x)
+            	dp_VIA_shift_reg = 0;		// all output is BLANK
+            	dp_VIA_port_b++;			// mux disable, dac only to x
+            	dp_VIA_port_a = x;			// dac -> x
+            	dp_VIA_t1_cnt_hi=0;		// start timer
+			dp_VIA_t1_cnt_lo = KNIGHT_DRAW_SCALE;
+            	while ((dp_VIA_int_flags & 0x40) == 0); // wait till timer finishes
+			draw_vlp_2(knight[2]);
+
+			if (enemy->ch_0.obj.active)
+			{
+				// ZERO
+				dp_VIA_cntl=0xcc;
+
+				y = enemy->ch_0.obj.y;
+				x = enemy->ch_0.obj.x;			
+			
+				dp_VIA_t1_cnt_lo = OBJECT_MOVE_SCALE;
+            		dp_VIA_port_a = y;			// y pos to dac
+            		dp_VIA_cntl = 0xce;	// disable zero, disable all blank
+            		dp_VIA_port_b = 0;			// mux enable, dac to -> integrator y (and x)
+            		dp_VIA_shift_reg = 0;		// all output is BLANK
+            		dp_VIA_port_b++;			// mux disable, dac only to x
+            		dp_VIA_port_a = x;			// dac -> x
+            		dp_VIA_t1_cnt_hi=0;		// start timer
+				dp_VIA_t1_cnt_lo = ENEMY_DRAW_SCALE;
+            		while ((dp_VIA_int_flags & 0x40) == 0); // wait till timer finishes
+
+				draw_vlp_1(enemy->ch.anim->shapes[enemy->ch.base_frame + enemy->ch.frame]);
+			}
 		}
 		else if (enemy->state == ENEMY_STATE_SPAWN)
 		{
