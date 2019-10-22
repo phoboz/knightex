@@ -377,10 +377,23 @@ void move_enemies(void)
 				}
 			}
 		}
-		else if (enemy->state == ENEMY_STATE_EGG)
+		else if (enemy->state == ENEMY_STATE_EGG_DROP)
 		{
-			if (enemy->ch.dy != 0)
+			if (enemy->ch.dy < 0)
 			{
+				if (enemy->ch.dx < 0)
+				{
+					enemy->ch.frame = EGG_FRAME_DROP_LEFT;
+				}
+				else if (enemy->ch.dx > 0)
+				{
+					enemy->ch.frame = EGG_FRAME_DROP_RIGHT;
+				}
+				else
+				{
+					enemy->ch.frame = EGG_FRAME_DROP;
+				}
+
 				if (move_character(&enemy->ch) == 2)
 				{
 					enemy->state_counter = 0;
@@ -388,17 +401,86 @@ void move_enemies(void)
 				}
 				else if (hit_over_platform(&enemy->ch.obj, &enemy->ch.dy, enemy->ch.dx))
 				{
-					enemy->ch.dy = 0;
-					enemy->ch.dx = 0;
+					if (enemy->ch.dx > 0)
+					{
+						if (--enemy->ch.dx == 0)
+						{
+							enemy->ch.dx = 1;
+						}
+					}
+					else if (enemy->ch.dx < 0)
+					{
+						if (++enemy->ch.dx == 0)
+						{
+							enemy->ch.dx = -1;
+						}
+					}
+				}
+			}
+			else if (enemy->ch.dy > 0)
+			{
+				if (enemy->ch.dx < 0)
+				{
+					enemy->ch.frame = EGG_FRAME_DROP_RIGHT;
+				}
+				else if (enemy->ch.dx > 0)
+				{
+					enemy->ch.frame = EGG_FRAME_DROP_LEFT;
+				}
+				else
+				{
+					enemy->ch.frame = EGG_FRAME_DROP;
+				}
+
+				if (enemy->ch.obj.y < enemy->ch_0.obj.y)
+				{
+					if (move_character(&enemy->ch) == 2)
+					{
+						enemy->state_counter = 0;
+						enemy->state = ENEMY_STATE_REMOVE;
+					}
+					else if (hit_platform(&enemy->ch.obj, &enemy->ch.dy, &enemy->ch.dx))
+					{
+						enemy->ch.dy = -1;
+					}
+				}
+				else
+				{
+					enemy->ch.dy = -1;
 				}
 			}
 			else
 			{
-				if (++enemy->state_counter >= ENEMY_EGG_TRESHOLD)
+				enemy->ch_0.dy = (enemy->ch_0.obj.y - enemy->ch.obj.y) >> 1;
+				if (enemy->ch_0.dy)
 				{
-					enemy->state = ENEMY_STATE_KNIGHT;
+					enemy->ch_0.obj.y -= enemy->ch_0.dy;
+					enemy->ch.dy = 1;
+				}
+				else
+				{
+					enemy->ch.dx = 0;
+					enemy->ch.frame = EGG_FRAME_STILL;
+					enemy->state = ENEMY_STATE_EGG;
 					enemy->state_counter = 0;
 				}
+			}
+		}
+		else if (enemy->state == ENEMY_STATE_EGG)
+		{
+			if (++enemy->state_counter >= ENEMY_EGG_TRESHOLD)
+			{
+				enemy->ch.frame = EGG_FRAME_HATCH;
+				enemy->state = ENEMY_STATE_EGG_HATCH;
+				enemy->state_counter = 0;
+			}
+		}
+		else if (enemy->state == ENEMY_STATE_EGG_HATCH)
+		{
+			if (++enemy->state_counter >= ENEMY_EGG_HATCH_TRESHOLD)
+			{
+				enemy->state = ENEMY_STATE_KNIGHT;
+				enemy->state_counter = 0;
 			}
 		}
 		else if (enemy->state == ENEMY_STATE_KNIGHT)
@@ -535,9 +617,10 @@ void hit_enemy(
 	struct enemy *enemy
 	)
 {
+	enemy->ch_0.obj.y = enemy->ch.obj.y;
 	enemy->ch.dy = -1;
 	enemy->state_counter = 0;
-	enemy->state = ENEMY_STATE_EGG;
+	enemy->state = ENEMY_STATE_EGG_DROP;
 }
 
 void draw_enemies(void)
@@ -606,7 +689,7 @@ void draw_enemies(void)
 */
 			}			
 		}
-		else if (enemy->state == ENEMY_STATE_EGG)
+		else if (enemy->state >= ENEMY_STATE_EGG_DROP && enemy->state <= ENEMY_STATE_EGG_HATCH)
 		{
 			// ZERO
 			dp_VIA_cntl=0xcc;
@@ -625,7 +708,7 @@ void draw_enemies(void)
 			dp_VIA_t1_cnt_lo = ENEMY_DRAW_SCALE;
             	while ((dp_VIA_int_flags & 0x40) == 0); // wait till timer finishes
 
-			draw_vlp_1(egg);
+			draw_vlp_1(egg[enemy->ch.frame]);
 		}
 		else if (enemy->state == ENEMY_STATE_KNIGHT)
 		{
