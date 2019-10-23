@@ -492,15 +492,18 @@ void move_enemies(void)
 				if (enemy->ch.obj.x < 0)
 				{
 					enemy->ch_0.obj.x = CHARACTER_MIN_X;
+					enemy->ch_0.base_frame = enemy->ch.anim->frame_right;
 					set_dir_character(&enemy->ch_0, DIR_RIGHT);
 				}
 				else
 				{
 					enemy->ch_0.obj.x = CHARACTER_MAX_X;
+					enemy->ch_0.base_frame = enemy->ch.anim->frame_left;
 					set_dir_character(&enemy->ch_0, DIR_LEFT);
 				}
 
 				enemy->ch_0.obj.active = 1;
+				enemy->ch_0.frame = 0;
 
 				enemy->state = ENEMY_STATE_CALL_BIRD;
 				enemy->state_counter = 0;
@@ -508,9 +511,7 @@ void move_enemies(void)
 		}
 		else if (enemy->state == ENEMY_STATE_CALL_BIRD)
 		{
-			unsigned int match = 0;
-
-			enemy->state_counter = 0;
+			unsigned int match_y = 0;
 
 			if (enemy->ch_0.obj.y > enemy->ch.obj.y)
 			{
@@ -527,25 +528,28 @@ void move_enemies(void)
 			else
 			{
 				enemy->ch_0.dy = 0;
-				match = 1;
+				match_y = 1;
 			}
 
-			if (enemy->ch_0.obj.x < enemy->ch.obj.x)
+			if (enemy->ch_0.obj.x == enemy->ch.obj.x && match_y)
 			{
-				set_dir_character(&enemy->ch_0, DIR_RIGHT);
-			}
-			else if (enemy->ch_0.obj.x > enemy->ch.obj.x)
-			{
-				set_dir_character(&enemy->ch_0, DIR_LEFT);
-			}
-			else if (match)
-			{
+				enemy->ch_0.obj.active = 0;
 				enemy->state_counter = 0;
 				set_dir_enemy(enemy, enemy->ch_0.dir);
 				enemy->state = ENEMY_STATE_MOVE;
 			}
+			else
+			{
+				if (++enemy->ch_0.counter >= enemy->race->flap_treshold)
+				{
+					if (++enemy->ch_0.frame > 1)
+					{
+						enemy->ch_0.frame = 0;
+					}
+				}
 
-			move_character(&enemy->ch_0);
+				move_character(&enemy->ch_0);
+			}
 		}
 		else if (enemy->state == ENEMY_STATE_SPAWN)
 		{
@@ -592,7 +596,8 @@ void move_enemies(void)
 		}
 		else if (enemy->state == ENEMY_STATE_REMOVE)
 		{
-			rem_enemy = enemy;
+			// Do not remove for now
+			//rem_enemy = enemy;
 		}
 		enemy = (struct enemy *) enemy->ch.obj.next;
 
@@ -617,10 +622,18 @@ void hit_enemy(
 	struct enemy *enemy
 	)
 {
-	enemy->ch_0.obj.y = enemy->ch.obj.y;
-	enemy->ch.dy = -1;
 	enemy->state_counter = 0;
-	enemy->state = ENEMY_STATE_EGG_DROP;
+
+	if (enemy->race->type == ENEMY_TYPE_PTERY)
+	{
+		enemy->state = ENEMY_STATE_REMOVE;
+	}
+	else
+	{
+		enemy->ch_0.obj.y = enemy->ch.obj.y;
+		enemy->ch.dy = -1;
+		enemy->state = ENEMY_STATE_EGG_DROP;
+	}
 }
 
 void draw_enemies(void)
@@ -769,7 +782,7 @@ void draw_enemies(void)
 				dp_VIA_t1_cnt_lo = ENEMY_DRAW_SCALE;
             		while ((dp_VIA_int_flags & 0x40) == 0); // wait till timer finishes
 
-				draw_vlp_1(enemy->ch.anim->shapes[enemy->ch.base_frame + enemy->ch.frame]);
+				draw_vlp_1(enemy->ch_0.anim->shapes[enemy->ch_0.base_frame + enemy->ch_0.frame]);
 			}
 		}
 		else if (enemy->state == ENEMY_STATE_SPAWN)
