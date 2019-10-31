@@ -451,25 +451,36 @@ struct enemy* interaction_enemies_player(
 		enemy = (struct enemy *) enemy_list;
 		while (enemy != 0)
 		{
-			if (player->state == PLAYER_STATE_NORMAL)
+			if (player->state < PLAYER_STATE_INACTIVE)
 			{
-				if (enemy->state == ENEMY_STATE_MOVE || enemy->state == ENEMY_STATE_STOP)
+				if (enemy->state < ENEMY_STATE_INACTIVE)
 				{
 					if (hit_object(&player->ch.obj, &enemy->ch.obj))
 					{
 						if (player->ch.obj.y == enemy->ch.obj.y)
 						{
 							player->ch.dx = -player->ch.dx;
-							retreat_enemy(enemy);
+							hit_enemy_equal(enemy);
 						}
 						else if (player->ch.obj.y > enemy->ch.obj.y)
 						{
-							hit_enemy(enemy);
+							if (hit_enemy_over(enemy))
+							{
+								player->state = PLAYER_STATE_DEAD;
+							}
 						}
 						else
 						{
 							player->state = PLAYER_STATE_DEAD;
 						}
+					}
+				}
+				else if (enemy->state > ENEMY_STATE_COL_START &&
+						enemy->state < ENEMY_STATE_COL_END)
+				{
+					if (hit_object(&player->ch.obj, &enemy->ch.obj))
+					{
+						collect_enemy(enemy);
 					}
 				}
 			}

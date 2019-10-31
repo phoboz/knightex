@@ -96,13 +96,14 @@ void init_enemy(
 	init_character(&enemy->ch, y, x, race->speed, race->anim, &enemy_list);
 	init_character_0(&enemy->ch_0, y, x, 1, race->anim);
 
-	enemy->race			= race;
-	enemy->speed_counter	= 0;
-	enemy->gravity_counter	= 0;
-	enemy->rise_counter	= 0;
-	enemy->spawn_counter	= 0;
-	enemy->window_counter	= 0;
-	enemy->number_counter	= 0;
+	enemy->race = race;
+
+	enemy->speed_counter		= 0;
+	enemy->gravity_counter		= 0;
+	enemy->rise_counter		= 0;
+	enemy->invisible_counter	= ENEMY_INVISIBLE_TRESHOLD;
+	enemy->window_counter		= 0;
+	enemy->number_counter		= 0;
 
 	enemy->state = state;
 	enemy->state_counter = 0;
@@ -133,6 +134,11 @@ void move_enemies(void)
 		{
 			enemy->window_counter = 0;
 			enemy->number_counter = 0;
+		}
+
+		if (enemy->invisible_counter < ENEMY_INVISIBLE_TRESHOLD)
+		{
+			enemy->invisible_counter++;
 		}
 
 		enemy_type = enemy->race->type;
@@ -551,6 +557,14 @@ void move_enemies(void)
 				move_character(&enemy->ch_0);
 			}
 		}
+		else if (enemy->state == ENEMY_STATE_ZOMBIE)
+		{
+			if (move_character(&enemy->ch_0))
+			{
+				enemy->state_counter = 0;
+				enemy->state = ENEMY_STATE_REMOVE;
+			}
+		}
 		else if (enemy->state == ENEMY_STATE_SPAWN)
 		{
 			if (++enemy->ch.counter >= ENEMY_SPAWN_ANIM_TRESHOLD)
@@ -611,29 +625,67 @@ void move_enemies(void)
 	}
 }
 
-void retreat_enemy(
+void hit_enemy_equal(
 	struct enemy *enemy
 	)
 {
-	enemy->ch.dx = -enemy->ch.dx;
+	if (enemy->race->type == ENEMY_TYPE_PTERY)
+	{
+		enemy->state_counter = 0;
+		enemy->state = ENEMY_STATE_REMOVE;
+	}
+	else
+	{
+		enemy->ch.dx = -enemy->ch.dx;
+	}
 }
 
-void hit_enemy(
+unsigned int hit_enemy_over(
 	struct enemy *enemy
 	)
 {
-	enemy->state_counter = 0;
+	unsigned int result;
 
 	if (enemy->race->type == ENEMY_TYPE_PTERY)
 	{
-		enemy->state = ENEMY_STATE_REMOVE;
+		result = 1;
 	}
 	else
 	{
 		enemy->ch_0.obj.y = enemy->ch.obj.y;
 		enemy->ch.dy = -1;
+		enemy->state_counter = 0;
 		enemy->state = ENEMY_STATE_EGG_DROP;
+		enemy->invisible_counter = 0;
+		result = 0;
 	}
+
+	return result;
+}
+
+unsigned int collect_enemy(
+	struct enemy *enemy
+	)
+{
+	unsigned int result = 0;
+
+	if (enemy->invisible_counter >= ENEMY_INVISIBLE_TRESHOLD)
+	{
+		if (enemy->state == ENEMY_STATE_CALL_BIRD)
+		{
+			enemy->state_counter = 0;
+			enemy->state = ENEMY_STATE_ZOMBIE;
+		}
+		else
+		{
+			enemy->state_counter = 0;
+			enemy->state = ENEMY_STATE_REMOVE;
+		}
+
+		result = 1;
+	}
+
+	return result;
 }
 
 void draw_enemies(void)
@@ -762,6 +814,33 @@ void draw_enemies(void)
 			dp_VIA_t1_cnt_lo = KNIGHT_DRAW_SCALE;
             	while ((dp_VIA_int_flags & 0x40) == 0); // wait till timer finishes
 			draw_vlp_2(knight[2]);
+
+			if (enemy->ch_0.obj.active)
+			{
+				// ZERO
+				dp_VIA_cntl=0xcc;
+
+				y = enemy->ch_0.obj.y;
+				x = enemy->ch_0.obj.x;			
+			
+				dp_VIA_t1_cnt_lo = OBJECT_MOVE_SCALE;
+            		dp_VIA_port_a = y;			// y pos to dac
+            		dp_VIA_cntl = 0xce;	// disable zero, disable all blank
+            		dp_VIA_port_b = 0;			// mux enable, dac to -> integrator y (and x)
+            		dp_VIA_shift_reg = 0;		// all output is BLANK
+            		dp_VIA_port_b++;			// mux disable, dac only to x
+            		dp_VIA_port_a = x;			// dac -> x
+            		dp_VIA_t1_cnt_hi=0;		// start timer
+				dp_VIA_t1_cnt_lo = ENEMY_DRAW_SCALE;
+            		while ((dp_VIA_int_flags & 0x40) == 0); // wait till timer finishes
+
+				draw_vlp_1(enemy->ch_0.anim->shapes[enemy->ch_0.base_frame + enemy->ch_0.frame]);
+			}
+		}
+		else if (enemy->state == ENEMY_STATE_ZOMBIE)
+		{
+			signed int y;
+			signed int x;
 
 			if (enemy->ch_0.obj.active)
 			{

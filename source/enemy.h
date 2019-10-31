@@ -8,19 +8,27 @@
 #define ENEMY_TYPE_BOUNCER		0
 #define ENEMY_TYPE_PTERY		10
 
-#define ENEMY_STATE_SPAWN		0
-#define ENEMY_STATE_STOP		1
-#define ENEMY_STATE_MOVE		2
-#define ENEMY_STATE_FLAP		3
-#define ENEMY_STATE_BOUNCE		6
-#define ENEMY_STATE_WALK		7
-#define ENEMY_STATE_EGG_DROP	10
-#define ENEMY_STATE_EGG		11
-#define ENEMY_STATE_EGG_HATCH	12
-#define ENEMY_STATE_KNIGHT		20
-#define ENEMY_STATE_CALL_BIRD	25
-#define ENEMY_STATE_REMOVE		30
-#define ENEMY_STATE_REMOVED		31
+#define ENEMY_STATE_STOP		0
+#define ENEMY_STATE_MOVE		1
+#define ENEMY_STATE_FLAP		2
+#define ENEMY_STATE_BOUNCE		3
+#define ENEMY_STATE_WALK		4
+#define ENEMY_STATE_INACTIVE	10
+
+#define ENEMY_STATE_SPAWN		11
+
+#define ENEMY_STATE_COL_START	20
+#define ENEMY_STATE_EGG_DROP	21
+#define ENEMY_STATE_EGG		22
+#define ENEMY_STATE_EGG_HATCH	23
+#define ENEMY_STATE_KNIGHT		30
+#define ENEMY_STATE_CALL_BIRD	35
+#define ENEMY_STATE_COL_END		40
+
+#define ENEMY_STATE_ZOMBIE		41
+
+#define ENEMY_STATE_REMOVE		50
+#define ENEMY_STATE_REMOVED		51
 
 #define ENEMY_SPAWN_TRESHOLD		16
 #define ENEMY_SPAWN_ANIM_TRESHOLD	1
@@ -28,6 +36,7 @@
 #define ENEMY_EGG_TRESHOLD			200
 #define ENEMY_EGG_HATCH_TRESHOLD	50
 #define ENEMY_KNIGHT_TRESHOLD		100
+#define ENEMY_INVISIBLE_TRESHOLD	16
 
 #define ENEMY_MAX_BOUNCES			4
 #define ENEMY_TIME_WINDOW			200
@@ -57,7 +66,7 @@ struct enemy
 	unsigned int speed_counter;
 	unsigned int gravity_counter;
 	unsigned int rise_counter;
-	unsigned int spawn_counter;
+	unsigned int invisible_counter;
 	unsigned int window_counter;
 	unsigned int number_counter;
 	unsigned int state_counter;
@@ -83,11 +92,15 @@ void deinit_enemy(
 
 void move_enemies(void);
 
-void retreat_enemy(
+void hit_enemy_equal(
 	struct enemy *enemy
 	);
 
-void hit_enemy(
+unsigned int hit_enemy_over(
+	struct enemy *enemy
+	);
+
+unsigned int collect_enemy(
 	struct enemy *enemy
 	);
 

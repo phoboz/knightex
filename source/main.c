@@ -60,14 +60,14 @@ int main(void)
 //disable_platform(2);
 //init_enemy(&enemies[0], -20, 16, DIR_RIGHT, ENEMY_STATE_EGG, &enemy_races[0]);
 	// 4 bouncers
-	init_enemy(&enemies[0], -32, -48, DIR_RIGHT, 0, &enemy_races[0]);
-	init_enemy(&enemies[1], -32, 48, DIR_LEFT, 0, &enemy_races[0]);
-	init_enemy(&enemies[2], 32, 48, DIR_RIGHT, 0, &enemy_races[0]);
-	init_enemy(&enemies[3], 32, -48, DIR_LEFT, 0, &enemy_races[0]);
+	init_enemy(&enemies[0], -32, -48, DIR_RIGHT, ENEMY_STATE_SPAWN, &enemy_races[0]);
+	init_enemy(&enemies[1], -32, 48, DIR_LEFT, ENEMY_STATE_SPAWN, &enemy_races[0]);
+	init_enemy(&enemies[2], 32, 48, DIR_RIGHT, ENEMY_STATE_SPAWN, &enemy_races[0]);
+	init_enemy(&enemies[3], 32, -48, DIR_LEFT, ENEMY_STATE_SPAWN, &enemy_races[0]);
 
 	// 2 pterys
-	init_enemy(&enemies[4], 48, -48, DIR_RIGHT, 0, &enemy_races[1]);
-	//init_enemy(&enemies[5], 48, 48, DIR_LEFT, 0, &enemy_races[1]);
+	init_enemy(&enemies[4], 48, -48, DIR_RIGHT, ENEMY_STATE_SPAWN, &enemy_races[1]);
+	//init_enemy(&enemies[5], 48, 48, DIR_LEFT, ENEMY_STATE_SPAWN, &enemy_races[1]);
 
 	while(1)
 	{
