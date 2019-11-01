@@ -481,9 +481,9 @@ void draw_player(
 		}
 		else if (player->state == PLAYER_STATE_RISE)
 		{
+			unsigned int base_frame = 0;
 			signed int y = player->ch.obj.y;
 			signed int x = player->ch.obj.x;
-			
 			
 			dp_VIA_t1_cnt_lo = OBJECT_MOVE_SCALE;
             	dp_VIA_port_a = y;			// y pos to dac
@@ -497,6 +497,30 @@ void draw_player(
             	while ((dp_VIA_int_flags & 0x40) == 0); // wait till timer finishes
 
 			draw_vlp_1(player->ch.anim->shapes[player->ch.base_frame + player->ch.frame]);
+
+			if (player->ch.dir == DIR_LEFT)
+			{
+				base_frame = KNIGHT_RISE_LEFT_START;
+			}
+			else if (player->ch.dir == DIR_RIGHT)
+			{
+				base_frame = KNIGHT_RISE_RIGHT_START;
+			}
+
+			// ZERO
+			dp_VIA_cntl=0xcc;
+
+			dp_VIA_t1_cnt_lo = OBJECT_MOVE_SCALE;
+         		dp_VIA_port_a = y;			// y pos to dac
+         		dp_VIA_cntl = 0xce;	// disable zero, disable all blank
+         		dp_VIA_port_b = 0;			// mux enable, dac to -> integrator y (and x)
+         		dp_VIA_shift_reg = 0;		// all output is BLANK
+         		dp_VIA_port_b++;			// mux disable, dac only to x
+         		dp_VIA_port_a = x;			// dac -> x
+         		dp_VIA_t1_cnt_hi=0;		// start timer
+			dp_VIA_t1_cnt_lo = KNIGHT_DRAW_SCALE;
+         		while ((dp_VIA_int_flags & 0x40) == 0); // wait till timer finishes
+			draw_vlp_2(knight[base_frame + player->ch.frame]);
 		}
 	}
 }

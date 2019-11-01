@@ -16,9 +16,9 @@
 #define OSTRICH_BRAKE_RIGHT			13
 
 #define OSTRICH_RISE_LEFT_START		14
-#define OSTRICH_RISE_LEFT_END		22
-#define OSTRICH_RISE_RIGHT_START	23
-#define OSTRICH_RISE_RIGHT_END		31
+#define OSTRICH_RISE_LEFT_END		21
+#define OSTRICH_RISE_RIGHT_START	22
+#define OSTRICH_RISE_RIGHT_END		29
 
 extern const signed char* const ostrich[];
 

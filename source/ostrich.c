@@ -275,15 +275,6 @@ const signed char ostrich_13[]=
 	(signed char) -1, -1*BLOW_UP, +2*BLOW_UP, // draw, y, x
 	(signed char) +2 // endmarker 
 };
-const signed char ostich_rise_left_0[]=
-{	(signed char) +0, -7*BLOW_UP, -6*BLOW_UP, // sync and move to y, x
-	(signed char) +0, -7*BLOW_UP, +0*BLOW_UP, // additional sync move to y, x
-	(signed char) +0, -4*BLOW_UP, +0*BLOW_UP, // additional sync move to y, x
-	(signed char) -1, +4*BLOW_UP, -1*BLOW_UP, // draw, y, x
-	(signed char) -1, -2*BLOW_UP, -7*BLOW_UP, // draw, y, x
-	(signed char) -1, -2*BLOW_UP, +5*BLOW_UP, // draw, y, x
-	(signed char) +2 // endmarker 
-};
 const signed char ostich_rise_left_1[]=
 {	(signed char) +0, -8*BLOW_UP, -5*BLOW_UP, // sync and move to y, x
 	(signed char) +0, -8*BLOW_UP, +0*BLOW_UP, // additional sync move to y, x
@@ -402,15 +393,6 @@ const signed char ostich_rise_left_8[]=
 	(signed char) -1, -2*BLOW_UP, +10*BLOW_UP, // draw, y, x
 	(signed char) -1, +9*BLOW_UP, +10*BLOW_UP, // draw, y, x
 	(signed char) -1, +3*BLOW_UP, -5*BLOW_UP, // draw, y, x
-	(signed char) +2 // endmarker 
-};
-const signed char ostich_rise_right_0[]=
-{	(signed char) +0, -7*BLOW_UP, +6*BLOW_UP, // sync and move to y, x
-	(signed char) +0, -7*BLOW_UP, +0*BLOW_UP, // additional sync move to y, x
-	(signed char) +0, -4*BLOW_UP, +0*BLOW_UP, // additional sync move to y, x
-	(signed char) -1, +4*BLOW_UP, +1*BLOW_UP, // draw, y, x
-	(signed char) -1, -2*BLOW_UP, +7*BLOW_UP, // draw, y, x
-	(signed char) -1, -2*BLOW_UP, -5*BLOW_UP, // draw, y, x
 	(signed char) +2 // endmarker 
 };
 const signed char ostich_rise_right_1[]=
@@ -548,7 +530,6 @@ const signed char* const ostrich[]=
 	 ostrich_11,
 	 ostrich_12,
 	 ostrich_13,
-	 ostich_rise_left_0,
 	 ostich_rise_left_1,
 	 ostich_rise_left_2,
 	 ostich_rise_left_3,
@@ -557,7 +538,6 @@ const signed char* const ostrich[]=
 	 ostich_rise_left_6,
 	 ostich_rise_left_7,
 	 ostich_rise_left_8,
-	 ostich_rise_right_0,
 	 ostich_rise_right_1,
 	 ostich_rise_right_2,
 	 ostich_rise_right_3,
