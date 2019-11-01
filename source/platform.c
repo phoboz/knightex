@@ -204,9 +204,9 @@ static signed int platform_indices[MAX_PLATFORMS] =
 static struct platform_pad platform_pads[MAX_PLATFORM_PADS] =
 {
 	/*	y,	x,		dir			*/
-	{	57,	-4,		DIR_RIGHT		},
+	{	57,	-7,		DIR_RIGHT		},
 	{	5,	-100,	DIR_RIGHT		},
-	{	9,	78,		DIR_LEFT		},
+	{	9,	76,		DIR_LEFT		},
 	{	-75,	-9,		DIR_RIGHT		}
 };
 
