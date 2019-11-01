@@ -129,7 +129,15 @@ unsigned int init_enemy_at_pad(
 	pad = get_platform_pad(pad_index);
 	if (pad)
 	{
-		init_enemy(enemy, pad->y, pad->x, pad->dir, ENEMY_STATE_SPAWN, race);
+		init_enemy(enemy, pad->y, pad->x, pad->dir, ENEMY_STATE_RISE, race);
+		if (pad->dir == DIR_LEFT)
+		{
+			enemy->ch.base_frame = enemy->ch.anim->frame_rise_left;
+		}
+		else if (pad->dir == DIR_RIGHT)
+		{
+			enemy->ch.base_frame = enemy->ch.anim->frame_rise_right;
+		}
 		result = 1;
 	}
 	else
@@ -594,23 +602,25 @@ void move_enemies(void)
 				enemy->state = ENEMY_STATE_REMOVE;
 			}
 		}
-		else if (enemy->state == ENEMY_STATE_SPAWN)
+		else if (enemy->state == ENEMY_STATE_RISE)
 		{
-			if (++enemy->ch.counter >= ENEMY_SPAWN_ANIM_TRESHOLD)
+			if (++enemy->ch.counter == enemy->ch.anim->treshold)
 			{
 				enemy->ch.counter = 0;
-				if (++enemy->ch.frame >= ENEMY_SPAWN_ANIM_FRAMES)
+				if (++enemy->ch.frame == enemy->ch.anim->max_rise_frames)
 				{
+					if (enemy->ch.dir == DIR_LEFT)
+					{
+						enemy->ch.base_frame = enemy->ch.anim->frame_walk_left;
+					}
+					else if (enemy->ch.dir == DIR_RIGHT)
+					{
+						enemy->ch.base_frame = enemy->ch.anim->frame_walk_right;
+					}
 					enemy->ch.frame = 0;
+					enemy->state_counter = 0;
+					enemy->state = PLAYER_STATE_WALK;
 				}
-			}
-
-			if (++enemy->state_counter >= ENEMY_SPAWN_TRESHOLD)
-			{
-				enemy->ch.counter = 0;
-				enemy->ch.frame = 0;
-				enemy->state = ENEMY_STATE_MOVE;
-				enemy->state_counter = 0;
 			}
 		}
 		else if (enemy->state == ENEMY_STATE_STOP)
@@ -923,15 +933,26 @@ void draw_enemies(void)
 				draw_vlp_1(enemy->ch_0.anim->shapes[enemy->ch_0.base_frame + enemy->ch_0.frame]);
 			}
 		}
-		else if (enemy->state == ENEMY_STATE_SPAWN)
+		else if (enemy->state == ENEMY_STATE_RISE)
 		{
-			draw_synced_list_c(
-				spiral[enemy->ch.frame],
-				enemy->ch.obj.y,
-				enemy->ch.obj.x,
-				OBJECT_MOVE_SCALE,
-				0x01 + (enemy->state_counter >> 2)
-				);
+			// ZERO
+			dp_VIA_cntl=0xcc;
+
+			signed int y = enemy->ch.obj.y;
+			signed int x = enemy->ch.obj.x;			
+			
+			dp_VIA_t1_cnt_lo = OBJECT_MOVE_SCALE;
+            	dp_VIA_port_a = y;			// y pos to dac
+            	dp_VIA_cntl = 0xce;	// disable zero, disable all blank
+            	dp_VIA_port_b = 0;			// mux enable, dac to -> integrator y (and x)
+            	dp_VIA_shift_reg = 0;		// all output is BLANK
+            	dp_VIA_port_b++;			// mux disable, dac only to x
+            	dp_VIA_port_a = x;			// dac -> x
+            	dp_VIA_t1_cnt_hi=0;		// start timer
+			dp_VIA_t1_cnt_lo = ENEMY_DRAW_SCALE;
+            	while ((dp_VIA_int_flags & 0x40) == 0); // wait till timer finishes
+
+			draw_vlp_1(enemy->ch.anim->shapes[enemy->ch.base_frame + enemy->ch.frame]);
 		}
 
 		enemy = (struct enemy *) enemy->ch.obj.next;

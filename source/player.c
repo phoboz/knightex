@@ -52,11 +52,11 @@ unsigned int init_player(
 		player->ch.dir = pad->dir;
 		if (pad->dir == DIR_LEFT)
 		{
-			player->ch.base_frame = player_anim.frame_rise_left;
+			player->ch.base_frame = player->ch.anim->frame_rise_left;
 		}
 		else if (pad->dir == DIR_RIGHT)
 		{
-			player->ch.base_frame = player_anim.frame_rise_right;
+			player->ch.base_frame = player->ch.anim->frame_rise_right;
 		}
 		status = 1;
 	}

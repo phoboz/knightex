@@ -64,7 +64,7 @@ int main(void)
 	init_enemy_at_pad(&enemies[2], 2, &enemy_races[0]);
 
 	// 1 ptery
-	init_enemy(&enemies[3], 48, -48, DIR_RIGHT, ENEMY_STATE_SPAWN, &enemy_races[1]);
+	init_enemy(&enemies[3], 48, -48, DIR_RIGHT, ENEMY_STATE_STOP, &enemy_races[1]);
 
 	while(1)
 	{
