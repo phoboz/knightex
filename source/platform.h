@@ -5,6 +5,7 @@
 #define PLATFORM_1_4
 
 #define MAX_PLATFORMS		7
+#define MAX_PLATFORM_PADS	4
 
 #define PLATFORM_HEIGHT	9
 #define PLATFORM_WIDTH0	24
@@ -22,6 +23,13 @@
 #define PLATFORM_GROUND_Y		-80
 
 struct object;
+
+struct platform_pad
+{
+	signed int y;
+	signed int x;
+	unsigned int dir;
+};
 
 extern signed int platform_ground_length;
 
@@ -45,6 +53,10 @@ unsigned int hit_platform(
 	struct object *obj,
 	signed int *dy,
 	signed int *dx
+	);
+
+struct platform_pad* get_platform_pad(
+	unsigned int index
 	);
 
 #endif

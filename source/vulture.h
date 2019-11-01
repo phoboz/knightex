@@ -15,6 +15,11 @@
 #define VULTURE_WALK_RIGHT_END		12
 #define VULTURE_BRAKE_RIGHT			13
 
+#define VULTURE_RISE_LEFT_START		14
+#define VULTURE_RISE_LEFT_END		21
+#define VULTURE_RISE_RIGHT_START	22
+#define VUKTURE_RISE_RIGHT_END		29
+
 extern const signed char* const vulture[];
 
 #endif

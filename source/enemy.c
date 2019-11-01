@@ -32,6 +32,9 @@ static const struct character_anim enemy_anims[] =
 		VULTURE_WALK_RIGHT_START,
 		VULTURE_BRAKE_LEFT,
 		VULTURE_BRAKE_RIGHT,
+		VULTURE_RISE_LEFT_END - VULTURE_RISE_LEFT_START + 1, // max_frames
+		VULTURE_RISE_LEFT_START,
+		VULTURE_RISE_RIGHT_START,
 		vulture					// vectorlists
 	},
 
@@ -47,6 +50,9 @@ static const struct character_anim enemy_anims[] =
 		PTERY_RIGHT,
 		PTERY_DIVE_LEFT,
 		PTERY_DIVE_RIGHT,
+		0,						// max_frames
+		0,
+		0,
 		ptery
 	}
 };
@@ -111,6 +117,29 @@ void init_enemy(
 	set_dir_enemy(enemy, dir);
 }
 
+unsigned int init_enemy_at_pad(
+	struct enemy *enemy,
+	unsigned int pad_index,
+	const struct enemy_race *race
+	)
+{
+	unsigned int result;
+	struct platform_pad *pad;
+
+	pad = get_platform_pad(pad_index);
+	if (pad)
+	{
+		init_enemy(enemy, pad->y, pad->x, pad->dir, ENEMY_STATE_SPAWN, race);
+		result = 1;
+	}
+	else
+	{
+		result = 0;
+	}
+
+	return result;
+}
+	
 void deinit_enemy(
 	struct enemy *enemy
 	)
@@ -610,34 +639,64 @@ void move_enemies(void)
 		}
 		else if (enemy->state == ENEMY_STATE_REMOVE)
 		{
-			// Do not remove for now
-			//rem_enemy = enemy;
+			rem_enemy = enemy;
 		}
 		enemy = (struct enemy *) enemy->ch.obj.next;
 
 		if (rem_enemy != 0)
 		{
 			rem_enemy->state_counter = 0;
-			enemy->state = ENEMY_STATE_REMOVED;
+			rem_enemy->state = ENEMY_STATE_REMOVED;
 			deinit_enemy(rem_enemy);
 			rem_enemy = 0;
 		}
 	}
 }
 
-void hit_enemy_equal(
-	struct enemy *enemy
+unsigned int hit_enemy_equal(
+	struct enemy *enemy,
+	unsigned int dir,
+	signed int dx
 	)
 {
+	unsigned int result;
+
 	if (enemy->race->type == ENEMY_TYPE_PTERY)
 	{
-		enemy->state_counter = 0;
-		enemy->state = ENEMY_STATE_REMOVE;
+		if (dir != enemy->ch.dir)
+		{
+			enemy->state_counter = 0;
+			enemy->state = ENEMY_STATE_REMOVE;
+			result = 0;
+		}
+		else
+		{
+			result = 1;
+		}
 	}
 	else
 	{
-		enemy->ch.dx = -enemy->ch.dx;
+		if (dir != enemy->ch.dir)
+		{
+			enemy->ch.dx = -enemy->ch.dx;
+			result = 0;
+		}
+		else
+		{
+			if (abs(dx) > abs(enemy->ch.dx))
+			{
+				enemy->state_counter = 0;
+				enemy->state = ENEMY_STATE_REMOVE;
+				result = 0;
+			}
+			else
+			{
+				result = 1;
+			}
+		}
 	}
+
+	return result;
 }
 
 unsigned int hit_enemy_over(

@@ -86,14 +86,22 @@ void init_enemy(
 	const struct enemy_race *race
 	);
 
+unsigned int init_enemy_at_pad(
+	struct enemy *enemy,
+	unsigned int pad_index,
+	const struct enemy_race *race
+	);
+
 void deinit_enemy(
 	struct enemy *enemy
 	);
 
 void move_enemies(void);
 
-void hit_enemy_equal(
-	struct enemy *enemy
+unsigned int hit_enemy_equal(
+	struct enemy *enemy,
+	unsigned int dir,
+	signed int dx
 	);
 
 unsigned int hit_enemy_over(

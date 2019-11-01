@@ -20,6 +20,9 @@ struct character_anim
 	unsigned int frame_walk_right;
 	unsigned int frame_brake_left;
 	unsigned int frame_brake_right;
+	unsigned int max_rise_frames;
+	unsigned int frame_rise_left;
+	unsigned int frame_rise_right;
 	const signed char * const *shapes;
 };
 

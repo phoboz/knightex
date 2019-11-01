@@ -26,32 +26,46 @@ static const struct character_anim player_anim =
 	OSTRICH_WALK_RIGHT_START,
 	OSTRICH_BRAKE_LEFT,
 	OSTRICH_BRAKE_RIGHT,
+	OSTRICH_RISE_LEFT_END - OSTRICH_RISE_LEFT_START + 1,
+	OSTRICH_RISE_LEFT_START,
+	OSTRICH_RISE_RIGHT_START,
 	ostrich
 };
 
-void init_player(
-	struct player *player,
-	signed int y,
-	signed int x,
-	unsigned int dir
+unsigned int init_player(
+	struct player *player
 	)
 {
-	init_character(&player->ch, y, x, PLAYER_SPEED, &player_anim, 0);
+	unsigned int status;
+	struct platform_pad *pad;
 
-	player->state			= PLAYER_STATE_NORMAL;
-	player->state_counter	= 0;
-	player->speed_counter	= 0;
+	pad = get_platform_pad(PLAYER_INIT_PAD_INDEX);
+	if (pad)
+	{
+		init_character(&player->ch, pad->y, pad->x, PLAYER_SPEED, &player_anim, 0);
 
-	player->control_dir = dir;
-	player->ch.dir = dir;
-	if (dir == DIR_LEFT)
-	{
-		player->ch.base_frame = player_anim.frame_left;
+		player->state			= PLAYER_STATE_RISE;
+		player->state_counter	= 0;
+		player->speed_counter	= 0;
+
+		player->control_dir = pad->dir;
+		player->ch.dir = pad->dir;
+		if (pad->dir == DIR_LEFT)
+		{
+			player->ch.base_frame = player_anim.frame_rise_left;
+		}
+		else if (pad->dir == DIR_RIGHT)
+		{
+			player->ch.base_frame = player_anim.frame_rise_right;
+		}
+		status = 1;
 	}
-	else if (dir == DIR_RIGHT)
+	else
 	{
-		player->ch.base_frame = player_anim.frame_right;
+		status = 0;
 	}
+
+	return status;
 }
 
 unsigned int move_player(
@@ -61,54 +75,57 @@ unsigned int move_player(
 	unsigned int brake = 0;
 	unsigned int status = 0;
 
-	if (joystick_1_left())
+	if (player->state < PLAYER_STATE_INACTIVE)
 	{
-		if (player->control_dir == DIR_LEFT)
+		if (joystick_1_left())
 		{
-			if (player->ch.dx > 0)
+			if (player->control_dir == DIR_LEFT)
 			{
-				brake = 1;
-			}
-
-			if (++player->speed_counter >= PLAYER_SPEED_TRESHOLD)
-			{
-				player->speed_counter = 0;
-				if (player->ch.dx > -PLAYER_SPEED)
+				if (player->ch.dx > 0)
 				{
-					player->ch.dx--;
+					brake = 1;
+				}
+
+				if (++player->speed_counter >= PLAYER_SPEED_TRESHOLD)
+				{
+					player->speed_counter = 0;
+					if (player->ch.dx > -PLAYER_SPEED)
+					{
+						player->ch.dx--;
+					}
 				}
 			}
-		}
-		else
-		{
-			player->control_dir = DIR_LEFT;
-		}
-	}
-	else if (joystick_1_right())
-	{
-		if (player->control_dir == DIR_RIGHT)
-		{
-			if (player->ch.dx < 0)
+			else
 			{
-				brake = 1;
+				player->control_dir = DIR_LEFT;
 			}
-
-			if (++player->speed_counter >= PLAYER_SPEED_TRESHOLD)
+		}
+		else if (joystick_1_right())
 			{
-				player->speed_counter = 0;
-				if (player->ch.dx < PLAYER_SPEED)
+			if (player->control_dir == DIR_RIGHT)
+			{
+				if (player->ch.dx < 0)
 				{
-					player->ch.dx++;
+					brake = 1;
+				}
+
+				if (++player->speed_counter >= PLAYER_SPEED_TRESHOLD)
+				{
+					player->speed_counter = 0;
+					if (player->ch.dx < PLAYER_SPEED)
+					{
+						player->ch.dx++;
+					}
 				}
 			}
+			else
+			{
+				player->control_dir = DIR_RIGHT;
+			}
 		}
-		else
-		{
-			player->control_dir = DIR_RIGHT;
-		}
-	}
 
-	player->ch.treshold = PLAYER_TRESHOLD - (unsigned int) abs(player->ch.dx);
+		player->ch.treshold = PLAYER_TRESHOLD - (unsigned int) abs(player->ch.dx);
+	}
 
 	switch (player->state)
 	{
@@ -150,6 +167,7 @@ unsigned int move_player(
 				status |= PLAYER_STATUS_FLAP;
 				if (!hit_platform(&player->ch.obj, &player->ch.dy, &player->ch.dx))
 				{
+					player->state_counter = 0;
 					player->state = PLAYER_STATE_FLAP;
 				}
 			}
@@ -175,6 +193,7 @@ unsigned int move_player(
 				{
 					player->ch.base_frame = player->ch.anim->frame_walk_right;
 				}
+				player->state_counter = 0;
 				player->state = PLAYER_STATE_WALK;
 				status |= PLAYER_STATUS_WALK;
 			}
@@ -271,6 +290,7 @@ unsigned int move_player(
 						player->ch.base_frame = player->ch.anim->frame_brake_right;
 						player->ch.frame = 0;
 					}
+					player->state_counter = 0;
 					player->state = PLAYER_STATE_BRAKE;
 					status |= PLAYER_STATUS_BRAKE;
 				}
@@ -295,6 +315,7 @@ unsigned int move_player(
 					player->ch.base_frame = player->ch.anim->frame_right;
 				}
 				player->ch.frame = 1;
+				player->state_counter = 0;
 				player->state = PLAYER_STATE_FLAP;
 				status |= PLAYER_STATUS_FLAP;
 			}
@@ -309,6 +330,7 @@ unsigned int move_player(
 					player->ch.base_frame = player->ch.anim->frame_right;
 				}
 				player->ch.frame = 0;
+				player->state_counter = 0;
 				player->state = PLAYER_STATE_NORMAL;
 			}
 			break;
@@ -324,6 +346,7 @@ unsigned int move_player(
 				{
 					player->ch.base_frame = player->ch.anim->frame_walk_right;
 				}
+				player->state_counter = 0;
 				player->state = PLAYER_STATE_WALK;
 			}
 			else
@@ -343,6 +366,7 @@ unsigned int move_player(
 					player->ch.base_frame = player->ch.anim->frame_right;
 				}
 				player->ch.frame = 1;
+				player->state_counter = 0;
 				player->state = PLAYER_STATE_FLAP;
 				status |= PLAYER_STATUS_FLAP;
 			}
@@ -357,7 +381,29 @@ unsigned int move_player(
 					player->ch.base_frame = player->ch.anim->frame_right;
 				}
 				player->ch.frame = 0;
+				player->state_counter = 0;
 				player->state = PLAYER_STATE_NORMAL;
+			}
+			break;
+
+		case PLAYER_STATE_RISE:
+			if (++player->ch.counter == player->ch.anim->treshold)
+			{
+				player->ch.counter = 0;
+				if (++player->ch.frame == player->ch.anim->max_rise_frames)
+				{
+					if (player->ch.dir == DIR_LEFT)
+					{
+						player->ch.base_frame = player->ch.anim->frame_walk_left;
+					}
+					else if (player->ch.dir == DIR_RIGHT)
+					{
+						player->ch.base_frame = player->ch.anim->frame_walk_right;
+					}
+					player->ch.frame = 0;
+					player->state_counter = 0;
+					player->state = PLAYER_STATE_WALK;
+				}
 			}
 			break;
 
@@ -368,6 +414,7 @@ unsigned int move_player(
 	hit_platform(&player->ch.obj, &player->ch.dy, &player->ch.dx);
 	if (move_character(&player->ch) == 2)
 	{
+		player->state_counter = 0;
 		player->state = PLAYER_STATE_DEAD;
 	}
 
@@ -381,7 +428,7 @@ void draw_player(
 {
 	if (player->ch.obj.active)
 	{
-		if (player->state != PLAYER_STATE_DEAD)
+		if (player->state >= PLAYER_STATE_NORMAL && player->state <= PLAYER_STATE_BRAKE)
 		{			
 			signed int y = player->ch.obj.y;
 			signed int x = player->ch.obj.x;
@@ -432,12 +479,41 @@ void draw_player(
 				);
 */			
 		}
+		else if (player->state == PLAYER_STATE_RISE)
+		{
+			signed int y = player->ch.obj.y;
+			signed int x = player->ch.obj.x;
+			
+			
+			dp_VIA_t1_cnt_lo = OBJECT_MOVE_SCALE;
+            	dp_VIA_port_a = y;			// y pos to dac
+            	dp_VIA_cntl = 0xce;	// disable zero, disable all blank
+            	dp_VIA_port_b = 0;			// mux enable, dac to -> integrator y (and x)
+            	dp_VIA_shift_reg = 0;		// all output is BLANK
+            	dp_VIA_port_b++;			// mux disable, dac only to x
+            	dp_VIA_port_a = x;			// dac -> x
+            	dp_VIA_t1_cnt_hi=0;		// start timer
+			dp_VIA_t1_cnt_lo = PLAYER_DRAW_SCALE;
+            	while ((dp_VIA_int_flags & 0x40) == 0); // wait till timer finishes
+
+			draw_vlp_1(player->ch.anim->shapes[player->ch.base_frame + player->ch.frame]);
+		}
 	}
 }
 
-
-
-
+void bounce_player(
+	struct player *player
+	)
+{
+	if (player->ch.dir == DIR_LEFT)
+	{
+		player->ch.dx = 1;
+	}
+	else if (player->ch.dir == DIR_RIGHT)
+	{
+		player->ch.dx = -1;
+	}
+}
 
 struct enemy* interaction_enemies_player(
 	struct player *player
@@ -459,18 +535,30 @@ struct enemy* interaction_enemies_player(
 					{
 						if (player->ch.obj.y == enemy->ch.obj.y)
 						{
-							player->ch.dx = -player->ch.dx;
-							hit_enemy_equal(enemy);
+							if (hit_enemy_equal(enemy, player->ch.dir, player->ch.dx))
+							{
+								player->state_counter = 0;
+								player->state = PLAYER_STATE_DEAD;
+							}
+							else
+							{
+								if (player->ch.dir != enemy->ch.dir)
+								{
+									bounce_player(player);
+								}
+							}
 						}
 						else if (player->ch.obj.y > enemy->ch.obj.y)
 						{
 							if (hit_enemy_over(enemy))
 							{
+								player->state_counter = 0;
 								player->state = PLAYER_STATE_DEAD;
 							}
 						}
 						else
 						{
+							player->state_counter = 0;
 							player->state = PLAYER_STATE_DEAD;
 						}
 					}

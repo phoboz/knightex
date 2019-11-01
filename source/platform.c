@@ -201,6 +201,15 @@ static signed int platform_indices[MAX_PLATFORMS] =
 	6
 };
 
+static struct platform_pad platform_pads[MAX_PLATFORM_PADS] =
+{
+	/*	y,	x,		dir			*/
+	{	57,	-4,		DIR_RIGHT		},
+	{	5,	-100,	DIR_RIGHT		},
+	{	9,	78,		DIR_LEFT		},
+	{	-75,	-9,		DIR_RIGHT		}
+};
+
 signed int platform_ground_length = 127;//96;
 
 void enable_platform(
@@ -366,6 +375,24 @@ unsigned int hit_platform(
 	}
 
 	return result;
+}
+
+struct platform_pad* get_platform_pad(
+	unsigned int index
+	)
+{
+	struct platform_pad *pad;
+
+	if (index < MAX_PLATFORM_PADS)
+	{
+		pad = &platform_pads[index];
+	}
+	else
+	{
+		pad = 0;
+	}
+
+	return pad;
 }
 
 // ***************************************************************************

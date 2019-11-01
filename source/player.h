@@ -15,12 +15,15 @@
 #define PLAYER_FLAP_TRESHOLD	8
 #define PLAYER_GRAVITY_TRESHOLD	8
 
-#define PLAYER_STATE_NORMAL		0
-#define PLAYER_STATE_FLAP		1
-#define PLAYER_STATE_WALK		2
-#define PLAYER_STATE_BRAKE		3
+#define PLAYER_STATE_NORMAL		1
+#define PLAYER_STATE_FLAP		2
+#define PLAYER_STATE_WALK		3
+#define PLAYER_STATE_BRAKE		4
 #define PLAYER_STATE_INACTIVE	10
-#define PLAYER_STATE_DEAD		11
+#define PLAYER_STATE_RISE		11
+#define PLAYER_STATE_DEAD		20
+
+#define PLAYER_INIT_PAD_INDEX	3
 
 #define PLAYER_STATUS_FLAP		0x01
 #define PLAYER_STATUS_WALK		0x02
@@ -36,11 +39,8 @@ struct player
 	unsigned int gravity_counter;
 };
 
-void init_player(
-	struct player *player,
-	signed int y,
-	signed int x,
-	unsigned int dir
+unsigned int init_player(
+	struct player *player
 	);
 
 unsigned int move_player(
@@ -48,6 +48,10 @@ unsigned int move_player(
 	);
 
 void draw_player(
+	struct player *player
+	);
+
+void bounce_player(
 	struct player *player
 	);
 
