@@ -102,6 +102,8 @@ void init_enemy(
 	init_character(&enemy->ch, y, x, race->speed, race->anim, &enemy_list);
 	init_character_0(&enemy->ch_0, y, x, 1, race->anim);
 
+	enemy->ch_0.obj.active = 0;
+
 	enemy->race = race;
 
 	enemy->speed_counter		= 0;

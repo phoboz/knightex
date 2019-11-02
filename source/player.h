@@ -3,13 +3,15 @@
 
 #include "character.h"
 
-#define PLAYER_HEIGHT			10
-#define PLAYER_WIDTH			4
-#define PLAYER_DRAW_SCALE		1
-#define PLAYER_SPEED			4
-#define PLAYER_TRESHOLD		4
-#define PLAYER_GRAVITY			6
-#define PLAYER_LIFT			1
+#define PLAYER_HEIGHT				10
+#define PLAYER_WIDTH				4
+#define PLAYER_DRAW_SCALE			1
+#define PLAYER_SPEED				4
+#define PLAYER_TRESHOLD			4
+#define PLAYER_GRAVITY				6
+#define PLAYER_LIFT				1
+#define PLAYER_HIT_BIRD_FALL_SPEED	1
+#define PLAYER_KNIGHT_FALL_SPEED	2
 
 #define PLAYER_SPEED_TRESHOLD	10
 #define PLAYER_FLAP_TRESHOLD	8
@@ -21,7 +23,8 @@
 #define PLAYER_STATE_BRAKE		4
 #define PLAYER_STATE_INACTIVE	10
 #define PLAYER_STATE_RISE		11
-#define PLAYER_STATE_DEAD		20
+#define PLAYER_STATE_HIT		20
+#define PLAYER_STATE_DEAD		30
 
 #define PLAYER_INIT_PAD_INDEX	3
 
@@ -32,6 +35,7 @@
 struct player
 {
 	struct character ch;
+	struct character ch_0;
 	unsigned int control_dir;
 	unsigned int state;
 	unsigned int state_counter;

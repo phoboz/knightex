@@ -75,6 +75,10 @@ unsigned int animate_character_limit(
 	unsigned int max_frames
 	);
 
+unsigned int check_move_character(
+	struct character *ch
+	);
+
 unsigned int move_character(
 	struct character *ch
 	);

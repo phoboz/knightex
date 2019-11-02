@@ -40,6 +40,18 @@ const signed char knight_2[]=
 	(signed char) -1, +11*BLOW_UP, +5*BLOW_UP, // draw, y, x
 	(signed char) +2 // endmarker 
 };
+const signed char knight_3[]=
+{	(signed char) +0, +5*BLOW_UP, -11*BLOW_UP, // sync and move to y, x
+	(signed char) -1, -2*BLOW_UP, +8*BLOW_UP, // draw, y, x
+	(signed char) -1, -1*BLOW_UP, -4*BLOW_UP, // draw, y, x
+	(signed char) -1, -2*BLOW_UP, +4*BLOW_UP, // draw, y, x
+	(signed char) -1, +1*BLOW_UP, +3*BLOW_UP, // draw, y, x
+	(signed char) -1, -1*BLOW_UP, +7*BLOW_UP, // draw, y, x
+	(signed char) -1, +4*BLOW_UP, +0*BLOW_UP, // draw, y, x
+	(signed char) -1, -1*BLOW_UP, -7*BLOW_UP, // draw, y, x
+	(signed char) -1, +2*BLOW_UP, -11*BLOW_UP, // draw, y, x
+	(signed char) +2 // endmarker 
+};
 const signed char knight_rise_left_0[]=
 {	(signed char) +0, -8*BLOW_UP, -6*BLOW_UP, // sync and move to y, x
 	(signed char) +0, -8*BLOW_UP, +0*BLOW_UP, // additional sync move to y, x
@@ -190,6 +202,7 @@ const signed char* const knight[]=
 {	 knight_0, // list of all single vectorlists in this
 	 knight_1,
 	 knight_2,
+	 knight_3,
 	 knight_rise_left_0,
 	 knight_rise_left_1,
 	 knight_rise_left_2,

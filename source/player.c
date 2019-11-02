@@ -43,6 +43,9 @@ unsigned int init_player(
 	if (pad)
 	{
 		init_character(&player->ch, pad->y, pad->x, PLAYER_SPEED, &player_anim, 0);
+		init_character_0(&player->ch_0, pad->y, pad->x, 1, &player_anim);
+
+		player->ch_0.obj.active = 0;
 
 		player->state			= PLAYER_STATE_RISE;
 		player->state_counter	= 0;
@@ -407,6 +410,27 @@ unsigned int move_player(
 			}
 			break;
 
+		case PLAYER_STATE_HIT:
+			if (hit_over_platform(&player->ch_0.obj, &player->ch_0.dy, player->ch_0.dx))
+			{
+				player->ch_0.dx = 0;
+				player->ch_0.frame = KNIGHT_DEAD;
+			}
+
+			if (move_character(&player->ch_0) == 2)
+			{
+				player->state_counter = 0;
+				player->state = PLAYER_STATE_DEAD;
+			}
+
+			if (check_move_character(&player->ch))
+			{
+				player->ch_0.obj.active = 0;
+				player->ch.dy = 0;
+				player->ch.dx = 0;
+			}
+			break;
+
 		default:
 			break;
 	}
@@ -432,7 +456,6 @@ void draw_player(
 		{			
 			signed int y = player->ch.obj.y;
 			signed int x = player->ch.obj.x;
-			
 			
 			dp_VIA_t1_cnt_lo = OBJECT_MOVE_SCALE;
             	dp_VIA_port_a = y;			// y pos to dac
@@ -522,6 +545,48 @@ void draw_player(
          		while ((dp_VIA_int_flags & 0x40) == 0); // wait till timer finishes
 			draw_vlp_2(knight[base_frame + player->ch.frame]);
 		}
+		else if (player->state == PLAYER_STATE_HIT)
+		{			
+			signed int y;
+			signed int x;
+
+			if (player->ch_0.obj.active)
+			{
+				y = player->ch.obj.y;
+ 				x = player->ch.obj.x;
+			
+				dp_VIA_t1_cnt_lo = OBJECT_MOVE_SCALE;
+            		dp_VIA_port_a = y;			// y pos to dac
+            		dp_VIA_cntl = 0xce;	// disable zero, disable all blank
+            		dp_VIA_port_b = 0;			// mux enable, dac to -> integrator y (and x)
+            		dp_VIA_shift_reg = 0;		// all output is BLANK
+            		dp_VIA_port_b++;			// mux disable, dac only to x
+            		dp_VIA_port_a = x;			// dac -> x
+            		dp_VIA_t1_cnt_hi=0;		// start timer
+				dp_VIA_t1_cnt_lo = PLAYER_DRAW_SCALE;
+            		while ((dp_VIA_int_flags & 0x40) == 0); // wait till timer finishes
+
+				draw_vlp_1(player->ch.anim->shapes[player->ch.base_frame + player->ch.frame]);
+			}
+
+			y = player->ch_0.obj.y - 4;
+			x = player->ch_0.obj.x;
+
+			// ZERO
+			dp_VIA_cntl=0xcc;
+			
+			dp_VIA_t1_cnt_lo = OBJECT_MOVE_SCALE;
+            	dp_VIA_port_a = y;			// y pos to dac
+            	dp_VIA_cntl = 0xce;	// disable zero, disable all blank
+            	dp_VIA_port_b = 0;			// mux enable, dac to -> integrator y (and x)
+            	dp_VIA_shift_reg = 0;		// all output is BLANK
+            	dp_VIA_port_b++;			// mux disable, dac only to x
+            	dp_VIA_port_a = x;			// dac -> x
+            	dp_VIA_t1_cnt_hi=0;		// start timer
+			dp_VIA_t1_cnt_lo = KNIGHT_DRAW_SCALE;
+            	while ((dp_VIA_int_flags & 0x40) == 0); // wait till timer finishes
+			draw_vlp_2(knight[player->ch_0.frame]);
+		}
 	}
 }
 
@@ -537,6 +602,24 @@ void bounce_player(
 	{
 		player->ch.dx = -1;
 	}
+}
+
+static void hit_player(
+	struct player *player
+	)
+{
+	player->ch_0.obj.active = 1;
+	player->ch_0.obj.y = player->ch.obj.y;
+	player->ch_0.obj.x = player->ch.obj.x;
+	player->ch_0.dy = -PLAYER_KNIGHT_FALL_SPEED;
+	player->ch_0.dx = -player->ch.dx;
+	player->ch_0.frame = player->ch.dir;
+
+	player->ch.dy = -PLAYER_HIT_BIRD_FALL_SPEED;
+	player->ch.dx = player->ch.move_speed;
+
+	player->state_counter = 0;
+	player->state = PLAYER_STATE_HIT;
 }
 
 struct enemy* interaction_enemies_player(
@@ -561,8 +644,7 @@ struct enemy* interaction_enemies_player(
 						{
 							if (hit_enemy_equal(enemy, player->ch.dir, player->ch.dx))
 							{
-								player->state_counter = 0;
-								player->state = PLAYER_STATE_DEAD;
+								hit_player(player);
 							}
 							else
 							{
@@ -576,14 +658,12 @@ struct enemy* interaction_enemies_player(
 						{
 							if (hit_enemy_over(enemy))
 							{
-								player->state_counter = 0;
-								player->state = PLAYER_STATE_DEAD;
+								hit_player(player);
 							}
 						}
 						else
 						{
-							player->state_counter = 0;
-							player->state = PLAYER_STATE_DEAD;
+							hit_player(player);
 						}
 					}
 				}

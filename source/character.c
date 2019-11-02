@@ -128,6 +128,42 @@ unsigned int animate_character_limit(
 	return loop;
 }
 
+unsigned int check_move_character(
+	struct character *ch
+	)
+{
+	unsigned int stopped = 0;
+
+	signed int y = ch->obj.y + ch->dy;
+	signed int x = ch->obj.x + ch->dx;
+
+	if (y <= CHARACTER_MIN_Y)
+	{
+		y = CHARACTER_MIN_Y;
+		stopped = 2;
+	}
+
+	if (y >= CHARACTER_MAX_Y)
+	{
+		y = CHARACTER_MAX_Y;
+		stopped = 1;
+	}
+
+	if (x <= CHARACTER_MIN_X)
+	{
+		x = CHARACTER_MAX_X - 1;
+		stopped = 3;
+	}
+
+	if (x >= CHARACTER_MAX_X)
+	{
+		x = CHARACTER_MIN_X + 1;
+		stopped = 3;
+	}
+
+	return stopped;
+}
+
 unsigned int move_character(
 	struct character *ch
 	)
