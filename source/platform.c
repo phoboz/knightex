@@ -210,7 +210,7 @@ static struct platform_pad platform_pads[MAX_PLATFORM_PADS] =
 	{	-75,	-9,		DIR_RIGHT		}
 };
 
-signed int platform_ground_length = 127;//96;
+signed int platform_ground_length = 96;
 
 void enable_platform(
 	signed int index

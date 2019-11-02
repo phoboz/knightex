@@ -27,6 +27,7 @@
 
 struct player player_1;
 unsigned int player_1_status;
+unsigned int player_1_extra_lives = 2;
 struct enemy enemies[MAX_ENEMIES];
 
 // ---------------------------------------------------------------------------
@@ -74,6 +75,15 @@ int main(void)
 		player_1_status = move_player(&player_1);
 		move_enemies();
 		interaction_enemies_player(&player_1);
+
+		if (player_1.state == PLAYER_STATE_DEAD)
+		{
+			if (player_1_extra_lives)
+			{
+				init_player(&player_1);
+				player_1_extra_lives--;
+			}
+		}
 
 		if (!sfx_status_1)
 		{

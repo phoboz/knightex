@@ -420,14 +420,45 @@ unsigned int move_player(
 			if (move_character(&player->ch_0) == 2)
 			{
 				player->state_counter = 0;
-				player->state = PLAYER_STATE_DEAD;
+				player->state = PLAYER_STATE_DROWNED;
 			}
 
-			if (check_move_character(&player->ch))
+			if (!hit_over_platform(&player->ch.obj, &player->ch.dy, player->ch.dx))
 			{
-				player->ch_0.obj.active = 0;
-				player->ch.dy = 0;
-				player->ch.dx = 0;
+				if (++player->gravity_counter >= PLAYER_GRAVITY_TRESHOLD)
+				{
+					player->gravity_counter = 0;
+					if (player->ch.dy > -PLAYER_GRAVITY)
+					{
+						player->ch.dy--;
+					}
+				}
+			}
+
+			if (player->ch_0.obj.active)
+			{
+				if (check_move_character(&player->ch))
+				{
+					player->ch_0.obj.active = 0;
+					player->ch.dy = 0;
+					player->ch.dx = 0;
+				}
+			}
+			else
+			{
+				if (++player->state_counter == PLAYER_DIE_TRESHOLD)
+				{
+					player->state_counter = 0;
+					player->state = PLAYER_STATE_DEAD;
+				}
+			}
+			break;
+
+		case PLAYER_STATE_DROWNED:
+			if (++player->state_counter == PLAYER_DIE_TRESHOLD)
+			{
+				player->state_counter = 0;
+				player->state = PLAYER_STATE_DEAD;
 			}
 			break;
 
@@ -438,8 +469,11 @@ unsigned int move_player(
 	hit_platform(&player->ch.obj, &player->ch.dy, &player->ch.dx);
 	if (move_character(&player->ch) == 2)
 	{
-		player->state_counter = 0;
-		player->state = PLAYER_STATE_DEAD;
+		if (player->state != PLAYER_STATE_HIT)
+		{
+			player->state_counter = 0;
+			player->state = PLAYER_STATE_DROWNED;
+		}
 	}
 
 	return status;
@@ -615,8 +649,15 @@ static void hit_player(
 	player->ch_0.dx = -player->ch.dx;
 	player->ch_0.frame = player->ch.dir;
 
-	player->ch.dy = -PLAYER_HIT_BIRD_FALL_SPEED;
-	player->ch.dx = player->ch.move_speed;
+	player->ch.dy = 0;
+	if (player->ch.dir == DIR_LEFT)
+	{
+		player->ch.dx = -player->ch.move_speed;
+	}
+	else if (player->ch.dir == DIR_RIGHT)
+	{
+		player->ch.dx = player->ch.move_speed;
+	}
 
 	player->state_counter = 0;
 	player->state = PLAYER_STATE_HIT;

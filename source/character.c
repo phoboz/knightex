@@ -139,25 +139,21 @@ unsigned int check_move_character(
 
 	if (y <= CHARACTER_MIN_Y)
 	{
-		y = CHARACTER_MIN_Y;
 		stopped = 2;
 	}
 
 	if (y >= CHARACTER_MAX_Y)
 	{
-		y = CHARACTER_MAX_Y;
 		stopped = 1;
 	}
 
 	if (x <= CHARACTER_MIN_X)
 	{
-		x = CHARACTER_MAX_X - 1;
 		stopped = 3;
 	}
 
 	if (x >= CHARACTER_MAX_X)
 	{
-		x = CHARACTER_MIN_X + 1;
 		stopped = 3;
 	}
 
@@ -175,7 +171,7 @@ unsigned int move_character(
 
 	if (ch->obj.y <= CHARACTER_MIN_Y)
 	{
-		ch->obj.y = CHARACTER_MIN_Y;
+		// No wrap
 		stopped = 2;
 	}
 
