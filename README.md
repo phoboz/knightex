@@ -1,2 +1,2 @@
-# JousteX
-JousteX, a Game for the Vectrex Game Console with ostriches jousting against each other
+# KnighteX
+KnightX, a Game for the Vectrex Game Console with knights, riding birds, jousting against each other
