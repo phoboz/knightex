@@ -56,10 +56,6 @@ void draw_player(
 	struct player *player
 	);
 
-void bounce_player(
-	struct player *player
-	);
-
 struct enemy* interaction_enemies_player(
 	struct player *player
 	);

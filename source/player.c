@@ -624,22 +624,39 @@ void draw_player(
 	}
 }
 
-void bounce_player(
-	struct player *player
+static void bounce_player(
+	struct player *player,
+	signed int x,
+	signed int speed
 	)
 {
 	if (player->ch.dir == DIR_LEFT)
 	{
-		player->ch.dx = 1;
+		if (x < player->ch.obj.x)
+		{
+			player->ch.dx = speed;
+		}
+		else
+		{
+			player->ch.dx = -speed;
+		}
 	}
 	else if (player->ch.dir == DIR_RIGHT)
 	{
-		player->ch.dx = -1;
+		if (x > player->ch.obj.x)
+		{
+			player->ch.dx = -speed;
+		}
+		else
+		{
+			player->ch.dx = speed;
+		}
 	}
 }
 
 static void hit_player(
-	struct player *player
+	struct player *player,
+	signed int x
 	)
 {
 	player->ch_0.obj.active = 1;
@@ -650,14 +667,7 @@ static void hit_player(
 	player->ch_0.frame = player->ch.dir;
 
 	player->ch.dy = 0;
-	if (player->ch.dir == DIR_LEFT)
-	{
-		player->ch.dx = -player->ch.move_speed;
-	}
-	else if (player->ch.dir == DIR_RIGHT)
-	{
-		player->ch.dx = player->ch.move_speed;
-	}
+	bounce_player(player, x, player->ch.move_speed);
 
 	player->state_counter = 0;
 	player->state = PLAYER_STATE_HIT;
@@ -685,13 +695,13 @@ struct enemy* interaction_enemies_player(
 						{
 							if (hit_enemy_equal(enemy, player->ch.dir, player->ch.dx))
 							{
-								hit_player(player);
+								hit_player(player, enemy->ch.obj.x);
 							}
 							else
 							{
 								if (player->ch.dir != enemy->ch.dir)
 								{
-									bounce_player(player);
+									bounce_player(player, enemy->ch.obj.x, 1);
 								}
 							}
 						}
@@ -699,12 +709,12 @@ struct enemy* interaction_enemies_player(
 						{
 							if (hit_enemy_over(enemy))
 							{
-								hit_player(player);
+								hit_player(player, enemy->ch.obj.x);
 							}
 						}
 						else
 						{
-							hit_player(player);
+							hit_player(player, enemy->ch.obj.x);
 						}
 					}
 				}
