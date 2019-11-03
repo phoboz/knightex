@@ -6,6 +6,7 @@
 
 #define MAX_PLATFORMS		7
 #define MAX_PLATFORM_PADS	4
+#define MAX_EGG_LOCATIONS	12
 
 #define PLATFORM_HEIGHT	9
 #define PLATFORM_WIDTH0	24
@@ -25,6 +26,13 @@
 struct object;
 
 struct platform_pad
+{
+	signed int y;
+	signed int x;
+	unsigned int dir;
+};
+
+struct egg_location
 {
 	signed int y;
 	signed int x;
@@ -56,6 +64,10 @@ unsigned int hit_platform(
 	);
 
 struct platform_pad* get_platform_pad(
+	unsigned int index
+	);
+
+struct egg_location* get_egg_location(
 	unsigned int index
 	);
 

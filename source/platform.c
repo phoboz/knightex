@@ -210,6 +210,23 @@ static struct platform_pad platform_pads[MAX_PLATFORM_PADS] =
 	{	-75,	-9,		DIR_RIGHT		}
 };
 
+static struct egg_location egg_locations[MAX_EGG_LOCATIONS] =
+{
+	/*	y,	x		dir				index */
+	{	69,	-102,	DIR_RIGHT		},	// 1
+	{	57,	-20,		DIR_RIGHT		},	// 2
+	{	69,	100,		DIR_LEFT		},	// 3
+	{	5,	-78,		DIR_RIGHT		},	// 4
+	{	-23,	-9,		DIR_RIGHT		},	// 5
+	{	-23,	28,		DIR_LEFT		},	// 6
+	{	9,	60,		DIR_LEFT		},	// 7
+	{	5,	112,		DIR_LEFT		},	// 8
+	{	-75,	-80,		DIR_RIGHT		},	// 9
+	{	-75,	-52,		DIR_RIGHT		},	// 10
+	{	-75,	52,		DIR_LEFT		},	// 11
+	{	-75,	80,		DIR_LEFT		}	// 12
+};
+
 signed int platform_ground_length = 96;
 
 void enable_platform(
@@ -393,6 +410,24 @@ struct platform_pad* get_platform_pad(
 	}
 
 	return pad;
+}
+
+struct egg_location* get_egg_location(
+	unsigned int index
+	)
+{
+	struct egg_location *loc;
+
+	if (index < MAX_EGG_LOCATIONS)
+	{
+		loc = &egg_locations[index];
+	}
+	else
+	{
+		loc = 0;
+	}
+
+	return loc;
 }
 
 // ***************************************************************************

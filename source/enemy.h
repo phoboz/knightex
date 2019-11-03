@@ -92,6 +92,12 @@ unsigned int init_enemy_at_pad(
 	const struct enemy_race *race
 	);
 
+unsigned int init_egg_at_location(
+	struct enemy *enemy,
+	unsigned int loc_index,
+	const struct enemy_race *race
+	);
+
 void deinit_enemy(
 	struct enemy *enemy
 	);

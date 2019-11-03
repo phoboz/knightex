@@ -40,6 +40,33 @@ struct enemy enemies[MAX_ENEMIES];
 // after each reset, the cartridge title is shown and then main() is called
 // ---------------------------------------------------------------------------
 
+void std_wave(void)
+{
+	// 3 bouncers
+	init_enemy_at_pad(&enemies[0], 0, &enemy_races[0]);
+	init_enemy_at_pad(&enemies[1], 1, &enemy_races[0]);
+	init_enemy_at_pad(&enemies[2], 2, &enemy_races[0]);
+
+	// 1 ptery
+	init_enemy(&enemies[3], 48, -48, DIR_RIGHT, ENEMY_STATE_STOP, &enemy_races[1]);
+}
+
+void egg_wave(void)
+{
+	init_egg_at_location(&enemies[0], 0, &enemy_races[0]);
+	init_egg_at_location(&enemies[1], 1, &enemy_races[0]);
+	init_egg_at_location(&enemies[2], 2, &enemy_races[0]);
+	init_egg_at_location(&enemies[3], 3, &enemy_races[0]);
+	init_egg_at_location(&enemies[4], 4, &enemy_races[0]);
+	init_egg_at_location(&enemies[5], 5, &enemy_races[0]);
+	init_egg_at_location(&enemies[6], 6, &enemy_races[0]);
+	init_egg_at_location(&enemies[7], 7, &enemy_races[0]);
+	init_egg_at_location(&enemies[8], 8, &enemy_races[0]);
+	init_egg_at_location(&enemies[9], 9, &enemy_races[0]);
+	init_egg_at_location(&enemies[10], 10, &enemy_races[0]);
+	init_egg_at_location(&enemies[11], 11, &enemy_races[0]);
+}
+
 int main(void)
 {
 	unsigned int i;
@@ -58,14 +85,7 @@ int main(void)
 
 //disable_platform(0);
 //disable_platform(2);
-
-	// 3 bouncers
-	init_enemy_at_pad(&enemies[0], 0, &enemy_races[0]);
-	init_enemy_at_pad(&enemies[1], 1, &enemy_races[0]);
-	init_enemy_at_pad(&enemies[2], 2, &enemy_races[0]);
-
-	// 1 ptery
-	init_enemy(&enemies[3], 48, -48, DIR_RIGHT, ENEMY_STATE_STOP, &enemy_races[1]);
+	std_wave();
 
 	while(1)
 	{

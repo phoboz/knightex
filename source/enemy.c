@@ -149,6 +149,29 @@ unsigned int init_enemy_at_pad(
 
 	return result;
 }
+
+unsigned int init_egg_at_location(
+	struct enemy *enemy,
+	unsigned int loc_index,
+	const struct enemy_race *race
+	)
+{
+	unsigned int result;
+	struct egg_location *loc;
+
+	loc = get_egg_location(loc_index);
+	if (loc)
+	{
+		init_enemy(enemy, loc->y, loc->x, loc->dir, ENEMY_STATE_EGG, race);
+		result = 1;
+	}
+	else
+	{
+		result = 0;
+	}
+
+	return result;
+}
 	
 void deinit_enemy(
 	struct enemy *enemy
