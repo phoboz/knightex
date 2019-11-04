@@ -190,18 +190,7 @@ static const struct platform_def platform_defs[]=
 	{	0,	90,		90+6,	90+0x0c*3,		platform07_data	}
 };
 
-static signed int platform_indices[MAX_PLATFORMS] =
-{
-	0,
-	1,
-	2,
-	3,
-	4,
-	5,
-	6
-};
-
-static struct platform_pad platform_pads[MAX_PLATFORM_PADS] =
+static const struct platform_pad platform_pads[MAX_PLATFORM_PADS] =
 {
 	/*	y,	x,		dir			*/
 	{	57,	-7,		DIR_RIGHT		},
@@ -210,7 +199,7 @@ static struct platform_pad platform_pads[MAX_PLATFORM_PADS] =
 	{	-75,	-9,		DIR_RIGHT		}
 };
 
-static struct egg_location egg_locations[MAX_EGG_LOCATIONS] =
+static const struct egg_location egg_locations[MAX_EGG_LOCATIONS] =
 {
 	/*	y,	x		dir				index */
 	{	69,	-102,	DIR_RIGHT		},	// 1
@@ -227,7 +216,20 @@ static struct egg_location egg_locations[MAX_EGG_LOCATIONS] =
 	{	-75,	80,		DIR_LEFT		}	// 12
 };
 
-signed int platform_ground_length = 96;
+static signed int platform_indices[MAX_PLATFORMS] =
+{
+	0,
+	1,
+	2,
+	3,
+	4,
+	5,
+	6
+};
+
+static signed int platform_target_ground_length;
+static signed int platform_ground_length;
+static unsigned int platform_counter;
 
 void enable_platform(
 	signed int index
@@ -241,6 +243,59 @@ void disable_platform(
 	)
 {
 	platform_indices[index] = -1;
+}
+
+void init_platforms(void)
+{
+	unsigned int i;
+
+	platform_target_ground_length = PLATFORM_GROUND_LENGTH_MAX;
+	platform_ground_length = PLATFORM_GROUND_LENGTH_MAX;
+	platform_counter = 0;
+
+	for (i = 0; i < MAX_PLATFORMS; i++)
+	{
+		enable_platform((signed int) i);
+	}
+}
+
+void set_platform_ground_length(
+	signed int length
+	)
+{
+	if (length < PLATFORM_GROUND_LENGTH_MIN)
+	{
+		length = PLATFORM_GROUND_LENGTH_MIN;
+	}
+	else if (length > PLATFORM_GROUND_LENGTH_MAX)
+	{
+		length = PLATFORM_GROUND_LENGTH_MAX;
+	}
+
+	platform_target_ground_length = length;
+}
+
+void move_platforms(void)
+{
+	if (++platform_counter >= PLATFORM_ANIM_TRESHOLD)
+	{
+		platform_counter = 0;
+
+		if (platform_ground_length < platform_target_ground_length)
+		{
+			if (++platform_ground_length > platform_target_ground_length)
+			{
+				platform_ground_length = platform_target_ground_length;
+			}
+		}
+		else if (platform_ground_length > platform_target_ground_length)
+		{
+			if (--platform_ground_length < platform_target_ground_length)
+			{
+				platform_ground_length = platform_target_ground_length;
+			}
+		}
+	}
 }
 
 void draw_platforms(void)
@@ -394,11 +449,11 @@ unsigned int hit_platform(
 	return result;
 }
 
-struct platform_pad* get_platform_pad(
+const struct platform_pad* get_platform_pad(
 	unsigned int index
 	)
 {
-	struct platform_pad *pad;
+	const struct platform_pad *pad;
 
 	if (index < MAX_PLATFORM_PADS)
 	{
@@ -412,11 +467,11 @@ struct platform_pad* get_platform_pad(
 	return pad;
 }
 
-struct egg_location* get_egg_location(
+const struct egg_location* get_egg_location(
 	unsigned int index
 	)
 {
-	struct egg_location *loc;
+	const struct egg_location *loc;
 
 	if (index < MAX_EGG_LOCATIONS)
 	{

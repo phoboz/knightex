@@ -43,6 +43,9 @@
 
 #define ENEMY_CALL_BIRD_DY			18
 
+#define ENEMY_RACE_BOUNCER			0
+#define ENEMY_RACE_PTERY			1
+
 struct enemy_race
 {
 	unsigned int type;
@@ -89,6 +92,13 @@ void init_enemy(
 unsigned int init_enemy_at_pad(
 	struct enemy *enemy,
 	unsigned int pad_index,
+	const struct enemy_race *race
+	);
+
+void init_enemy_in_sky(
+	struct enemy *enemy,
+	unsigned int dir,
+	signed int y,
 	const struct enemy_race *race
 	);
 

@@ -19,6 +19,7 @@
 #include "platform.h"
 #include "player.h"
 #include "enemy.h"
+#include "wave.h"
 #include "flap_snd.h"
 #include "walk_snd.h"
 #include "brake_snd.h"
@@ -27,8 +28,11 @@
 
 struct player player_1;
 unsigned int player_1_status;
-unsigned int player_1_extra_lives = 2;
+unsigned int player_1_extra_lives = 24;
 struct enemy enemies[MAX_ENEMIES];
+struct wave wave;
+unsigned int new_wave_index = 0;
+unsigned int curr_wave_index;
 
 // ---------------------------------------------------------------------------
 // cold reset: the vectrex logo is shown, all ram data is cleared
@@ -39,33 +43,6 @@ struct enemy enemies[MAX_ENEMIES];
 // ---------------------------------------------------------------------------
 // after each reset, the cartridge title is shown and then main() is called
 // ---------------------------------------------------------------------------
-
-void std_wave(void)
-{
-	// 3 bouncers
-	init_enemy_at_pad(&enemies[0], 0, &enemy_races[0]);
-	init_enemy_at_pad(&enemies[1], 1, &enemy_races[0]);
-	init_enemy_at_pad(&enemies[2], 2, &enemy_races[0]);
-
-	// 1 ptery
-	init_enemy(&enemies[3], 48, -48, DIR_RIGHT, ENEMY_STATE_STOP, &enemy_races[1]);
-}
-
-void egg_wave(void)
-{
-	init_egg_at_location(&enemies[0], 0, &enemy_races[0]);
-	init_egg_at_location(&enemies[1], 1, &enemy_races[0]);
-	init_egg_at_location(&enemies[2], 2, &enemy_races[0]);
-	init_egg_at_location(&enemies[3], 3, &enemy_races[0]);
-	init_egg_at_location(&enemies[4], 4, &enemy_races[0]);
-	init_egg_at_location(&enemies[5], 5, &enemy_races[0]);
-	init_egg_at_location(&enemies[6], 6, &enemy_races[0]);
-	init_egg_at_location(&enemies[7], 7, &enemy_races[0]);
-	init_egg_at_location(&enemies[8], 8, &enemy_races[0]);
-	init_egg_at_location(&enemies[9], 9, &enemy_races[0]);
-	init_egg_at_location(&enemies[10], 10, &enemy_races[0]);
-	init_egg_at_location(&enemies[11], 11, &enemy_races[0]);
-}
 
 int main(void)
 {
@@ -81,46 +58,59 @@ int main(void)
 		give_object(&enemies[i].ch.obj, &enemy_free_list);
 	}
 
+	init_platforms();
 	init_player(&player_1);
+	init_wave(&wave);
 
-//disable_platform(0);
-//disable_platform(2);
-	std_wave();
+/////////////////////
+//wave.wave_index = 3;
+////////////////////
 
 	while(1)
 	{
-		check_joysticks();
-		check_buttons();
-
-		player_1_status = move_player(&player_1);
-		move_enemies();
-		interaction_enemies_player(&player_1);
-
-		if (player_1.state == PLAYER_STATE_DEAD)
+		new_wave_index = move_wave(&wave);
+		if (new_wave_index)
 		{
-			if (player_1_extra_lives)
-			{
-				init_player(&player_1);
-				player_1_extra_lives--;
-			}
+			curr_wave_index = new_wave_index;
+			new_wave_index = 0;
+			close_wave(&wave);
 		}
-
-		if (!sfx_status_1)
+		else
 		{
-			if ((player_1_status & PLAYER_STATUS_FLAP) == PLAYER_STATUS_FLAP)
+			check_joysticks();
+			check_buttons();
+
+			move_platforms();
+			player_1_status = move_player(&player_1);
+			move_enemies();
+			interaction_enemies_player(&player_1);
+
+			if (player_1.state == PLAYER_STATE_DEAD)
 			{
-				sfx_pointer_1 = (long unsigned int) (&flap_snd_data);
-				sfx_status_1 = 1;
+				if (player_1_extra_lives)
+				{
+					init_player(&player_1);
+					player_1_extra_lives--;
+				}
 			}
-			if ((player_1_status & PLAYER_STATUS_WALK) == PLAYER_STATUS_WALK)
+
+			if (!sfx_status_1)
 			{
-				sfx_pointer_1 = (long unsigned int) (&walk_snd_data);
-				sfx_status_1 = 1;
-			}
-			else if ((player_1_status & PLAYER_STATUS_BRAKE) == PLAYER_STATUS_BRAKE)
-			{
-				sfx_pointer_1 = (long unsigned int) (&brake_snd_data);
-				sfx_status_1 = 1;
+				if ((player_1_status & PLAYER_STATUS_FLAP) == PLAYER_STATUS_FLAP)
+				{
+					sfx_pointer_1 = (long unsigned int) (&flap_snd_data);
+					sfx_status_1 = 1;
+				}
+				if ((player_1_status & PLAYER_STATUS_WALK) == PLAYER_STATUS_WALK)
+				{
+					sfx_pointer_1 = (long unsigned int) (&walk_snd_data);
+					sfx_status_1 = 1;
+				}
+				else if ((player_1_status & PLAYER_STATUS_BRAKE) == PLAYER_STATUS_BRAKE)
+				{
+					sfx_pointer_1 = (long unsigned int) (&brake_snd_data);
+					sfx_status_1 = 1;
+				}
 			}
 		}
 

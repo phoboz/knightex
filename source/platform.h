@@ -21,7 +21,11 @@
 #endif
 #endif
 
-#define PLATFORM_GROUND_Y		-80
+#define PLATFORM_GROUND_Y			-80
+#define PLATFORM_GROUND_LENGTH_MAX	127
+#define PLATFORM_GROUND_LENGTH_MIN	96
+
+#define PLATFORM_ANIM_TRESHOLD		24
 
 struct object;
 
@@ -39,8 +43,6 @@ struct egg_location
 	unsigned int dir;
 };
 
-extern signed int platform_ground_length;
-
 void enable_platform(
 	signed int index
 	);
@@ -48,6 +50,14 @@ void enable_platform(
 void disable_platform(
 	signed int index
 	);
+
+void init_platforms(void);
+
+void set_platform_ground_length(
+	signed int length
+	);
+
+void move_platforms(void);
 
 void draw_platforms(void);
 
@@ -63,11 +73,11 @@ unsigned int hit_platform(
 	signed int *dx
 	);
 
-struct platform_pad* get_platform_pad(
+const struct platform_pad* get_platform_pad(
 	unsigned int index
 	);
 
-struct egg_location* get_egg_location(
+const struct egg_location* get_egg_location(
 	unsigned int index
 	);
 

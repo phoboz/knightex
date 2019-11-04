@@ -37,7 +37,7 @@ unsigned int init_player(
 	)
 {
 	unsigned int status;
-	struct platform_pad *pad;
+	const struct platform_pad *pad;
 
 	pad = get_platform_pad(PLAYER_INIT_PAD_INDEX);
 	if (pad)

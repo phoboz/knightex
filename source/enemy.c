@@ -126,7 +126,7 @@ unsigned int init_enemy_at_pad(
 	)
 {
 	unsigned int result;
-	struct platform_pad *pad;
+	const struct platform_pad *pad;
 
 	pad = get_platform_pad(pad_index);
 	if (pad)
@@ -150,6 +150,23 @@ unsigned int init_enemy_at_pad(
 	return result;
 }
 
+void init_enemy_in_sky(
+	struct enemy *enemy,
+	unsigned int dir,
+	signed int y,
+	const struct enemy_race *race
+	)
+{
+	if (dir == DIR_LEFT)
+	{
+		init_enemy(enemy, y, CHARACTER_MAX_X - 1, dir, ENEMY_STATE_STOP, race);
+	}
+	else if (dir == DIR_RIGHT)
+	{
+		init_enemy(enemy, y, CHARACTER_MIN_X + 1, dir, ENEMY_STATE_STOP, race);
+	}
+}
+
 unsigned int init_egg_at_location(
 	struct enemy *enemy,
 	unsigned int loc_index,
@@ -157,7 +174,7 @@ unsigned int init_egg_at_location(
 	)
 {
 	unsigned int result;
-	struct egg_location *loc;
+	const struct egg_location *loc;
 
 	loc = get_egg_location(loc_index);
 	if (loc)
