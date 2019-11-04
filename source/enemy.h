@@ -5,7 +5,8 @@
 
 #define ENEMY_DRAW_SCALE	1
 
-#define ENEMY_TYPE_BOUNCER		0
+#define ENEMY_TYPE_BOUNCER		1
+#define ENEMY_TYPE_HUNTER		2
 #define ENEMY_TYPE_PTERY		10
 
 #define ENEMY_STATE_STOP		0
@@ -44,7 +45,8 @@
 #define ENEMY_CALL_BIRD_DY			18
 
 #define ENEMY_RACE_BOUNCER			0
-#define ENEMY_RACE_PTERY			1
+#define ENEMY_RACE_HUNTER			1
+#define ENEMY_RACE_PTERY			2
 
 struct enemy_race
 {
@@ -75,6 +77,7 @@ struct enemy
 	unsigned int state_counter;
 };
 
+extern signed int target_y, target_x;
 extern const struct enemy_race enemy_races[];
 extern unsigned int enemy_status;
 extern struct object *enemy_list;

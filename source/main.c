@@ -63,7 +63,7 @@ int main(void)
 	init_wave(&wave);
 
 /////////////////////
-//wave.wave_index = 3;
+//wave.wave_index = 6;
 ////////////////////
 
 	while(1)
@@ -81,7 +81,19 @@ int main(void)
 			check_buttons();
 
 			move_platforms();
+
 			player_1_status = move_player(&player_1);
+			if (player_1.state < PLAYER_STATE_INACTIVE)
+			{
+				target_y = player_1.ch.obj.y;
+				target_x = player_1.ch.obj.x;
+			}
+			else
+			{
+				target_y = 0;
+				target_x = 0;
+			}
+
 			move_enemies();
 			interaction_enemies_player(&player_1);
 

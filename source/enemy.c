@@ -15,12 +15,11 @@
 
 // ---------------------------------------------------------------------------
 
-extern const signed char* const spiral[];
-extern struct player player_1;
+signed int target_y, target_x;
 
 static const struct character_anim enemy_anims[] =
 {
-	/* Vulture */
+	/* Bouncer */
 	{
 		10,						// h
 		4,						// w
@@ -61,6 +60,7 @@ const struct enemy_race enemy_races[] =
 {
 	/*	type					speed	speed_treshold	flap_treshold		gravity_treshold	rise_treshold	reaction_treshold	bounce_treshold	anim	*/
 	{	ENEMY_TYPE_BOUNCER,	2,		6,				24,				3,				2,			24,				12,				&enemy_anims[0]	},
+	{	ENEMY_TYPE_HUNTER,		2,		5,				32,				3,				1,			16,				12,				&enemy_anims[0]	},
 	{	ENEMY_TYPE_PTERY,		3,		2,				255,				4,				4,			56,				0,				&enemy_anims[1]	}
 };
 
@@ -247,7 +247,7 @@ void move_enemies(void)
 				enemy->ch.dy = 0;
 			}
 
-			if (enemy_type == ENEMY_TYPE_BOUNCER)
+			if (enemy_type >= ENEMY_TYPE_BOUNCER && enemy_type <= ENEMY_TYPE_HUNTER)
 			{
 				if (hit_over_platform(&enemy->ch.obj, &enemy->ch.dy, enemy->ch.dx))
 				{
@@ -272,11 +272,23 @@ void move_enemies(void)
 
 					if (++enemy->state_counter == enemy->race->reaction_treshold)
 					{
-						if (enemy->ch.obj.y < player_1.ch.obj.y)
+						enemy->state_counter = 0;
+						if (enemy_type == ENEMY_TYPE_HUNTER)
+						{
+							if (enemy->ch.obj.x < target_x)
+							{
+								set_dir_enemy(enemy, DIR_RIGHT);
+							}
+							else if (enemy->ch.obj.x > target_x)
+							{
+								set_dir_enemy(enemy, DIR_LEFT);
+							}
+						}
+
+						if (enemy->ch.obj.y < target_y)
 						{
 							enemy->state = ENEMY_STATE_FLAP;
 						}
-						enemy->state_counter = 0;
 					}
 				}
 				else
@@ -328,7 +340,7 @@ void move_enemies(void)
 				enemy->ch.dy = 0;
 			}
 
-			if (enemy_type == ENEMY_TYPE_BOUNCER)
+			if (enemy_type >= ENEMY_TYPE_BOUNCER && enemy_type <= ENEMY_TYPE_HUNTER)
 			{
 				animate_character_limit(&enemy->ch, 2);
 
@@ -411,7 +423,7 @@ void move_enemies(void)
 
 				enemy->state_counter = 0;
 
-				if (enemy->ch.obj.y > player_1.ch.obj.y)
+				if (enemy->ch.obj.y > target_y)
 				{
 					enemy->state = ENEMY_STATE_MOVE;
 				}
@@ -661,7 +673,7 @@ void move_enemies(void)
 					}
 					enemy->ch.frame = 0;
 					enemy->state_counter = 0;
-					enemy->state = PLAYER_STATE_WALK;
+					enemy->state = ENEMY_STATE_WALK;
 				}
 			}
 		}
@@ -669,16 +681,16 @@ void move_enemies(void)
 		{
 			if (++enemy->state_counter >= enemy->race->reaction_treshold)
 			{
-				if (enemy->ch.obj.x < player_1.ch.obj.x)
+				if (enemy->ch.obj.x < target_x)
 				{
 					set_dir_enemy(enemy, DIR_RIGHT);
 				}
-				else if (enemy->ch.obj.x > player_1.ch.obj.x)
+				else if (enemy->ch.obj.x > target_x)
 				{
 					set_dir_enemy(enemy, DIR_LEFT);
 				}
 
-				if (enemy->ch.obj.y < player_1.ch.obj.y)
+				if (enemy->ch.obj.y < target_y)
 				{
 					enemy->state = ENEMY_STATE_FLAP;
 				}

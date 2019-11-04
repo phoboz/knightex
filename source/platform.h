@@ -51,6 +51,8 @@ void disable_platform(
 	signed int index
 	);
 
+void restore_platforms(void);
+
 void init_platforms(void);
 
 void set_platform_ground_length(

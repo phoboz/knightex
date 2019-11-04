@@ -245,18 +245,23 @@ void disable_platform(
 	platform_indices[index] = -1;
 }
 
-void init_platforms(void)
+void restore_platforms(void)
 {
 	unsigned int i;
-
-	platform_target_ground_length = PLATFORM_GROUND_LENGTH_MAX;
-	platform_ground_length = PLATFORM_GROUND_LENGTH_MAX;
-	platform_counter = 0;
 
 	for (i = 0; i < MAX_PLATFORMS; i++)
 	{
 		enable_platform((signed int) i);
 	}
+}
+
+void init_platforms(void)
+{
+	platform_target_ground_length = PLATFORM_GROUND_LENGTH_MAX;
+	platform_ground_length = PLATFORM_GROUND_LENGTH_MAX;
+	platform_counter = 0;
+
+	restore_platforms();
 }
 
 void set_platform_ground_length(
