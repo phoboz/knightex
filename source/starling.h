@@ -1,0 +1,25 @@
+#ifndef _STARLING_H
+#define _STARLING_H
+
+#define STARLING_SCALE	8
+
+#define STARLING_LEFT				0
+#define STARLING_FLAP_LEFT			1
+#define STARLING_WALK_LEFT_START	2
+#define STARLING_WALK_LEFT_END		5
+#define STARLING_BRAKE_LEFT			6
+
+#define STARLING_RIGHT				15
+#define STARLING_FLAP_RIGHT			16
+#define STARLING_WALK_RIGHT_START	17
+#define STARLING_WALK_RIGHT_END		20
+#define STARLING_BRAKE_RIGHT		21
+
+#define STARLING_RISE_LEFT_START	7
+#define STARLING_RISE_LEFT_END		14
+#define STARLING_RISE_RIGHT_START	22
+#define STARLING_RISE_RIGHT_END		29
+
+extern const signed char* const starling[];
+
+#endif

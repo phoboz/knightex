@@ -7,8 +7,9 @@
 #include "draw.h"
 #include "platform.h"
 #include "vulture.h"
-#include "knight.h"
+#include "starling.h"
 #include "ptery.h"
+#include "knight.h"
 #include "egg.h"
 #include "player.h"
 #include "enemy.h"
@@ -19,7 +20,7 @@ signed int target_y, target_x;
 
 static const struct character_anim enemy_anims[] =
 {
-	/* Bouncer */
+	/* Vulture */
 	{
 		10,						// h
 		4,						// w
@@ -35,6 +36,24 @@ static const struct character_anim enemy_anims[] =
 		VULTURE_RISE_LEFT_START,
 		VULTURE_RISE_RIGHT_START,
 		vulture					// vectorlists
+	},
+
+	/* Starling */
+	{
+		10,						// h
+		4,						// w
+		3,						// treshold
+		STARLING_LEFT,
+		STARLING_RIGHT,
+		STARLING_WALK_LEFT_END - STARLING_WALK_LEFT_START + 1, // max_frames
+		STARLING_WALK_LEFT_START,
+		STARLING_WALK_RIGHT_START,
+		STARLING_BRAKE_LEFT,
+		STARLING_BRAKE_RIGHT,
+		STARLING_RISE_LEFT_END - STARLING_RISE_LEFT_START + 1, // max_frames
+		STARLING_RISE_LEFT_START,
+		STARLING_RISE_RIGHT_START,
+		starling					// vectorlists
 	},
 
 	/* Ptery */
@@ -60,8 +79,8 @@ const struct enemy_race enemy_races[] =
 {
 	/*	type					speed	speed_treshold	flap_treshold		gravity_treshold	rise_treshold	reaction_treshold	bounce_treshold	anim	*/
 	{	ENEMY_TYPE_BOUNCER,	2,		6,				24,				3,				2,			24,				12,				&enemy_anims[0]	},
-	{	ENEMY_TYPE_HUNTER,		2,		5,				32,				3,				1,			16,				12,				&enemy_anims[0]	},
-	{	ENEMY_TYPE_PTERY,		3,		2,				255,				4,				4,			56,				0,				&enemy_anims[1]	}
+	{	ENEMY_TYPE_HUNTER,		2,		5,				32,				3,				1,			16,				12,				&enemy_anims[1]	},
+	{	ENEMY_TYPE_PTERY,		3,		2,				255,				4,				4,			56,				0,				&enemy_anims[2]	}
 };
 
 unsigned int enemy_status = 0;

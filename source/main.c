@@ -63,7 +63,7 @@ int main(void)
 	init_wave(&wave);
 
 /////////////////////
-//wave.wave_index = 6;
+wave.wave_index = 5;
 ////////////////////
 
 	while(1)
