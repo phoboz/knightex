@@ -723,6 +723,15 @@ void move_enemies(void)
 		}
 		else if (enemy->state == ENEMY_STATE_ZOMBIE)
 		{
+			if (++enemy->ch_0.counter >= ENEMY_FLY_FLAP_TRESHOLD)
+			{
+				enemy->ch_0.counter = 0;
+				if (++enemy->ch_0.frame > 1)
+				{
+					enemy->ch_0.frame = 0;
+				}
+			}
+
 			if (move_character(&enemy->ch_0))
 			{
 				enemy->state_counter = 0;
