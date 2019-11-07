@@ -66,8 +66,8 @@ static const struct character_anim enemy_anims[] =
 		PTERY_FLAP_LEFT - PTERY_LEFT + 1,
 		PTERY_LEFT,
 		PTERY_RIGHT,
-		PTERY_DIVE_LEFT,
-		PTERY_DIVE_RIGHT,
+		PTERY_ATTACK_LEFT,
+		PTERY_ATTACK_RIGHT,
 		0,						// max_frames
 		0,
 		0,
@@ -77,10 +77,10 @@ static const struct character_anim enemy_anims[] =
 
 const struct enemy_race enemy_races[] =
 {
-	/*	type					speed	speed_treshold	flap_treshold		gravity_treshold	rise_treshold	reaction_treshold	bounce_treshold	anim	*/
-	{	ENEMY_TYPE_BOUNCER,	2,		6,				24,				3,				2,			24,				12,				&enemy_anims[0]	},
-	{	ENEMY_TYPE_HUNTER,		2,		5,				32,				3,				1,			16,				12,				&enemy_anims[1]	},
-	{	ENEMY_TYPE_PTERY,		3,		2,				255,				4,				4,			56,				0,				&enemy_anims[2]	}
+	/*	type					speed	speed_treshold	flap_treshold		gravity_treshold	rise_treshold	reaction_treshold	bounce_treshold	attack_treshold	retreat_treshold	anim				*/
+	{	ENEMY_TYPE_BOUNCER,	2,		6,				24,				3,				2,			24,				12,				255,				255,				&enemy_anims[0]	},
+	{	ENEMY_TYPE_HUNTER,		2,		5,				32,				3,				1,			16,				12,				255,				255,				&enemy_anims[1]	},
+	{	ENEMY_TYPE_PTERY,		3,		2,				255,				4,				4,			16,				56,				100,				32,				&enemy_anims[2]	}
 };
 
 unsigned int enemy_status = 0;
@@ -129,6 +129,7 @@ void init_enemy(
 	enemy->gravity_counter		= 0;
 	enemy->rise_counter		= 0;
 	enemy->invisible_counter	= ENEMY_INVISIBLE_TRESHOLD;
+	enemy->attack_counter		= 0;
 	enemy->window_counter		= 0;
 	enemy->number_counter		= 0;
 
@@ -319,15 +320,50 @@ void move_enemies(void)
 			}
 			else if (enemy_type == ENEMY_TYPE_PTERY)
 			{
-				enemy->ch.frame = 2;
-				unsigned int ret = move_character(&enemy->ch);
-				if (ret == 2)
+				if (enemy->ch.frame == PTERY_ATTACK_FRAME)
+				{
+					if (++enemy->attack_counter >= enemy->race->retreat_treshold)
+					{
+						enemy->attack_counter = 0;
+						enemy->ch.frame = 0;
+					}
+				}
+				else
+				{
+					animate_character(&enemy->ch);
+
+					if (++enemy->attack_counter >= enemy->race->attack_treshold)
+					{
+						enemy->attack_counter = 0;
+						enemy->ch.frame = PTERY_ATTACK_FRAME;
+					}
+				}
+
+				unsigned int ret = check_move_character(&enemy->ch);
+				if (!ret)
+				{
+					enemy->ch.obj.y += enemy->ch.dy;
+					enemy->ch.obj.x += enemy->ch.dx;
+				}
+				else if (ret == 2)
 				{
 					enemy->state_counter = 0;
 					enemy->state = ENEMY_STATE_REMOVE;
 				}
 				else if (ret == 3)
 				{
+					if (enemy->ch.dir == DIR_LEFT)
+					{
+						enemy->ch.base_frame = enemy->ch.anim->frame_right;
+						enemy->ch.dir = DIR_RIGHT;
+						enemy->ch.dx = enemy->ch.move_speed;
+					}
+					else if (enemy->ch.dir == DIR_RIGHT)
+					{
+						enemy->ch.base_frame = enemy->ch.anim->frame_left;
+						enemy->ch.dir = DIR_LEFT;
+						enemy->ch.dx = -enemy->ch.move_speed;
+					}
 					enemy->ch.frame = 0;
 					enemy->state_counter = 0;
 					enemy->state = ENEMY_STATE_STOP;
@@ -389,8 +425,12 @@ void move_enemies(void)
 			else if (enemy_type == ENEMY_TYPE_PTERY)
 			{
 				animate_character(&enemy->ch);
-
-				unsigned int ret = move_character(&enemy->ch);
+				unsigned int ret = check_move_character(&enemy->ch);
+				if (!ret)
+				{
+					enemy->ch.obj.y += enemy->ch.dy;
+					enemy->ch.obj.x += enemy->ch.dx;
+				}
 				if (ret == 2)
 				{
 					enemy->state_counter = 0;
@@ -398,6 +438,19 @@ void move_enemies(void)
 				}
 				else if (ret == 3)
 				{
+					if (enemy->ch.dir == DIR_LEFT)
+					{
+						enemy->ch.base_frame = enemy->ch.anim->frame_right;
+						enemy->ch.dir = DIR_RIGHT;
+						enemy->ch.dx = enemy->ch.move_speed;
+					}
+					else if (enemy->ch.dir == DIR_RIGHT)
+					{
+						enemy->ch.base_frame = enemy->ch.anim->frame_left;
+						enemy->ch.dir = DIR_LEFT;
+						enemy->ch.dx = -enemy->ch.move_speed;
+					}
+					enemy->ch.frame = 0;
 					enemy->state_counter = 0;
 					enemy->state = ENEMY_STATE_STOP;
 				}
@@ -656,8 +709,9 @@ void move_enemies(void)
 			}
 			else
 			{
-				if (++enemy->ch_0.counter >= enemy->race->flap_treshold)
+				if (++enemy->ch_0.counter >= ENEMY_FLY_FLAP_TRESHOLD)
 				{
+					enemy->ch_0.counter = 0;
 					if (++enemy->ch_0.frame > 1)
 					{
 						enemy->ch_0.frame = 0;
@@ -698,7 +752,7 @@ void move_enemies(void)
 		}
 		else if (enemy->state == ENEMY_STATE_STOP)
 		{
-			if (++enemy->state_counter >= enemy->race->reaction_treshold)
+			if (++enemy->state_counter >= enemy->race->bounce_treshold)
 			{
 				if (enemy->ch.obj.x < target_x)
 				{
@@ -746,7 +800,7 @@ unsigned int hit_enemy_equal(
 
 	if (enemy->race->type == ENEMY_TYPE_PTERY)
 	{
-		if (dir != enemy->ch.dir)
+		if (dir != enemy->ch.dir && enemy->ch.frame == PTERY_ATTACK_FRAME)
 		{
 			enemy->state_counter = 0;
 			enemy->state = ENEMY_STATE_REMOVE;

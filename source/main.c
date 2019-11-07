@@ -28,7 +28,7 @@
 
 struct player player_1;
 unsigned int player_1_status;
-unsigned int player_1_extra_lives = 24;
+unsigned int player_1_extra_lives = 100;
 struct enemy enemies[MAX_ENEMIES];
 struct wave wave;
 unsigned int new_wave_index = 0;
@@ -63,7 +63,7 @@ int main(void)
 	init_wave(&wave);
 
 /////////////////////
-wave.wave_index = 5;
+//wave.wave_index = 5;
 ////////////////////
 
 	while(1)
@@ -90,7 +90,7 @@ wave.wave_index = 5;
 			}
 			else
 			{
-				target_y = 0;
+				target_y = 127;
 				target_x = 0;
 			}
 

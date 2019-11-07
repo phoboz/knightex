@@ -38,6 +38,7 @@
 #define ENEMY_EGG_HATCH_TRESHOLD	50
 #define ENEMY_KNIGHT_TRESHOLD		100
 #define ENEMY_INVISIBLE_TRESHOLD	16
+#define ENEMY_FLY_FLAP_TRESHOLD		4
 
 #define ENEMY_MAX_BOUNCES			4
 #define ENEMY_TIME_WINDOW			200
@@ -58,6 +59,8 @@ struct enemy_race
 	unsigned int rise_treshold;
 	unsigned int reaction_treshold;
 	unsigned int bounce_treshold;
+	unsigned int attack_treshold;
+	unsigned int retreat_treshold;
 	const struct character_anim *anim;
 };
 
@@ -72,6 +75,7 @@ struct enemy
 	unsigned int gravity_counter;
 	unsigned int rise_counter;
 	unsigned int invisible_counter;
+	unsigned int attack_counter;
 	unsigned int window_counter;
 	unsigned int number_counter;
 	unsigned int state_counter;
