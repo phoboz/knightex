@@ -11,7 +11,7 @@
 
 // ---------------------------------------------------------------------------
 
-const struct wave_element wave_0[] =
+const struct wave_element wave_1[] =
 {
 	/*	treshold		index					type							race					param		*/
 	{	0,			0,						WAVE_ELEMENT_INIT_PLATFORMS,	0,					0			},
@@ -20,7 +20,7 @@ const struct wave_element wave_0[] =
 	{	80,			2,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			}
 };
 
-const struct wave_element wave_1[] =
+const struct wave_element wave_2[] =
 {
 	/*	treshold		index					type							race					param		*/
 	{	0,			PLATFORM_GROUND_LENGTH_MIN,	WAVE_ELEMENT_SET_GROUND_LENGTH,	0,					0			},
@@ -30,7 +30,7 @@ const struct wave_element wave_1[] =
 	{	80,			0,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			}
 };
 
-const struct wave_element wave_2[] =
+const struct wave_element wave_3[] =
 {
 	/*	treshold		index					type							race					param		*/
 	{	80,			0,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
@@ -41,7 +41,7 @@ const struct wave_element wave_2[] =
 	{	80,			2,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			}
 };
 
-const struct wave_element wave_3[] =
+const struct wave_element wave_4[] =
 {
 	/*	treshold		index					type							race					param		*/
 	{	0,			0,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_BOUNCER	,	0			},
@@ -59,7 +59,7 @@ const struct wave_element wave_3[] =
 
 };
 
-const struct wave_element wave_4[] =
+const struct wave_element wave_5[] =
 {
 	/*	treshold		index					type							race					param		*/
 	{	0,			1,						WAVE_ELEMENT_DISABLE_PLATFORM,	0,					0			},
@@ -71,7 +71,7 @@ const struct wave_element wave_4[] =
 	{	80,			2,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0			}
 };
 
-const struct wave_element wave_5[] =
+const struct wave_element wave_6[] =
 {
 	/*	treshold		index					type							race					param		*/
 	{	0,			0,						WAVE_ELEMENT_DISABLE_PLATFORM,	0,					0			},
@@ -85,7 +85,7 @@ const struct wave_element wave_5[] =
 	{	80,			2,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			}
 };
 
-const struct wave_element wave_6[] =
+const struct wave_element wave_7[] =
 {
 	/*	treshold		index					type							race					param		*/
 	{	0,			0,						WAVE_ELEMENT_DISABLE_PLATFORM,	0,					0			},
@@ -100,7 +100,7 @@ const struct wave_element wave_6[] =
 	{	80,			2,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			}
 };
 
-const struct wave_element wave_7[] =
+const struct wave_element wave_8[] =
 {
 	/*	treshold		index					type							race					param		*/
 	{	0,			0,						WAVE_ELEMENT_RESTORE_PLATFORMS,	0,					0			},
@@ -118,17 +118,83 @@ const struct wave_element wave_7[] =
 	{	0,			11,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_BOUNCER	,	0			}
 };
 
+const struct wave_element wave_9[] =
+{
+	/*	treshold		index					type							race					param		*/
+	{	80,			0,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
+	{	80,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
+	{	80,			2,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
+	{	80,			0,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			2,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			0,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			}
+};
+
+const struct wave_element wave_10[] =
+{
+	/*	treshold		index					type							race					param		*/
+	{	0,			4,						WAVE_ELEMENT_DISABLE_PLATFORM,	0,					0			},
+	{	80,			0,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
+	{	80,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
+	{	80,			2,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			0,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			2,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			0,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			}
+};
+
+const struct wave_element wave_11[] =
+{
+	/*	treshold		index					type							race					param		*/
+	{	0,			0,						WAVE_ELEMENT_DISABLE_PLATFORM,	0,					0			},
+	{	0,			1,						WAVE_ELEMENT_DISABLE_PLATFORM,	0,					0			},
+	{	0,			2,						WAVE_ELEMENT_DISABLE_PLATFORM,	0,					0			},
+	{	0,			4,						WAVE_ELEMENT_DISABLE_PLATFORM,	0,					0			},
+	{	0,			DIR_RIGHT,				WAVE_ELEMENT_ENEMY_IN_SKY,		ENEMY_RACE_PTERY,		WAVE_PTERY_Y	},
+	{	80,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			2,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			2,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			2,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			}
+};
+
+const struct wave_element wave_12[] =
+{
+	/*	treshold		index					type							race					param		*/
+	{	0,			0,						WAVE_ELEMENT_RESTORE_PLATFORMS,	0,					0			},
+	{	0,			0,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
+	{	0,			1,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
+	{	0,			2,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
+	{	0,			3,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
+	{	0,			4,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
+	{	0,			5,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
+	{	0,			6,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
+	{	0,			7,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
+	{	0,			8,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
+	{	0,			9,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
+	{	0,			10,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
+	{	0,			11,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			}
+};
+
 const struct wave_def waves[] =
 {
 	/*	num_elmts				wave_elmts	*/
-	{	NUM_ELMTS(wave_0),		wave_0	},
 	{	NUM_ELMTS(wave_1),		wave_1	},
 	{	NUM_ELMTS(wave_2),		wave_2	},
 	{	NUM_ELMTS(wave_3),		wave_3	},
 	{	NUM_ELMTS(wave_4),		wave_4	},
 	{	NUM_ELMTS(wave_5),		wave_5	},
 	{	NUM_ELMTS(wave_6),		wave_6	},
-	{	NUM_ELMTS(wave_7),		wave_7	}
+	{	NUM_ELMTS(wave_7),		wave_7	},
+	{	NUM_ELMTS(wave_8),		wave_8	},
+	{	NUM_ELMTS(wave_9),		wave_9	},
+	{	NUM_ELMTS(wave_10),	wave_10	},
+	{	NUM_ELMTS(wave_11),	wave_11	},
+	{	NUM_ELMTS(wave_12),	wave_12	}
 };
 
 static const unsigned int max_waves = NUM_ELMTS(waves);
