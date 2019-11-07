@@ -63,7 +63,7 @@ int main(void)
 	init_wave(&wave);
 
 /////////////////////
-//wave.wave_index = 5;
+//wave.wave_index = 4;
 ////////////////////
 
 	while(1)
@@ -90,7 +90,7 @@ int main(void)
 			}
 			else
 			{
-				target_y = 127;
+				target_y = 80;
 				target_x = 0;
 			}
 

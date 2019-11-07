@@ -185,7 +185,7 @@ static const struct platform_def platform_defs[]=
 	{	52,	-40,		-40+6,	-40+0x16*3+14,	platform02_data	},
 	{	64,	84,		84+6,	84+0x0c*3,		platform03_data	},
 	{	0,	-127,	-127,	-127+0x10*3+9,	platform04_data	},
-	{	-28,	-26,		-26+6,	-26+0x12*3+9,		platform05_data	},
+	{	-34,	-36,		-36+6,	-36+0x12*3+9,		platform05_data	},
 	{	4,	42,		42+6,	42+0x0f*3+9,		platform06_data	},
 	{	0,	90,		90+6,	90+0x0c*3,		platform07_data	}
 };
@@ -206,8 +206,8 @@ static const struct egg_location egg_locations[MAX_EGG_LOCATIONS] =
 	{	57,	-20,		DIR_RIGHT		},	// 2
 	{	69,	100,		DIR_LEFT		},	// 3
 	{	5,	-78,		DIR_RIGHT		},	// 4
-	{	-23,	-9,		DIR_RIGHT		},	// 5
-	{	-23,	28,		DIR_LEFT		},	// 6
+	{	-29,	-19,		DIR_RIGHT		},	// 5
+	{	-29,	18,		DIR_LEFT		},	// 6
 	{	9,	60,		DIR_LEFT		},	// 7
 	{	5,	112,		DIR_LEFT		},	// 8
 	{	-75,	-80,		DIR_RIGHT		},	// 9
