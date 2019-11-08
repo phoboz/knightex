@@ -1,6 +1,12 @@
 #ifndef _WAVE_H
 #define _WAVE_H
 
+#define WAVE_TYPE_NORMAL				0
+#define WAVE_TYPE_SURVIVAL				1
+#define WAVE_TYPE_EGG					2
+#define WAVE_TYPE_GLADIATOR				3
+#define WAVE_TYPE_PTERY				4
+
 #define WAVE_FINE_TIMER_TRESHOLD		50
 #define WAVE_PTERY_TRESHOLD				30
 #define WAVE_PTERY_Y					48
@@ -25,6 +31,7 @@ struct wave_element
 
 struct wave_def
 {
+	unsigned int wave_type;
 	unsigned int num_elements;
 	const struct wave_element *elements;
 };

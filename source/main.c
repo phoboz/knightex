@@ -90,7 +90,7 @@ int main(void)
 			}
 			else
 			{
-				target_y = 80;
+				target_y = 40;
 				target_x = 0;
 			}
 
