@@ -58,4 +58,8 @@ unsigned int move_wave(
 	struct wave *wave
 	);
 
+void announce_wave(
+	struct wave *wave
+	);
+
 #endif

@@ -20,12 +20,17 @@
 #include "player.h"
 #include "enemy.h"
 #include "wave.h"
+#include "text.h"
 #include "flap_snd.h"
 #include "walk_snd.h"
 #include "brake_snd.h"
 
 #define MAX_ENEMIES	12
 
+#define GAME_STATE_NORMAL			0
+#define GAME_STATE_NEXT_WAVE		1
+
+unsigned int game_state = GAME_STATE_NORMAL;
 struct player player_1;
 unsigned int player_1_status;
 unsigned int player_1_extra_lives = 100;
@@ -68,15 +73,6 @@ int main(void)
 
 	while(1)
 	{
-		new_wave_index = move_wave(&wave);
-		if (new_wave_index)
-		{
-			curr_wave_index = new_wave_index;
-			new_wave_index = 0;
-			close_wave(&wave);
-		}
-		else
-		{
 			check_joysticks();
 			check_buttons();
 
@@ -95,6 +91,20 @@ int main(void)
 			}
 
 			move_enemies();
+
+		if (game_state == GAME_STATE_NORMAL)
+		{
+			new_wave_index = move_wave(&wave);
+			if (new_wave_index)
+			{
+				curr_wave_index = new_wave_index;
+				new_wave_index = 0;
+				sfx_status_1 = 0;
+				sfx_status_2 = 0;
+				Vec_Music_Flag = 1;
+				game_state = GAME_STATE_NEXT_WAVE;
+			}
+
 			interaction_enemies_player(&player_1);
 
 			if (player_1.state == PLAYER_STATE_DEAD)
@@ -125,6 +135,21 @@ int main(void)
 				}
 			}
 		}
+		else if (game_state == GAME_STATE_NEXT_WAVE)
+		{
+			if (Vec_Music_Flag)
+			{
+				DP_to_C8();
+				Init_Music_chk(&Vec_Music_9);
+			}
+			else
+			{
+				close_wave(&wave);
+				game_state = GAME_STATE_NORMAL;
+			}
+		}
+
+		Wait_Recal();
 
 		if (Vec_Music_Flag)
 		{
@@ -144,13 +169,16 @@ int main(void)
 			Do_Sound();
 		}
 
-		Wait_Recal();
-
 		Intensity_7F();
 		draw_platforms();
 
 		draw_player(&player_1);
 		draw_enemies();
+
+		if (game_state == GAME_STATE_NEXT_WAVE)
+		{
+			announce_wave(&wave);
+		}
 	};
 	
 	// if return value is <= 0, then a warm reset will be performed,
