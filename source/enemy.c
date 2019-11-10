@@ -8,6 +8,7 @@
 #include "platform.h"
 #include "vulture.h"
 #include "starling.h"
+#include "eagle.h"
 #include "ptery.h"
 #include "knight.h"
 #include "egg.h"
