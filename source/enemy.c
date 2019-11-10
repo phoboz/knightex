@@ -57,6 +57,24 @@ static const struct character_anim enemy_anims[] =
 		starling					// vectorlists
 	},
 
+	/* Eagle */
+	{
+		10,						// h
+		5,						// w
+		3,						// treshold
+		EAGLE_LEFT,
+		EAGLE_RIGHT,
+		EAGLE_WALK_LEFT_END - EAGLE_WALK_LEFT_START + 1, // max_frames
+		EAGLE_WALK_LEFT_START,
+		EAGLE_WALK_RIGHT_START,
+		EAGLE_BRAKE_LEFT,
+		EAGLE_BRAKE_RIGHT,
+		EAGLE_RISE_LEFT_END - EAGLE_RISE_LEFT_START + 1, // max_frames
+		EAGLE_RISE_LEFT_START,
+		EAGLE_RISE_RIGHT_START,
+		eagle					// vectorlists
+	},
+
 	/* Ptery */
 	{
 		8,						// h
@@ -81,7 +99,8 @@ const struct enemy_race enemy_races[] =
 	/*	type					speed	speed_treshold	flap_treshold		gravity_treshold	rise_treshold	reaction_treshold	bounce_treshold	attack_treshold	retreat_treshold	anim				*/
 	{	ENEMY_TYPE_BOUNCER,	2,		6,				24,				3,				2,			24,				12,				255,				255,				&enemy_anims[0]	},
 	{	ENEMY_TYPE_HUNTER,		2,		5,				32,				3,				1,			16,				12,				255,				255,				&enemy_anims[1]	},
-	{	ENEMY_TYPE_PTERY,		3,		2,				255,				4,				4,			16,				56,				100,				32,				&enemy_anims[2]	}
+	{	ENEMY_TYPE_LORD,		4,		3,				24,				4,				1,			12,				8,				255,				255,				&enemy_anims[2]	},
+	{	ENEMY_TYPE_PTERY,		3,		2,				255,				4,				4,			16,				56,				100,				32,				&enemy_anims[3]	}
 };
 
 unsigned int enemy_status = 0;
@@ -268,7 +287,7 @@ void move_enemies(void)
 				enemy->ch.dy = 0;
 			}
 
-			if (enemy_type >= ENEMY_TYPE_BOUNCER && enemy_type <= ENEMY_TYPE_HUNTER)
+			if (enemy_type >= ENEMY_TYPE_BOUNCER && enemy_type <= ENEMY_TYPE_LORD)
 			{
 				if (hit_over_platform(&enemy->ch.obj, &enemy->ch.dy, enemy->ch.dx))
 				{
@@ -309,6 +328,16 @@ void move_enemies(void)
 						if (enemy->ch.obj.y < target_y)
 						{
 							enemy->state = ENEMY_STATE_FLAP;
+						}
+						else
+						{
+							if (enemy_type == ENEMY_TYPE_LORD)
+							{
+								if (enemy->ch.obj.y < ENEMY_LORD_MIN_Y)
+								{
+									enemy->state = ENEMY_STATE_FLAP;
+								}
+							}
 						}
 					}
 				}
@@ -396,7 +425,7 @@ void move_enemies(void)
 				enemy->ch.dy = 0;
 			}
 
-			if (enemy_type >= ENEMY_TYPE_BOUNCER && enemy_type <= ENEMY_TYPE_HUNTER)
+			if (enemy_type >= ENEMY_TYPE_BOUNCER && enemy_type <= ENEMY_TYPE_LORD)
 			{
 				animate_character_limit(&enemy->ch, 2);
 

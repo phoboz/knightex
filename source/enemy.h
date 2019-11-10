@@ -7,6 +7,7 @@
 
 #define ENEMY_TYPE_BOUNCER		1
 #define ENEMY_TYPE_HUNTER		2
+#define ENEMY_TYPE_LORD		3
 #define ENEMY_TYPE_PTERY		10
 
 #define ENEMY_STATE_STOP		0
@@ -39,6 +40,7 @@
 #define ENEMY_KNIGHT_TRESHOLD		100
 #define ENEMY_INVISIBLE_TRESHOLD	16
 #define ENEMY_FLY_FLAP_TRESHOLD		4
+#define ENEMY_LORD_MIN_Y			20
 
 #define ENEMY_MAX_BOUNCES			4
 #define ENEMY_TIME_WINDOW			200
@@ -47,7 +49,8 @@
 
 #define ENEMY_RACE_BOUNCER			0
 #define ENEMY_RACE_HUNTER			1
-#define ENEMY_RACE_PTERY			2
+#define ENEMY_RACE_LORD			2
+#define ENEMY_RACE_PTERY			3
 
 struct enemy_race
 {

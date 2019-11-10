@@ -237,6 +237,71 @@ static const struct wave_element wave_15[] =
 	{	0,			11,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			}
 };
 
+static const struct wave_element wave_16[] =
+{
+	/*	treshold		index					type							race					param		*/
+	{	80,			0,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			2,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			0,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			0,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_LORD,		0,			}
+};
+
+static const struct wave_element wave_17[] =
+{
+	/*	treshold		index					type							race					param		*/
+	{	80,			0,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			2,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			0,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			0,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_LORD,		0,			}
+};
+
+static const struct wave_element wave_18[] =
+{
+	/*	treshold		index					type							race					param		*/
+	{	0,			DIR_RIGHT,				WAVE_ELEMENT_ENEMY_IN_SKY,		ENEMY_RACE_PTERY,		WAVE_PTERY_Y	},
+	{	0,			DIR_LEFT,					WAVE_ELEMENT_ENEMY_IN_SKY,		ENEMY_RACE_PTERY,		WAVE_PTERY_Y	},
+	{	80,			0,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			2,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			0,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			0,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_LORD,		0,			}
+};
+
+static const struct wave_element wave_19[] =
+{
+	/*	treshold		index					type							race					param		*/
+	{	80,			0,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			2,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			0,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			2,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_LORD,		0,			},
+	{	80,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_LORD,		0,			}
+};
+
+static const struct wave_element wave_20[] =
+{
+	/*	treshold		index					type							race					param		*/
+	{	0,			0,						WAVE_ELEMENT_RESTORE_PLATFORMS,	0,					0			},
+	{	0,			0,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
+	{	0,			1,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
+	{	0,			2,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
+	{	0,			3,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
+	{	0,			4,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
+	{	0,			5,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
+	{	0,			6,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
+	{	0,			7,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
+	{	0,			8,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
+	{	0,			9,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
+	{	0,			10,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
+	{	0,			11,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			}
+};
+
 static const struct wave_def waves[] =
 {
 	/*	wave_type				num_elmts				wave_elmts	*/
@@ -254,7 +319,12 @@ static const struct wave_def waves[] =
 	{	WAVE_TYPE_SURVIVAL,	NUM_ELMTS(wave_12),	wave_12	},
 	{	WAVE_TYPE_PTERY,		NUM_ELMTS(wave_13),	wave_13	},
 	{	WAVE_TYPE_GLADIATOR,	NUM_ELMTS(wave_14),	wave_14	},
-	{	WAVE_TYPE_EGG,		NUM_ELMTS(wave_15),	wave_15	}
+	{	WAVE_TYPE_EGG,		NUM_ELMTS(wave_15),	wave_15	},
+	{	WAVE_TYPE_NORMAL,		NUM_ELMTS(wave_16),	wave_16	},
+	{	WAVE_TYPE_SURVIVAL,	NUM_ELMTS(wave_17),	wave_17	},
+	{	WAVE_TYPE_PTERY,		NUM_ELMTS(wave_18),	wave_18	},
+	{	WAVE_TYPE_GLADIATOR,	NUM_ELMTS(wave_19),	wave_19	},
+	{	WAVE_TYPE_EGG,		NUM_ELMTS(wave_20),	wave_20	}
 };
 
 static const unsigned int max_waves = NUM_ELMTS(waves);
