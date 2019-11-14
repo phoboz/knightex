@@ -68,7 +68,7 @@ int main(void)
 	init_wave(&wave);
 
 /////////////////////
-wave.wave_index = 15;
+//wave.wave_index = 27;
 ////////////////////
 
 	while(1)
