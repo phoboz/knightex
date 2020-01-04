@@ -752,6 +752,40 @@ void move_enemies(void)
 				move_character(&enemy->ch_0);
 			}
 		}
+		else if (enemy->state == ENEMY_STATE_COLLECT)
+		{
+			if (++enemy->state_counter == ENEMY_COLLECT_TRESHOLD)
+			{
+				enemy->state_counter = 0;
+				enemy->state = ENEMY_STATE_REMOVE;
+			}
+		}
+		else if (enemy->state == ENEMY_STATE_COLLECT_ZOMBIE)
+		{
+			if (++enemy->state_counter == ENEMY_COLLECT_TRESHOLD)
+			{
+				enemy->state_counter = 0;
+				enemy->state = ENEMY_STATE_ZOMBIE;
+			}
+			else if (enemy->ch_0.obj.active)
+			{
+				if (++enemy->ch_0.counter >= ENEMY_FLY_FLAP_TRESHOLD)
+				{
+					enemy->ch_0.counter = 0;
+					if (++enemy->ch_0.frame > 1)
+					{
+						enemy->ch_0.frame = 0;
+					}
+				}
+
+				if (move_character(&enemy->ch_0))
+				{
+					enemy->ch_0.obj.active = 0;
+					// Do not reset: enemy->state_counter = 0;
+					enemy->state = ENEMY_STATE_COLLECT;
+				}
+			}
+		}
 		else if (enemy->state == ENEMY_STATE_ZOMBIE)
 		{
 			if (++enemy->ch_0.counter >= ENEMY_FLY_FLAP_TRESHOLD)
@@ -765,6 +799,7 @@ void move_enemies(void)
 
 			if (move_character(&enemy->ch_0))
 			{
+				enemy->ch_0.obj.active = 0;
 				enemy->state_counter = 0;
 				enemy->state = ENEMY_STATE_REMOVE;
 			}
@@ -812,14 +847,6 @@ void move_enemies(void)
 					enemy->state = ENEMY_STATE_MOVE;
 				}
 				enemy->state_counter = 0;
-			}
-		}
-		else if (enemy->state == ENEMY_STATE_COLLECT)
-		{
-			if (++enemy->state_counter == ENEMY_COLLECT_TRESHOLD)
-			{
-				enemy->state_counter = 0;
-				enemy->state = ENEMY_STATE_REMOVE;
 			}
 		}
 		else if (enemy->state == ENEMY_STATE_REMOVE)
@@ -919,15 +946,15 @@ unsigned int collect_enemy(
 		if (enemy->state == ENEMY_STATE_CALL_BIRD)
 		{
 			enemy->state_counter = 0;
-			enemy->state = ENEMY_STATE_ZOMBIE;
+			enemy->state = ENEMY_STATE_COLLECT_ZOMBIE;
 		}
 		else
 		{
 			enemy->state_counter = 0;
 			enemy->state = ENEMY_STATE_COLLECT;
-			enemy->ch.frame = NUMBER_250;
 		}
 
+		enemy->ch.frame = NUMBER_250; // TODO: check if in air
 		result = 1;
 	}
 
@@ -1083,10 +1110,32 @@ void draw_enemies(void)
 				draw_vlp_1(enemy->ch_0.anim->shapes[enemy->ch_0.base_frame + enemy->ch_0.frame]);
 			}
 		}
-		else if (enemy->state == ENEMY_STATE_ZOMBIE)
+		else if (enemy->state >= ENEMY_STATE_COLLECT && enemy->state <= ENEMY_STATE_ZOMBIE)
 		{
 			signed int y;
 			signed int x;
+
+			if (enemy->state < ENEMY_STATE_ZOMBIE)
+			{
+				// ZERO
+				dp_VIA_cntl=0xcc;
+
+				y = enemy->ch.obj.y - enemy->ch.obj.h_2;
+				int x = enemy->ch.obj.x;			
+			
+				dp_VIA_t1_cnt_lo = OBJECT_MOVE_SCALE;
+            		dp_VIA_port_a = y;			// y pos to dac
+            		dp_VIA_cntl = 0xce;	// disable zero, disable all blank
+            		dp_VIA_port_b = 0;			// mux enable, dac to -> integrator y (and x)
+            		dp_VIA_shift_reg = 0;		// all output is BLANK
+            		dp_VIA_port_b++;			// mux disable, dac only to x
+            		dp_VIA_port_a = x;			// dac -> x
+            		dp_VIA_t1_cnt_hi=0;		// start timer
+				dp_VIA_t1_cnt_lo = ENEMY_DRAW_SCALE;
+            		while ((dp_VIA_int_flags & 0x40) == 0); // wait till timer finishes
+
+				draw_vlp_1(number[enemy->ch.frame]);
+			}
 
 			if (enemy->ch_0.obj.active)
 			{
@@ -1159,27 +1208,6 @@ void draw_enemies(void)
             		while ((dp_VIA_int_flags & 0x40) == 0); // wait till timer finishes
 				draw_vlp_2(knight[base_frame + enemy->ch.frame]);						
 			}			
-		}
-		else if (enemy->state == ENEMY_STATE_COLLECT)
-		{
-			// ZERO
-			dp_VIA_cntl=0xcc;
-
-			signed int y = enemy->ch.obj.y - enemy->ch.obj.h_2;
-			signed int x = enemy->ch.obj.x;			
-			
-			dp_VIA_t1_cnt_lo = OBJECT_MOVE_SCALE;
-            	dp_VIA_port_a = y;			// y pos to dac
-            	dp_VIA_cntl = 0xce;	// disable zero, disable all blank
-            	dp_VIA_port_b = 0;			// mux enable, dac to -> integrator y (and x)
-            	dp_VIA_shift_reg = 0;		// all output is BLANK
-            	dp_VIA_port_b++;			// mux disable, dac only to x
-            	dp_VIA_port_a = x;			// dac -> x
-            	dp_VIA_t1_cnt_hi=0;		// start timer
-			dp_VIA_t1_cnt_lo = ENEMY_DRAW_SCALE;
-            	while ((dp_VIA_int_flags & 0x40) == 0); // wait till timer finishes
-
-			draw_vlp_1(number[enemy->ch.frame]);
 		}
 
 		enemy = (struct enemy *) enemy->ch.obj.next;

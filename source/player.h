@@ -42,6 +42,7 @@ struct player
 	unsigned int state_counter;
 	unsigned int speed_counter;
 	unsigned int gravity_counter;
+	unsigned long points_x10;
 };
 
 unsigned int init_player(
