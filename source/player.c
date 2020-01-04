@@ -467,7 +467,9 @@ unsigned int move_player(
 	}
 
 	hit_platform(&player->ch.obj, &player->ch.dy, &player->ch.dx);
-	if (move_character(&player->ch) == 2)
+
+	unsigned int result = move_character(&player->ch);
+	if (result == 2)
 	{
 		if (player->state != PLAYER_STATE_HIT)
 		{
@@ -475,6 +477,18 @@ unsigned int move_player(
 			player->state = PLAYER_STATE_DROWNED;
 		}
 	}
+#if 0
+	else if (result == 1)
+	{
+		player->ch.dy = -PLAYER_LIFT;
+		if (player->state == PLAYER_STATE_FLAP)
+		{
+			player->ch.frame = 0;
+			player->state_counter = 0;
+			player->state = PLAYER_STATE_NORMAL;
+		}
+	}
+#endif
 
 	return status;
 }
