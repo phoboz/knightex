@@ -704,6 +704,11 @@ struct enemy* interaction_enemies_player(
 								{
 									bounce_player(player, enemy->ch.obj.x, 1);
 								}
+
+								if (enemy->state == ENEMY_STATE_COLLECT)
+								{
+									player->points_x10 += enemy->race->points_x10;
+								}
 							}
 						}
 						else if (player->ch.obj.y > enemy->ch.obj.y)
@@ -711,6 +716,10 @@ struct enemy* interaction_enemies_player(
 							if (hit_enemy_over(enemy))
 							{
 								hit_player(player, enemy->ch.obj.x);
+							}
+							else
+							{
+								player->points_x10 += enemy->race->points_x10;
 							}
 						}
 						else

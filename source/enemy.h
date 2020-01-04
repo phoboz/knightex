@@ -58,6 +58,7 @@
 struct enemy_race
 {
 	unsigned int type;
+	unsigned int points_x10;
 	signed int speed;
 	unsigned int speed_treshold;
 	unsigned int flap_treshold;

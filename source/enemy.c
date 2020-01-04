@@ -97,11 +97,11 @@ static const struct character_anim enemy_anims[] =
 
 const struct enemy_race enemy_races[] =
 {
-	/*	type					speed	speed_treshold	flap_treshold		gravity_treshold	rise_treshold	reaction_treshold	bounce_treshold	attack_treshold	retreat_treshold	anim				*/
-	{	ENEMY_TYPE_BOUNCER,	2,		6,				24,				3,				2,			24,				12,				255,				255,				&enemy_anims[0]	},
-	{	ENEMY_TYPE_HUNTER,		2,		5,				32,				3,				1,			16,				12,				255,				255,				&enemy_anims[1]	},
-	{	ENEMY_TYPE_LORD,		4,		3,				24,				4,				1,			12,				8,				255,				255,				&enemy_anims[2]	},
-	{	ENEMY_TYPE_PTERY,		3,		2,				255,				4,				4,			16,				56,				100,				32,				&enemy_anims[3]	}
+	/*	type					points_x10	speed	speed_treshold	flap_treshold		gravity_treshold	rise_treshold	reaction_treshold	bounce_treshold	attack_treshold	retreat_treshold	anim				*/
+	{	ENEMY_TYPE_BOUNCER,	50,			2,		6,				24,				3,				2,			24,				12,				255,				255,				&enemy_anims[0]	},
+	{	ENEMY_TYPE_HUNTER,		75,			2,		5,				32,				3,				1,			16,				12,				255,				255,				&enemy_anims[1]	},
+	{	ENEMY_TYPE_LORD,		150,			4,		3,				24,				4,				1,			12,				8,				255,				255,				&enemy_anims[2]	},
+	{	ENEMY_TYPE_PTERY,		100,			3,		2,				255,				4,				4,			16,				56,				100,				32,				&enemy_anims[3]	}
 };
 
 unsigned int enemy_status = 0;
