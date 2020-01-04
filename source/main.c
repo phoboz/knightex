@@ -29,11 +29,14 @@
 
 #define GAME_STATE_NORMAL			0
 #define GAME_STATE_NEXT_WAVE		1
+#define GAME_STATE_OVER			2
+
+static const char game_over_text[]	= "GAME OVER\x80";
 
 unsigned int game_state = GAME_STATE_NORMAL;
 struct player player_1;
 unsigned int player_1_status;
-unsigned int player_1_extra_lives = 100;
+unsigned int player_1_extra_lives = 3;
 struct enemy enemies[MAX_ENEMIES];
 struct wave wave;
 unsigned int new_wave_index = 0;
@@ -115,6 +118,10 @@ int main(void)
 					init_player(&player_1);
 					player_1_extra_lives--;
 				}
+				else
+				{
+					game_state = GAME_STATE_OVER;
+				}
 			}
 
 			if (!sfx_status_1)
@@ -175,6 +182,12 @@ int main(void)
 		reset_text();
 		print_points_x10(120, -16, player_1.points_x10);
 
+		Moveto_d(PLATFORM_GROUND_Y - 10, -120);
+		for (unsigned int i = 0; i < player_1_extra_lives; i++)
+		{
+			Dot_d(0, 4);
+		}
+
 		draw_platforms();
 
 		draw_player(&player_1);
@@ -183,6 +196,11 @@ int main(void)
 		if (game_state == GAME_STATE_NEXT_WAVE)
 		{
 			announce_wave(&wave);
+		}
+		else if (game_state == GAME_STATE_OVER)
+		{
+			reset_text();
+			Print_Str_d(32, -24, (char *) game_over_text);
 		}
 	};
 	

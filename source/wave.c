@@ -466,32 +466,32 @@ static const struct wave_def waves[] =
 	{	WAVE_TYPE_NORMAL,		NUM_ELMTS(wave_1),		wave_1	},
 	{	WAVE_TYPE_SURVIVAL,	NUM_ELMTS(wave_2),		wave_2	},
 	{	WAVE_TYPE_NORMAL,		NUM_ELMTS(wave_3),		wave_3	},
-	{	WAVE_TYPE_GLADIATOR,	NUM_ELMTS(wave_4),		wave_4	},
+	//{	WAVE_TYPE_GLADIATOR,	NUM_ELMTS(wave_4),		wave_4	},
 	{	WAVE_TYPE_EGG,		NUM_ELMTS(wave_5),		wave_5	},
 	{	WAVE_TYPE_NORMAL,		NUM_ELMTS(wave_6),		wave_6	},
 	{	WAVE_TYPE_SURVIVAL,	NUM_ELMTS(wave_7),		wave_7	},
 	{	WAVE_TYPE_PTERY,		NUM_ELMTS(wave_8),		wave_8	},
-	{	WAVE_TYPE_GLADIATOR,	NUM_ELMTS(wave_9),		wave_9	},
+	//{	WAVE_TYPE_GLADIATOR,	NUM_ELMTS(wave_9),		wave_9	},
 	{	WAVE_TYPE_EGG,		NUM_ELMTS(wave_10),	wave_10	},
 	{	WAVE_TYPE_NORMAL,		NUM_ELMTS(wave_11),	wave_11	},
 	{	WAVE_TYPE_SURVIVAL,	NUM_ELMTS(wave_12),	wave_12	},
 	{	WAVE_TYPE_PTERY,		NUM_ELMTS(wave_13),	wave_13	},
-	{	WAVE_TYPE_GLADIATOR,	NUM_ELMTS(wave_14),	wave_14	},
+	//{	WAVE_TYPE_GLADIATOR,	NUM_ELMTS(wave_14),	wave_14	},
 	{	WAVE_TYPE_EGG,		NUM_ELMTS(wave_15),	wave_15	},
 	{	WAVE_TYPE_NORMAL,		NUM_ELMTS(wave_16),	wave_16	},
 	{	WAVE_TYPE_SURVIVAL,	NUM_ELMTS(wave_17),	wave_17	},
 	{	WAVE_TYPE_PTERY,		NUM_ELMTS(wave_18),	wave_18	},
-	{	WAVE_TYPE_GLADIATOR,	NUM_ELMTS(wave_19),	wave_19	},
+	//{	WAVE_TYPE_GLADIATOR,	NUM_ELMTS(wave_19),	wave_19	},
 	{	WAVE_TYPE_EGG,		NUM_ELMTS(wave_20),	wave_20	},
 	{	WAVE_TYPE_NORMAL,		NUM_ELMTS(wave_21),	wave_21	},
 	{	WAVE_TYPE_SURVIVAL,	NUM_ELMTS(wave_22),	wave_22	},
 	{	WAVE_TYPE_PTERY,		NUM_ELMTS(wave_23),	wave_23	},
-	{	WAVE_TYPE_GLADIATOR,	NUM_ELMTS(wave_24),	wave_24	},
+	//{	WAVE_TYPE_GLADIATOR,	NUM_ELMTS(wave_24),	wave_24	},
 	{	WAVE_TYPE_EGG,		NUM_ELMTS(wave_25),	wave_25	},
 	{	WAVE_TYPE_NORMAL,		NUM_ELMTS(wave_26),	wave_26	},
 	{	WAVE_TYPE_SURVIVAL,	NUM_ELMTS(wave_27),	wave_27	},
 	{	WAVE_TYPE_PTERY,		NUM_ELMTS(wave_28),	wave_28	},
-	{	WAVE_TYPE_GLADIATOR,	NUM_ELMTS(wave_29),	wave_29	},
+	//{	WAVE_TYPE_GLADIATOR,	NUM_ELMTS(wave_29),	wave_29	},
 	{	WAVE_TYPE_EGG,		NUM_ELMTS(wave_30),	wave_30	}
 };
 
@@ -661,16 +661,18 @@ unsigned int move_wave(
 	return result;
 }
 
+#define WAVE_ANNOUNCE_Y 32
+
 void announce_wave(
 	struct wave *wave
 	)
 {
 	reset_text();
-	Print_Str_d(0, -24, (char *) wave_heading_text);
-	print_2digit_number(0, 0, (unsigned long) wave->wave_index + 1);
+	Print_Str_d(WAVE_ANNOUNCE_Y, -24, (char *) wave_heading_text);
+	print_2digit_number(WAVE_ANNOUNCE_Y, 0, (unsigned long) wave->wave_index + 1);
 	if (waves[wave->wave_index].wave_type)
 	{
-		Print_Str_d(-8, -24, (char *) wave_type_text[waves[wave->wave_index].wave_type - 1]);
+		Print_Str_d(WAVE_ANNOUNCE_Y - 8, -24, (char *) wave_type_text[waves[wave->wave_index].wave_type - 1]);
 	}
 }
 
