@@ -65,6 +65,7 @@ int main(void)
 
 	init_platforms();
 	init_player(&player_1);
+	player_1.points_x10 = 0;
 	init_wave(&wave);
 
 /////////////////////
@@ -170,6 +171,10 @@ int main(void)
 		}
 
 		Intensity_7F();
+
+		reset_text();
+		print_points_x10(120, -16, player_1.points_x10);
+
 		draw_platforms();
 
 		draw_player(&player_1);

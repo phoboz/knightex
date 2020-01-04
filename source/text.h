@@ -6,7 +6,13 @@
 
 void reset_text(void);
 
-void print_3digit_number(
+void print_2digit_number(
+	signed int y,
+	signed int x,
+	unsigned long number
+	);
+
+void print_points_x10(
 	signed int y,
 	signed int x,
 	unsigned long number

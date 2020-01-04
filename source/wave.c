@@ -667,7 +667,7 @@ void announce_wave(
 {
 	reset_text();
 	Print_Str_d(0, -24, (char *) wave_heading_text);
-	print_3digit_number(0, 0, (unsigned long) wave->wave_index + 1);
+	print_2digit_number(0, 0, (unsigned long) wave->wave_index + 1);
 	if (waves[wave->wave_index].wave_type)
 	{
 		Print_Str_d(-8, -24, (char *) wave_type_text[waves[wave->wave_index].wave_type - 1]);
