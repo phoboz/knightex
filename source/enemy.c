@@ -12,6 +12,7 @@
 #include "ptery.h"
 #include "knight.h"
 #include "egg.h"
+#include "number.h"
 #include "player.h"
 #include "enemy.h"
 
@@ -813,6 +814,14 @@ void move_enemies(void)
 				enemy->state_counter = 0;
 			}
 		}
+		else if (enemy->state == ENEMY_STATE_COLLECT)
+		{
+			if (++enemy->state_counter == ENEMY_COLLECT_TRESHOLD)
+			{
+				enemy->state_counter = 0;
+				enemy->state = ENEMY_STATE_REMOVE;
+			}
+		}
 		else if (enemy->state == ENEMY_STATE_REMOVE)
 		{
 			rem_enemy = enemy;
@@ -842,7 +851,8 @@ unsigned int hit_enemy_equal(
 		if (dir != enemy->ch.dir && enemy->ch.frame == PTERY_ATTACK_FRAME)
 		{
 			enemy->state_counter = 0;
-			enemy->state = ENEMY_STATE_REMOVE;
+			enemy->state = ENEMY_STATE_COLLECT;
+			enemy->ch.frame = NUMBER_1000;
 			result = 0;
 		}
 		else
@@ -914,7 +924,8 @@ unsigned int collect_enemy(
 		else
 		{
 			enemy->state_counter = 0;
-			enemy->state = ENEMY_STATE_REMOVE;
+			enemy->state = ENEMY_STATE_COLLECT;
+			enemy->ch.frame = NUMBER_250;
 		}
 
 		result = 1;
@@ -1148,6 +1159,27 @@ void draw_enemies(void)
             		while ((dp_VIA_int_flags & 0x40) == 0); // wait till timer finishes
 				draw_vlp_2(knight[base_frame + enemy->ch.frame]);						
 			}			
+		}
+		else if (enemy->state == ENEMY_STATE_COLLECT)
+		{
+			// ZERO
+			dp_VIA_cntl=0xcc;
+
+			signed int y = enemy->ch.obj.y - enemy->ch.obj.h_2;
+			signed int x = enemy->ch.obj.x;			
+			
+			dp_VIA_t1_cnt_lo = OBJECT_MOVE_SCALE;
+            	dp_VIA_port_a = y;			// y pos to dac
+            	dp_VIA_cntl = 0xce;	// disable zero, disable all blank
+            	dp_VIA_port_b = 0;			// mux enable, dac to -> integrator y (and x)
+            	dp_VIA_shift_reg = 0;		// all output is BLANK
+            	dp_VIA_port_b++;			// mux disable, dac only to x
+            	dp_VIA_port_a = x;			// dac -> x
+            	dp_VIA_t1_cnt_hi=0;		// start timer
+			dp_VIA_t1_cnt_lo = ENEMY_DRAW_SCALE;
+            	while ((dp_VIA_int_flags & 0x40) == 0); // wait till timer finishes
+
+			draw_vlp_1(number[enemy->ch.frame]);
 		}
 
 		enemy = (struct enemy *) enemy->ch.obj.next;
