@@ -50,6 +50,7 @@ unsigned int init_player(
 		player->state			= PLAYER_STATE_RISE;
 		player->state_counter	= 0;
 		player->speed_counter	= 0;
+		player->points_x10		= 0;
 
 		player->control_dir = pad->dir;
 		player->ch.dir = pad->dir;
@@ -723,7 +724,7 @@ struct enemy* interaction_enemies_player(
 				{
 					if (hit_object(&player->ch.obj, &enemy->ch.obj))
 					{
-						collect_enemy(enemy);
+						player->points_x10 += collect_enemy(enemy);
 					}
 				}
 			}

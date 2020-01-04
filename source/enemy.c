@@ -943,6 +943,17 @@ unsigned int collect_enemy(
 
 	if (enemy->invisible_counter >= ENEMY_INVISIBLE_TRESHOLD)
 	{
+		if (enemy->state == ENEMY_STATE_EGG_DROP)
+		{
+			enemy->ch.frame = NUMBER_500;
+			result = 50;
+		}
+		else
+		{
+			enemy->ch.frame = NUMBER_250;
+			result = 25;
+		}
+
 		if (enemy->state == ENEMY_STATE_CALL_BIRD)
 		{
 			enemy->state_counter = 0;
@@ -953,9 +964,6 @@ unsigned int collect_enemy(
 			enemy->state_counter = 0;
 			enemy->state = ENEMY_STATE_COLLECT;
 		}
-
-		enemy->ch.frame = NUMBER_250; // TODO: check if in air
-		result = 1;
 	}
 
 	return result;
