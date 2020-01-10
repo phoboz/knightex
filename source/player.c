@@ -233,6 +233,12 @@ unsigned int move_player(
 
 			if (hit_platform(&player->ch.obj, &player->ch.dy, &player->ch.dx))
 			{
+				if (!player->hit_roof)
+				{
+					player->hit_roof = 1;
+					player->roof_counter = 0;
+				}
+
 				player->state_counter = 0;
 				player->ch.frame = 0;
 				player->state = PLAYER_STATE_NORMAL;
