@@ -16,6 +16,7 @@
 #define PLAYER_FLAP_TRESHOLD		8
 #define PLAYER_GRAVITY_TRESHOLD		8
 #define PLAYER_ROOF_TRESHOLD		8
+#define PLAYER_FLAP_DELAY_TRESHOLD	4
 #define PLAYER_DIE_TRESHOLD			64
 
 #define PLAYER_STATE_NORMAL		1
@@ -46,6 +47,7 @@ struct player
 	unsigned long points_x10;
 	unsigned int hit_roof;
 	unsigned int roof_counter;
+	unsigned int flap_countdown;
 };
 
 unsigned int init_player(

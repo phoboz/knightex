@@ -50,6 +50,9 @@ unsigned int init_player(
 		player->state			= PLAYER_STATE_RISE;
 		player->state_counter	= 0;
 		player->speed_counter	= 0;
+		player->hit_roof		= 0;
+		player->roof_counter	= 0;
+		player->flap_countdown = 0;
 
 		player->control_dir = pad->dir;
 		player->ch.dir = pad->dir;
@@ -163,7 +166,12 @@ unsigned int move_player(
 				}
 			}
 
-			if (button_1_4_pressed())
+			if (player->flap_countdown != 0)
+			{
+				player->flap_countdown--;
+			}
+
+			if (button_1_4_pressed() && player->flap_countdown == 0)
 			{
 				player->ch.dy = PLAYER_LIFT;
 				player->ch.frame = 1;
@@ -748,13 +756,11 @@ struct enemy* interaction_enemies_player(
 								{
 									bounce_player(player, enemy->ch.obj.x, 2);
 									enemy->ch.dx = -enemy->ch.dx;
-									if (player->state == PLAYER_STATE_FLAP)
-									{
-										player->state = PLAYER_STATE_NORMAL;
-										player->state_counter = 0;
-										player->ch.frame = 0;
-									}
-									player->ch.dy = -PLAYER_LIFT;
+									player->state = PLAYER_STATE_NORMAL;
+									player->state_counter = 0;
+									player->ch.frame = 0;
+									player->ch.dy = -1;
+									player->flap_countdown = PLAYER_FLAP_DELAY_TRESHOLD;
 								}
 							}
 							else
