@@ -740,15 +740,22 @@ struct enemy* interaction_enemies_player(
 						{
 							if (player->hit_roof)
 							{
-								bounce_player(player, enemy->ch.obj.x, 2);
-								enemy->ch.dx = -enemy->ch.dx;
-								if (player->state == PLAYER_STATE_FLAP)
+								if (enemy->race->type == ENEMY_TYPE_PTERY)
 								{
-									player->state = PLAYER_STATE_NORMAL;
-									player->state_counter = 0;
-									player->ch.frame = 0;
+									hit_player(player, enemy->ch.obj.x);
 								}
-								player->ch.dy = -PLAYER_LIFT;
+								else
+								{
+									bounce_player(player, enemy->ch.obj.x, 2);
+									enemy->ch.dx = -enemy->ch.dx;
+									if (player->state == PLAYER_STATE_FLAP)
+									{
+										player->state = PLAYER_STATE_NORMAL;
+										player->state_counter = 0;
+										player->ch.frame = 0;
+									}
+									player->ch.dy = -PLAYER_LIFT;
+								}
 							}
 							else
 							{
