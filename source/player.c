@@ -477,18 +477,23 @@ unsigned int move_player(
 			player->state = PLAYER_STATE_DROWNED;
 		}
 	}
-#if 0
 	else if (result == 1)
 	{
-		player->ch.dy = -PLAYER_LIFT;
-		if (player->state == PLAYER_STATE_FLAP)
+		if (!player->hit_roof)
 		{
-			player->ch.frame = 0;
-			player->state_counter = 0;
-			player->state = PLAYER_STATE_NORMAL;
+			player->hit_roof = 1;
+			player->roof_counter = 0;
 		}
 	}
-#endif
+
+	if (player->hit_roof)
+	{
+		if (++player->roof_counter == PLAYER_ROOF_TRESHOLD)
+		{
+			player->roof_counter = 0;
+			player->hit_roof = 0;
+		}
+	}
 
 	return status;
 }
@@ -727,13 +732,28 @@ struct enemy* interaction_enemies_player(
 						}
 						else if (player->ch.obj.y > enemy->ch.obj.y)
 						{
-							if (hit_enemy_over(enemy))
+							if (player->hit_roof)
 							{
-								hit_player(player, enemy->ch.obj.x);
+								bounce_player(player, enemy->ch.obj.x, 2);
+								enemy->ch.dx = -enemy->ch.dx;
+								if (player->state == PLAYER_STATE_FLAP)
+								{
+									player->state = PLAYER_STATE_NORMAL;
+									player->state_counter = 0;
+									player->ch.frame = 0;
+								}
+								player->ch.dy = -PLAYER_LIFT;
 							}
 							else
 							{
-								player->points_x10 += enemy->race->points_x10;
+								if (hit_enemy_over(enemy))
+								{
+									hit_player(player, enemy->ch.obj.x);
+								}
+								else
+								{
+									player->points_x10 += enemy->race->points_x10;
+								}
 							}
 						}
 						else
