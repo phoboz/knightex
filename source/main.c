@@ -25,7 +25,8 @@
 #include "walk_snd.h"
 #include "brake_snd.h"
 
-#define MAX_ENEMIES	12
+#define MAX_ENEMIES				12
+#define SCORE_FOR_EXTRA_LIFE_X10	2000
 
 #define GAME_STATE_NORMAL			0
 #define GAME_STATE_NEXT_WAVE		1
@@ -37,6 +38,7 @@ unsigned int game_state = GAME_STATE_NORMAL;
 struct player player_1;
 unsigned int player_1_status;
 unsigned int player_1_extra_lives = 3;
+unsigned long player_1_next_extra_life = SCORE_FOR_EXTRA_LIFE_X10;
 struct enemy enemies[MAX_ENEMIES];
 struct wave wave;
 unsigned int new_wave_index = 0;
@@ -109,7 +111,7 @@ int main(void)
 				game_state = GAME_STATE_NEXT_WAVE;
 			}
 
-			interaction_enemies_player(&player_1);
+			player_1_status |= interaction_enemies_player(&player_1);
 
 			if (player_1.state == PLAYER_STATE_DEAD)
 			{
@@ -121,6 +123,16 @@ int main(void)
 				else
 				{
 					game_state = GAME_STATE_OVER;
+				}
+			}
+
+			if (player_1_status &
+				(PLAYER_STATUS_COLLECT | PLAYER_STATUS_WIN | PLAYER_STATUS_HIT))
+			{
+				if (player_1.points_x10 >= player_1_next_extra_life)
+				{
+					player_1_extra_lives++;
+					player_1_next_extra_life += SCORE_FOR_EXTRA_LIFE_X10;
 				}
 			}
 

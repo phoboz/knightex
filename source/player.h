@@ -34,6 +34,10 @@
 #define PLAYER_STATUS_FLAP		0x01
 #define PLAYER_STATUS_WALK		0x02
 #define PLAYER_STATUS_BRAKE		0x04
+#define PLAYER_STATUS_WIN		0x08
+#define PLAYER_STATUS_HIT		0x10
+#define PLAYER_STATUS_BOUNCE	0x20
+#define PLAYER_STATUS_COLLECT	0x40
 
 struct player
 {
@@ -62,7 +66,7 @@ void draw_player(
 	struct player *player
 	);
 
-struct enemy* interaction_enemies_player(
+unsigned int interaction_enemies_player(
 	struct player *player
 	);
 

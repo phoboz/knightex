@@ -707,12 +707,12 @@ static void hit_player(
 	player->points_x10 += 5;
 }
 
-struct enemy* interaction_enemies_player(
+unsigned int interaction_enemies_player(
 	struct player *player
 	)
 {
 	struct enemy *enemy;
-	struct enemy *result = 0;
+	unsigned int status = 0;
 
 	if (player->ch.obj.active)
 	{
@@ -730,17 +730,20 @@ struct enemy* interaction_enemies_player(
 							if (hit_enemy_equal(enemy, player->ch.dir, player->ch.dx))
 							{
 								hit_player(player, enemy->ch.obj.x);
+								status |= PLAYER_STATUS_HIT;
 							}
 							else
 							{
 								if (player->ch.dir != enemy->ch.dir)
 								{
 									bounce_player(player, enemy->ch.obj.x, 1);
+									status |= PLAYER_STATUS_BOUNCE;
 								}
 
 								if (enemy->state == ENEMY_STATE_COLLECT)
 								{
 									player->points_x10 += enemy->race->points_x10;
+									status |= PLAYER_STATUS_COLLECT;
 								}
 							}
 						}
@@ -751,6 +754,7 @@ struct enemy* interaction_enemies_player(
 								if (enemy->race->type == ENEMY_TYPE_PTERY)
 								{
 									hit_player(player, enemy->ch.obj.x);
+									status |= PLAYER_STATUS_HIT;
 								}
 								else
 								{
@@ -761,6 +765,7 @@ struct enemy* interaction_enemies_player(
 									player->ch.frame = 0;
 									player->ch.dy = -1;
 									player->flap_countdown = PLAYER_FLAP_DELAY_TRESHOLD;
+									status |= PLAYER_STATUS_BOUNCE;
 								}
 							}
 							else
@@ -768,10 +773,12 @@ struct enemy* interaction_enemies_player(
 								if (hit_enemy_over(enemy))
 								{
 									hit_player(player, enemy->ch.obj.x);
+									status |= PLAYER_STATUS_HIT;
 								}
 								else
 								{
 									player->points_x10 += enemy->race->points_x10;
+									status |= PLAYER_STATUS_WIN;
 								}
 							}
 						}
@@ -787,6 +794,7 @@ struct enemy* interaction_enemies_player(
 					if (hit_object(&player->ch.obj, &enemy->ch.obj))
 					{
 						player->points_x10 += collect_enemy(enemy);
+						status |= PLAYER_STATUS_COLLECT;
 					}
 				}
 			}
@@ -795,7 +803,7 @@ struct enemy* interaction_enemies_player(
 		}
 	}
 
-	return result;
+	return status;
 }
 
 // ***************************************************************************
