@@ -26,6 +26,7 @@
 #include "brake_snd.h"
 
 #define MAX_ENEMIES				12
+#define SURVIVAL_AWARD_PONTS_X10	100
 #define SCORE_FOR_EXTRA_LIFE_X10	2000
 
 #define GAME_STATE_NORMAL			0
@@ -33,11 +34,14 @@
 #define GAME_STATE_NEXT_WAVE		2
 #define GAME_STATE_OVER			3
 
+#define PLAYER_1_NO_SURVIVE			0x01
+
 static const char game_over_text[]	= "GAME OVER\x80";
 
 unsigned int game_state = GAME_STATE_NORMAL;
 struct player player_1;
 unsigned int player_1_status;
+unsigned int player_1_wave_flags;
 unsigned int player_1_extra_lives = 3;
 unsigned long player_1_next_extra_life = SCORE_FOR_EXTRA_LIFE_X10;
 unsigned int last_wave_type = WAVE_TYPE_NORMAL;
@@ -45,6 +49,15 @@ struct enemy enemies[MAX_ENEMIES];
 struct wave wave;
 unsigned int new_wave_index = 0;
 unsigned int curr_wave_index;
+
+void check_points(void)
+{
+	if (player_1.points_x10 >= player_1_next_extra_life)
+	{
+		player_1_extra_lives++;
+		player_1_next_extra_life += SCORE_FOR_EXTRA_LIFE_X10;
+	}
+}
 
 // ---------------------------------------------------------------------------
 // cold reset: the vectrex logo is shown, all ram data is cleared
@@ -76,7 +89,7 @@ int main(void)
 	init_wave(&wave);
 
 /////////////////////
-//wave.wave_index = 1;
+//wave.wave_index = 2;
 ////////////////////
 
 	while(1)
@@ -110,8 +123,11 @@ int main(void)
 				sfx_status_1 = 0;
 				sfx_status_2 = 0;
 				Vec_Music_Flag = 1;
-				if (last_wave_type == WAVE_TYPE_SURVIVAL)
+				if (last_wave_type == WAVE_TYPE_SURVIVAL &&
+				    (player_1_wave_flags & PLAYER_1_NO_SURVIVE) == 0x00)
 				{
+					player_1.points_x10 += SURVIVAL_AWARD_PONTS_X10;
+					check_points();
 					game_state = GAME_STATE_AWARD;
 				}
 				else
@@ -124,6 +140,11 @@ int main(void)
 
 			if (player_1.state == PLAYER_STATE_DEAD)
 			{
+				if (get_wave_type(&wave) == WAVE_TYPE_SURVIVAL)
+				{
+					player_1_wave_flags |= PLAYER_1_NO_SURVIVE;
+				}
+
 				if (player_1_extra_lives)
 				{
 					init_player(&player_1);
@@ -138,11 +159,7 @@ int main(void)
 			if (player_1_status &
 				(PLAYER_STATUS_COLLECT | PLAYER_STATUS_WIN | PLAYER_STATUS_HIT))
 			{
-				if (player_1.points_x10 >= player_1_next_extra_life)
-				{
-					player_1_extra_lives++;
-					player_1_next_extra_life += SCORE_FOR_EXTRA_LIFE_X10;
-				}
+				check_points();
 			}
 
 			if (!sfx_status_1)
@@ -169,7 +186,7 @@ int main(void)
 			if (Vec_Music_Flag)
 			{
 				DP_to_C8();
-				Init_Music_chk(&Vec_Music_1);
+				Init_Music_chk(&Vec_Music_4);
 			}
 			else
 			{
@@ -184,10 +201,22 @@ int main(void)
 			if (Vec_Music_Flag)
 			{
 				DP_to_C8();
-				Init_Music_chk(&Vec_Music_9);
+				if (get_wave_type(&wave) == WAVE_TYPE_SURVIVAL)
+				{
+					Init_Music_chk(&Vec_Music_5);
+				}
+				else if (get_wave_type(&wave) == WAVE_TYPE_EGG)
+				{
+					Init_Music_chk(&Vec_Music_8);
+				}
+				else
+				{
+					Init_Music_chk(&Vec_Music_9);
+				}
 			}
 			else
 			{
+				player_1_wave_flags = 0x00;
 				last_wave_type = close_wave(&wave);
 				game_state = GAME_STATE_NORMAL;
 			}

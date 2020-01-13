@@ -12,29 +12,34 @@
 
 // ---------------------------------------------------------------------------
 
+struct wave_info {
+	int dx;
+	const char * const text;
+};
+
 static const char wave_heading_text[]	= "WAVE \x80";
 static const char survival_wave_text[]	= "SURVIVAL WAVE \x80";
 static const char egg_wave_text[]		= "EGG WAVE \x80";
 static const char gladiator_wave_text[]	= "GLADIATOR WAVE \x80";
 static const char ptery_wave_text[]		= "PTERY WAVE \x80";
-static const char * const wave_type_text[] =
+static const struct wave_info wave_type_info[] =
 {
-	survival_wave_text,
-	egg_wave_text,
-	gladiator_wave_text,
-	ptery_wave_text
+	/*	dx	text					*/
+	{	11,	survival_wave_text		},
+	{	 1,	egg_wave_text			},
+	{	12,	gladiator_wave_text	},
+	{	11,	ptery_wave_text		}
 };
 
 static const char survival_award_text[] =		"SURVIVAL BONUS \x80";
-static const char bonus_none_text[] =		"NO BONUS \x80";
 static const char bonus_1000_text[] =		"1,000 \x80";
 
 static const struct wave_element wave_1[] =
 {
 	/*	treshold		index					type							race					param		*/
 	{	0,			0,						WAVE_ELEMENT_INIT_PLATFORMS,	0,					0			},
-	//{	80,			0,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
-	//{	80,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
+	{	80,			0,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
+	{	80,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
 	{	80,			2,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			}
 };
 
@@ -42,10 +47,10 @@ static const struct wave_element wave_2[] =
 {
 	/*	treshold		index					type							race					param		*/
 	{	0,			PLATFORM_GROUND_LENGTH_MIN,	WAVE_ELEMENT_SET_GROUND_LENGTH,	0,					0			},
-	//{	80,			0,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
-	//{	80,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
+	{	80,			0,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
+	{	80,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
 	{	80,			2,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
-	//{	80,			0,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			}
+	{	80,			0,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			}
 };
 
 static const struct wave_element wave_3[] =
@@ -674,7 +679,7 @@ unsigned int get_wave_type(
 	return waves[wave->wave_index].wave_type;
 }
 
-#define WAVE_TEXT_X 		28
+#define WAVE_TEXT_X 		18
 #define WAVE_TEXT_Y 		32
 #define WAVE_TEXT_SPACE	8
 
@@ -686,10 +691,8 @@ void draw_award_wave(
 	{
 		case WAVE_AWARD_TYPE_SURVIVAL:
 			reset_text();
-			Print_Str_d(WAVE_TEXT_Y, -WAVE_TEXT_X, (char *) survival_award_text);
-			Print_Str_d(WAVE_TEXT_Y - WAVE_TEXT_SPACE, -WAVE_TEXT_X + 14*2/2, (char *) bonus_none_text);
-			// TODO: Check if condition is met
-			//Print_Str_d(WAVE_TEXT_Y - WAVE_TEXT_SPACE, -WAVE_TEXT_X + 14*2/2, (char *) bonus_1000_text);
+			Print_Str_d(WAVE_TEXT_Y, -WAVE_TEXT_X-7, (char *) survival_award_text);
+			Print_Str_d(WAVE_TEXT_Y - WAVE_TEXT_SPACE, -WAVE_TEXT_X + 7, (char *) bonus_1000_text);
 			break;
 
 		default:
@@ -702,11 +705,13 @@ void announce_wave(
 	)
 {
 	reset_text();
-	Print_Str_d(WAVE_TEXT_Y, -WAVE_TEXT_X + 11*2/2, (char *) wave_heading_text);
-	print_2digit_number(WAVE_TEXT_Y, 11*2/2, (unsigned long) wave->wave_index + 1);
+	Print_Str_d(WAVE_TEXT_Y, -WAVE_TEXT_X, (char *) wave_heading_text);
+	print_2digit_number(WAVE_TEXT_Y, 6, (unsigned long) wave->wave_index + 1);
 	if (waves[wave->wave_index].wave_type)
 	{
-		Print_Str_d(WAVE_TEXT_Y - WAVE_TEXT_SPACE, -WAVE_TEXT_X, (char *) wave_type_text[waves[wave->wave_index].wave_type - 1]);
+		Print_Str_d(WAVE_TEXT_Y - WAVE_TEXT_SPACE,
+				   -(WAVE_TEXT_X + wave_type_info[waves[wave->wave_index].wave_type - 1].dx),
+				   (char *) wave_type_info[waves[wave->wave_index].wave_type - 1].text);
 	}
 }
 
