@@ -20,6 +20,9 @@
 #define WAVE_ELEMENT_RESTORE_PLATFORMS	23
 #define WAVE_ELEMENT_SET_GROUND_LENGTH	24
 
+#define WAVE_AWARD_TYPE_NONE			0
+#define WAVE_AWARD_TYPE_SURVIVAL		1
+
 struct wave_element
 {
 	unsigned int treshold;
@@ -50,12 +53,20 @@ void init_wave(
 	struct wave *wave
 	);
 
-void close_wave(
+unsigned int close_wave(
 	struct wave *wave
 	);
 
 unsigned int move_wave(
 	struct wave *wave
+	);
+
+unsigned int get_wave_type(
+	struct wave *wave
+	);
+
+void draw_award_wave(
+	unsigned int award_type
 	);
 
 void announce_wave(

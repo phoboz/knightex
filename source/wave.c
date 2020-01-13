@@ -25,12 +25,16 @@ static const char * const wave_type_text[] =
 	ptery_wave_text
 };
 
+static const char survival_award_text[] =		"SURVIVAL BONUS \x80";
+static const char bonus_none_text[] =		"NO BONUS \x80";
+static const char bonus_1000_text[] =		"1,000 \x80";
+
 static const struct wave_element wave_1[] =
 {
 	/*	treshold		index					type							race					param		*/
 	{	0,			0,						WAVE_ELEMENT_INIT_PLATFORMS,	0,					0			},
-	{	80,			0,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
-	{	80,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
+	//{	80,			0,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
+	//{	80,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
 	{	80,			2,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			}
 };
 
@@ -38,10 +42,10 @@ static const struct wave_element wave_2[] =
 {
 	/*	treshold		index					type							race					param		*/
 	{	0,			PLATFORM_GROUND_LENGTH_MIN,	WAVE_ELEMENT_SET_GROUND_LENGTH,	0,					0			},
-	{	80,			0,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
-	{	80,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
+	//{	80,			0,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
+	//{	80,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
 	{	80,			2,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
-	{	80,			0,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			}
+	//{	80,			0,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			}
 };
 
 static const struct wave_element wave_3[] =
@@ -510,7 +514,7 @@ void init_wave(
 	wave->new_wave =		0;
 }
 
-void close_wave(
+unsigned close_wave(
 	struct wave *wave
 	)
 {
@@ -528,6 +532,8 @@ void close_wave(
 	}
 
 	wave->new_wave = 0;
+
+	return waves[wave->wave_index].wave_type;
 }
 	
 unsigned int move_wave(
@@ -661,18 +667,46 @@ unsigned int move_wave(
 	return result;
 }
 
-#define WAVE_ANNOUNCE_Y 32
+unsigned int get_wave_type(
+	struct wave *wave
+	)
+{
+	return waves[wave->wave_index].wave_type;
+}
+
+#define WAVE_TEXT_X 		28
+#define WAVE_TEXT_Y 		32
+#define WAVE_TEXT_SPACE	8
+
+void draw_award_wave(
+	unsigned int award_type
+	)
+{
+	switch (award_type)
+	{
+		case WAVE_AWARD_TYPE_SURVIVAL:
+			reset_text();
+			Print_Str_d(WAVE_TEXT_Y, -WAVE_TEXT_X, (char *) survival_award_text);
+			Print_Str_d(WAVE_TEXT_Y - WAVE_TEXT_SPACE, -WAVE_TEXT_X + 14*2/2, (char *) bonus_none_text);
+			// TODO: Check if condition is met
+			//Print_Str_d(WAVE_TEXT_Y - WAVE_TEXT_SPACE, -WAVE_TEXT_X + 14*2/2, (char *) bonus_1000_text);
+			break;
+
+		default:
+			break;
+	}
+}
 
 void announce_wave(
 	struct wave *wave
 	)
 {
 	reset_text();
-	Print_Str_d(WAVE_ANNOUNCE_Y, -24, (char *) wave_heading_text);
-	print_2digit_number(WAVE_ANNOUNCE_Y, 0, (unsigned long) wave->wave_index + 1);
+	Print_Str_d(WAVE_TEXT_Y, -WAVE_TEXT_X + 11*2/2, (char *) wave_heading_text);
+	print_2digit_number(WAVE_TEXT_Y, 11*2/2, (unsigned long) wave->wave_index + 1);
 	if (waves[wave->wave_index].wave_type)
 	{
-		Print_Str_d(WAVE_ANNOUNCE_Y - 8, -24, (char *) wave_type_text[waves[wave->wave_index].wave_type - 1]);
+		Print_Str_d(WAVE_TEXT_Y - WAVE_TEXT_SPACE, -WAVE_TEXT_X, (char *) wave_type_text[waves[wave->wave_index].wave_type - 1]);
 	}
 }
 

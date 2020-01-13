@@ -29,8 +29,9 @@
 #define SCORE_FOR_EXTRA_LIFE_X10	2000
 
 #define GAME_STATE_NORMAL			0
-#define GAME_STATE_NEXT_WAVE		1
-#define GAME_STATE_OVER			2
+#define GAME_STATE_AWARD			1
+#define GAME_STATE_NEXT_WAVE		2
+#define GAME_STATE_OVER			3
 
 static const char game_over_text[]	= "GAME OVER\x80";
 
@@ -39,6 +40,7 @@ struct player player_1;
 unsigned int player_1_status;
 unsigned int player_1_extra_lives = 3;
 unsigned long player_1_next_extra_life = SCORE_FOR_EXTRA_LIFE_X10;
+unsigned int last_wave_type = WAVE_TYPE_NORMAL;
 struct enemy enemies[MAX_ENEMIES];
 struct wave wave;
 unsigned int new_wave_index = 0;
@@ -74,7 +76,7 @@ int main(void)
 	init_wave(&wave);
 
 /////////////////////
-//wave.wave_index = 27;
+//wave.wave_index = 1;
 ////////////////////
 
 	while(1)
@@ -108,7 +110,14 @@ int main(void)
 				sfx_status_1 = 0;
 				sfx_status_2 = 0;
 				Vec_Music_Flag = 1;
-				game_state = GAME_STATE_NEXT_WAVE;
+				if (last_wave_type == WAVE_TYPE_SURVIVAL)
+				{
+					game_state = GAME_STATE_AWARD;
+				}
+				else
+				{
+					game_state = GAME_STATE_NEXT_WAVE;
+				}
 			}
 
 			player_1_status |= interaction_enemies_player(&player_1);
@@ -155,6 +164,21 @@ int main(void)
 				}
 			}
 		}
+		else if (game_state == GAME_STATE_AWARD)
+		{
+			if (Vec_Music_Flag)
+			{
+				DP_to_C8();
+				Init_Music_chk(&Vec_Music_1);
+			}
+			else
+			{
+				sfx_status_1 = 0;
+				sfx_status_2 = 0;
+				Vec_Music_Flag = 1;
+				game_state = GAME_STATE_NEXT_WAVE;
+			}
+		}
 		else if (game_state == GAME_STATE_NEXT_WAVE)
 		{
 			if (Vec_Music_Flag)
@@ -164,7 +188,7 @@ int main(void)
 			}
 			else
 			{
-				close_wave(&wave);
+				last_wave_type = close_wave(&wave);
 				game_state = GAME_STATE_NORMAL;
 			}
 		}
@@ -205,7 +229,11 @@ int main(void)
 		draw_player(&player_1);
 		draw_enemies();
 
-		if (game_state == GAME_STATE_NEXT_WAVE)
+		if (game_state == GAME_STATE_AWARD)
+		{
+			draw_award_wave(WAVE_AWARD_TYPE_SURVIVAL);
+		}
+		else if (game_state == GAME_STATE_NEXT_WAVE)
 		{
 			announce_wave(&wave);
 		}
