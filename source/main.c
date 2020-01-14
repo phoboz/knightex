@@ -240,23 +240,23 @@ int main(void)
 			}
 		}
 
-			if (player_1.state == PLAYER_STATE_DEAD)
+		if (player_1.state == PLAYER_STATE_DEAD)
+		{
+			if (get_wave_type(&wave) == WAVE_TYPE_SURVIVAL)
 			{
-				if (get_wave_type(&wave) == WAVE_TYPE_SURVIVAL)
-				{
-					player_1_wave_flags |= PLAYER_1_NO_SURVIVE;
-				}
-
-				if (player_1_extra_lives)
-				{
-					init_player(&player_1);
-					player_1_extra_lives--;
-				}
-				else
-				{
-					game_state = GAME_STATE_OVER;
-				}
+				player_1_wave_flags |= PLAYER_1_NO_SURVIVE;
 			}
+
+			if (player_1_extra_lives)
+			{
+				init_player(&player_1);
+				player_1_extra_lives--;
+			}
+			else
+			{
+				game_state = GAME_STATE_OVER;
+			}
+		}
 
 		Wait_Recal();
 
