@@ -94,7 +94,7 @@ int main(void)
 	init_wave(&wave);
 
 /////////////////////
-//wave.wave_index = 3;
+//wave.wave_index = 1;
 ////////////////////
 
 	while(1)
@@ -142,24 +142,6 @@ int main(void)
 			}
 
 			player_1_status |= interaction_enemies_player(&player_1);
-
-			if (player_1.state == PLAYER_STATE_DEAD)
-			{
-				if (get_wave_type(&wave) == WAVE_TYPE_SURVIVAL)
-				{
-					player_1_wave_flags |= PLAYER_1_NO_SURVIVE;
-				}
-
-				if (player_1_extra_lives)
-				{
-					init_player(&player_1);
-					player_1_extra_lives--;
-				}
-				else
-				{
-					game_state = GAME_STATE_OVER;
-				}
-			}
 
 			if (player_1_status &
 				(PLAYER_STATUS_COLLECT | PLAYER_STATUS_WIN | PLAYER_STATUS_HIT))
@@ -257,6 +239,24 @@ int main(void)
 				game_state = GAME_STATE_NORMAL;
 			}
 		}
+
+			if (player_1.state == PLAYER_STATE_DEAD)
+			{
+				if (get_wave_type(&wave) == WAVE_TYPE_SURVIVAL)
+				{
+					player_1_wave_flags |= PLAYER_1_NO_SURVIVE;
+				}
+
+				if (player_1_extra_lives)
+				{
+					init_player(&player_1);
+					player_1_extra_lives--;
+				}
+				else
+				{
+					game_state = GAME_STATE_OVER;
+				}
+			}
 
 		Wait_Recal();
 
