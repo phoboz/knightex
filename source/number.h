@@ -1,7 +1,7 @@
 #ifndef _NUMBER_H
 #define _NUMBER_H
 
-#define NUMBER_SCALE	8
+#define NUMBER_SCALE	10
 
 #define NUMBER_250		0
 #define NUMBER_500		1

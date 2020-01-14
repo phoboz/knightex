@@ -981,6 +981,12 @@ void draw_enemies(void)
 	enemy = (struct enemy *) enemy_list;
 	while (enemy != 0)
 	{
+		if (enemy->state == ENEMY_STATE_REMOVE || enemy->state == ENEMY_STATE_REMOVED)
+		{
+			enemy = (struct enemy *) enemy->ch.obj.next;
+			continue;
+		}
+
 		if (enemy->state >= ENEMY_STATE_MOVE && enemy->state <= ENEMY_STATE_WALK)
 		{
 			// ZERO
