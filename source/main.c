@@ -94,7 +94,7 @@ int main(void)
 	init_wave(&wave);
 
 /////////////////////
-//wave.wave_index = 2;
+//wave.wave_index = 3;
 ////////////////////
 
 	while(1)
