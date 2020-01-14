@@ -24,6 +24,11 @@
 #include "flap_snd.h"
 #include "walk_snd.h"
 #include "brake_snd.h"
+#include "rise_snd.h"
+#include "hit1_snd.h"
+#include "hit2_snd.h"
+#include "bounce_snd.h"
+#include "draw_snd.h"
 
 #define MAX_ENEMIES				12
 #define SURVIVAL_AWARD_PONTS_X10	100
@@ -162,14 +167,45 @@ int main(void)
 				check_points();
 			}
 
+			// Higher prio sound that cannot be interrupted
+			if ((enemy_status & ENEMY_STATUS_RISE) == ENEMY_STATUS_RISE)
+			{
+				sfx_pointer_1 = (long unsigned int) (&rise_snd_data);
+				sfx_status_1 = 1;
+			}
+
 			if (!sfx_status_1)
 			{
-				if ((player_1_status & PLAYER_STATUS_FLAP) == PLAYER_STATUS_FLAP)
+				if ((player_1_status & PLAYER_STATUS_HIT) == PLAYER_STATUS_HIT)
+				{
+					sfx_pointer_1 = (long unsigned int) (&hit2_snd_data);
+					sfx_status_1 = 1;
+				}
+				else if ((player_1_status & PLAYER_STATUS_WIN) == PLAYER_STATUS_WIN)
+				{
+					sfx_pointer_1 = (long unsigned int) (&hit1_snd_data);
+					sfx_status_1 = 1;
+				}
+				else if ((player_1_status & PLAYER_STATUS_DRAW) == PLAYER_STATUS_DRAW)
+				{
+					sfx_pointer_1 = (long unsigned int) (&draw_snd_data);
+					sfx_status_1 = 1;
+				}
+			}
+
+			if (!sfx_status_1)
+			{
+				if ((player_1_status & PLAYER_STATUS_BOUNCE) == PLAYER_STATUS_BOUNCE)
+				{
+					sfx_pointer_1 = (long unsigned int) (&bounce_snd_data);
+					sfx_status_1 = 1;
+				}
+				else if ((player_1_status & PLAYER_STATUS_FLAP) == PLAYER_STATUS_FLAP)
 				{
 					sfx_pointer_1 = (long unsigned int) (&flap_snd_data);
 					sfx_status_1 = 1;
 				}
-				if ((player_1_status & PLAYER_STATUS_WALK) == PLAYER_STATUS_WALK)
+				else if ((player_1_status & PLAYER_STATUS_WALK) == PLAYER_STATUS_WALK)
 				{
 					sfx_pointer_1 = (long unsigned int) (&walk_snd_data);
 					sfx_status_1 = 1;
@@ -242,22 +278,11 @@ int main(void)
 			Do_Sound();
 		}
 
-		Intensity_7F();
-
+		Intensity_5F();
 		reset_text();
 		print_points_x10(120, -16, player_1.points_x10);
 
-		Moveto_d(PLATFORM_GROUND_Y - 10, -120);
-		for (unsigned int i = 0; i < player_1_extra_lives; i++)
-		{
-			Dot_d(0, 4);
-		}
-
-		draw_platforms();
-
-		draw_player(&player_1);
-		draw_enemies();
-
+		Intensity_5F();
 		if (game_state == GAME_STATE_AWARD)
 		{
 			draw_award_wave(WAVE_AWARD_TYPE_SURVIVAL);
@@ -271,6 +296,19 @@ int main(void)
 			reset_text();
 			Print_Str_d(32, -24, (char *) game_over_text);
 		}
+
+		Moveto_d(PLATFORM_GROUND_Y - 10, -120);
+		for (unsigned int i = 0; i < player_1_extra_lives; i++)
+		{
+			Dot_d(0, 4);
+		}
+
+		//Intensity_7F();
+		draw_platforms();
+
+		Intensity_7F();
+		draw_player(&player_1);
+		draw_enemies();
 	};
 	
 	// if return value is <= 0, then a warm reset will be performed,

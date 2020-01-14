@@ -806,6 +806,11 @@ void move_enemies(void)
 		}
 		else if (enemy->state == ENEMY_STATE_RISE)
 		{
+			enemy_status |= ENEMY_STATE_RISE;
+			enemy->state = ENEMY_STATE_RISING;
+		}
+		else if (enemy->state == ENEMY_STATE_RISING)
+		{
 			if (++enemy->ch.counter == enemy->ch.anim->treshold)
 			{
 				enemy->ch.counter = 0;
@@ -1167,7 +1172,7 @@ void draw_enemies(void)
 				draw_vlp_1(enemy->ch_0.anim->shapes[enemy->ch_0.base_frame + enemy->ch_0.frame]);
 			}
 		}
-		else if (enemy->state == ENEMY_STATE_RISE)
+		else if (enemy->state >= ENEMY_STATE_RISING)
 		{
 			// ZERO
 			dp_VIA_cntl=0xcc;

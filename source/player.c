@@ -181,6 +181,10 @@ unsigned int move_player(
 					player->state_counter = 0;
 					player->state = PLAYER_STATE_FLAP;
 				}
+				else
+				{
+					status |= PLAYER_STATUS_BOUNCE;
+				}
 			}
 			else
 			{
@@ -250,6 +254,7 @@ unsigned int move_player(
 				player->state_counter = 0;
 				player->ch.frame = 0;
 				player->state = PLAYER_STATE_NORMAL;
+				status |= PLAYER_STATUS_BOUNCE;
 			}
 
 			if (++player->state_counter >= PLAYER_FLAP_TRESHOLD)
@@ -480,7 +485,10 @@ unsigned int move_player(
 			break;
 	}
 
-	hit_platform(&player->ch.obj, &player->ch.dy, &player->ch.dx);
+	if (hit_platform(&player->ch.obj, &player->ch.dy, &player->ch.dx))
+	{
+		status |= PLAYER_STATUS_BOUNCE;
+	}
 
 	unsigned int result = move_character(&player->ch);
 	if (result == 2)
@@ -737,7 +745,7 @@ unsigned int interaction_enemies_player(
 								if (player->ch.dir != enemy->ch.dir)
 								{
 									bounce_player(player, enemy->ch.obj.x, 1);
-									status |= PLAYER_STATUS_BOUNCE;
+									status |= PLAYER_STATUS_DRAW;
 								}
 
 								if (enemy->state == ENEMY_STATE_COLLECT)
@@ -765,7 +773,7 @@ unsigned int interaction_enemies_player(
 									player->ch.frame = 0;
 									player->ch.dy = -1;
 									player->flap_countdown = PLAYER_FLAP_DELAY_TRESHOLD;
-									status |= PLAYER_STATUS_BOUNCE;
+									status |= PLAYER_STATUS_DRAW;
 								}
 							}
 							else
@@ -785,6 +793,7 @@ unsigned int interaction_enemies_player(
 						else
 						{
 							hit_player(player, enemy->ch.obj.x);
+							status |= PLAYER_STATUS_HIT;
 						}
 					}
 				}
