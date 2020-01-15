@@ -32,7 +32,7 @@
 #include "scream_snd.h"
 
 #define MAX_ENEMIES				12
-#define NUMBER_OF_EXTRA_LIVES		3
+#define NUMBER_OF_EXTRA_LIVES		4
 #define SURVIVAL_AWARD_PONTS_X10	300
 #define SCORE_FOR_EXTRA_LIFE_X10	2000
 
@@ -69,7 +69,7 @@ void init_game(void)
 	init_platforms();
 
 	init_player(&player_1);
-	player_1_extra_lives = 3;
+	player_1_extra_lives = NUMBER_OF_EXTRA_LIVES;
 	player_1_next_extra_life = SCORE_FOR_EXTRA_LIFE_X10;
 	player_1.points_x10 = 0;
 	player_1.collect_count = 1;
@@ -334,7 +334,7 @@ int main(void)
 
 		Intensity_5F();
 		reset_text();
-		print_points_x10(120, -16, player_1.points_x10);
+		print_points_x10(120, -12, player_1.points_x10);
 
 		Intensity_5F();
 		if (game_state == GAME_STATE_AWARD)

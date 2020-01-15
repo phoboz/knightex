@@ -950,7 +950,7 @@ unsigned int collect_enemy(
 
 	if (enemy->invisible_counter >= ENEMY_INVISIBLE_TRESHOLD)
 	{
-		if (enemy->state != ENEMY_STATE_KNIGHT || enemy->state == ENEMY_STATE_CALL_BIRD)
+		if (enemy->state != ENEMY_STATE_KNIGHT && enemy->state != ENEMY_STATE_CALL_BIRD)
 		{
 			enemy->ch.frame = count - 1;
 			result = 25 * count;
@@ -961,16 +961,8 @@ unsigned int collect_enemy(
 				result += 50;
 			}
 
-			if (enemy->state == ENEMY_STATE_CALL_BIRD)
-			{
-				enemy->state_counter = 0;
-				enemy->state = ENEMY_STATE_COLLECT_ZOMBIE;
-			}
-			else
-			{
-				enemy->state_counter = 0;
-				enemy->state = ENEMY_STATE_COLLECT;
-			}
+			enemy->state_counter = 0;
+			enemy->state = ENEMY_STATE_COLLECT;
 		}
 		else
 		{
