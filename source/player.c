@@ -802,13 +802,16 @@ unsigned int interaction_enemies_player(
 				{
 					if (hit_object(&player->ch.obj, &enemy->ch.obj))
 					{
-						if (player->collect_count < 4)
+						unsigned int points_x10 = collect_enemy(enemy, player->collect_count);
+						if (points_x10)
 						{
-							player->collect_count++;
+							if (++player->collect_count > 4)
+							{
+								player->collect_count = 4;
+							}
+							player->points_x10 += points_x10;
+							status |= PLAYER_STATUS_COLLECT;
 						}
-
-						player->points_x10 += collect_enemy(enemy, player->collect_count);
-						status |= PLAYER_STATUS_COLLECT;
 					}
 				}
 			}

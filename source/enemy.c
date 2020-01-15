@@ -950,24 +950,40 @@ unsigned int collect_enemy(
 
 	if (enemy->invisible_counter >= ENEMY_INVISIBLE_TRESHOLD)
 	{
-		enemy->ch.frame = count - 1;
-		result = 25 * count;
-
-		if (enemy->state == ENEMY_STATE_EGG_DROP)
+		if (enemy->state != ENEMY_STATE_KNIGHT || enemy->state == ENEMY_STATE_CALL_BIRD)
 		{
-			enemy->ch.frame += 2;
-			result += 50;
-		}
+			enemy->ch.frame = count - 1;
+			result = 25 * count;
 
-		if (enemy->state == ENEMY_STATE_CALL_BIRD)
-		{
-			enemy->state_counter = 0;
-			enemy->state = ENEMY_STATE_COLLECT_ZOMBIE;
+			if (enemy->state == ENEMY_STATE_EGG_DROP)
+			{
+				enemy->ch.frame += 2;
+				result += 50;
+			}
+
+			if (enemy->state == ENEMY_STATE_CALL_BIRD)
+			{
+				enemy->state_counter = 0;
+				enemy->state = ENEMY_STATE_COLLECT_ZOMBIE;
+			}
+			else
+			{
+				enemy->state_counter = 0;
+				enemy->state = ENEMY_STATE_COLLECT;
+			}
 		}
 		else
 		{
-			enemy->state_counter = 0;
-			enemy->state = ENEMY_STATE_COLLECT;
+			if (enemy->state == ENEMY_STATE_CALL_BIRD)
+			{
+				enemy->state_counter = 0;
+				enemy->state = ENEMY_STATE_ZOMBIE;
+			}
+			else
+			{
+				enemy->state_counter = 0;
+				enemy->state = ENEMY_STATE_REMOVE;
+			}
 		}
 	}
 

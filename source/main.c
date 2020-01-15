@@ -47,7 +47,7 @@ static const char game_over_text[]	= "GAME OVER\x80";
 unsigned int game_state = GAME_STATE_NORMAL;
 struct player player_1;
 unsigned int player_1_status;
-unsigned int player_1_wave_flags;
+unsigned int player_1_wave_flags = 0x00;
 unsigned int player_1_extra_lives = 3;
 unsigned long player_1_next_extra_life = SCORE_FOR_EXTRA_LIFE_X10;
 unsigned int last_wave_type = WAVE_TYPE_NORMAL;
@@ -92,6 +92,7 @@ int main(void)
 	init_platforms();
 	init_player(&player_1);
 	player_1.points_x10 = 0;
+	player_1.collect_count = 1;
 	init_wave(&wave);
 
 /////////////////////
@@ -244,8 +245,8 @@ int main(void)
 			}
 			else
 			{
+				player_1.collect_count = 1;
 				player_1_wave_flags = 0x00;
-				player_1.collect_count = 0;
 				last_wave_type = close_wave(&wave);
 				game_state = GAME_STATE_NORMAL;
 			}
