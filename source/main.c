@@ -32,6 +32,7 @@
 #include "scream_snd.h"
 
 #define MAX_ENEMIES				12
+#define NUMBER_OF_EXTRA_LIVES		3
 #define SURVIVAL_AWARD_PONTS_X10	300
 #define SCORE_FOR_EXTRA_LIFE_X10	2000
 
@@ -47,14 +48,62 @@ static const char game_over_text[]	= "GAME OVER\x80";
 unsigned int game_state = GAME_STATE_NORMAL;
 struct player player_1;
 unsigned int player_1_status;
-unsigned int player_1_wave_flags = 0x00;
-unsigned int player_1_extra_lives = 3;
-unsigned long player_1_next_extra_life = SCORE_FOR_EXTRA_LIFE_X10;
-unsigned int last_wave_type = WAVE_TYPE_NORMAL;
+unsigned int player_1_extra_lives;
+unsigned long player_1_next_extra_life;
 struct enemy enemies[MAX_ENEMIES];
 struct wave wave;
-unsigned int new_wave_index = 0;
+unsigned int last_wave_type;
+unsigned int player_1_wave_flags;
+unsigned int new_wave_index;
 unsigned int curr_wave_index;
+
+void init_game(void)
+{
+	unsigned int i;
+
+	for (i = 0; i < MAX_ENEMIES; i++)
+	{
+		give_object(&enemies[i].ch.obj, &enemy_free_list);
+	}
+
+	init_platforms();
+
+	init_player(&player_1);
+	player_1_extra_lives = 3;
+	player_1_next_extra_life = SCORE_FOR_EXTRA_LIFE_X10;
+	player_1.points_x10 = 0;
+	player_1.collect_count = 1;
+
+	init_wave(&wave);
+	last_wave_type = WAVE_TYPE_NORMAL;
+	player_1_wave_flags = 0x00;
+	new_wave_index = 0;
+
+/////////////////////
+//wave.wave_index = 3;
+////////////////////
+}
+
+void close_game(void)
+{
+	unsigned int i;
+
+	for (i = 0; i < MAX_ENEMIES; i++)
+	{
+		enemies[i].ch.obj.prev = 0;
+		enemies[i].ch.obj.next = 0;
+	}
+
+	enemy_list = 0;
+	enemy_free_list = 0;
+}
+
+void restart_game(void)
+{
+	close_wave(&wave);
+	close_game();
+	init_game();
+}
 
 void check_points(void)
 {
@@ -77,27 +126,12 @@ void check_points(void)
 
 int main(void)
 {
-	unsigned int i;
-
 	enable_controller_1_x();
 	enable_controller_1_y();
 	disable_controller_2_x();
 	disable_controller_2_y();
 
-	for (i = 0; i < MAX_ENEMIES; i++)
-	{
-		give_object(&enemies[i].ch.obj, &enemy_free_list);
-	}
-
-	init_platforms();
-	init_player(&player_1);
-	player_1.points_x10 = 0;
-	player_1.collect_count = 1;
-	init_wave(&wave);
-
-/////////////////////
-//wave.wave_index = 3;
-////////////////////
+	init_game();
 
 	while(1)
 	{
@@ -248,6 +282,14 @@ int main(void)
 				player_1.collect_count = 1;
 				player_1_wave_flags = 0x00;
 				last_wave_type = close_wave(&wave);
+				game_state = GAME_STATE_NORMAL;
+			}
+		}
+		else if (game_state == GAME_STATE_OVER)
+		{
+			if (button_1_4_pressed())
+			{
+				restart_game();
 				game_state = GAME_STATE_NORMAL;
 			}
 		}
