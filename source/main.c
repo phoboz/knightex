@@ -29,9 +29,10 @@
 #include "hit2_snd.h"
 #include "bounce_snd.h"
 #include "draw_snd.h"
+#include "scream_snd.h"
 
 #define MAX_ENEMIES				12
-#define SURVIVAL_AWARD_PONTS_X10	100
+#define SURVIVAL_AWARD_PONTS_X10	300
 #define SCORE_FOR_EXTRA_LIFE_X10	2000
 
 #define GAME_STATE_NORMAL			0
@@ -94,7 +95,7 @@ int main(void)
 	init_wave(&wave);
 
 /////////////////////
-//wave.wave_index = 1;
+//wave.wave_index = 3;
 ////////////////////
 
 	while(1)
@@ -153,6 +154,11 @@ int main(void)
 			if ((enemy_status & ENEMY_STATUS_RISE) == ENEMY_STATUS_RISE)
 			{
 				sfx_pointer_1 = (long unsigned int) (&rise_snd_data);
+				sfx_status_1 = 1;
+			}
+			else if ((enemy_status & ENEMY_STATUS_SCREAM) == ENEMY_STATUS_SCREAM)
+			{
+				sfx_pointer_1 = (long unsigned int) (&scream_snd_data);
 				sfx_status_1 = 1;
 			}
 
@@ -227,6 +233,10 @@ int main(void)
 				{
 					Init_Music_chk(&Vec_Music_8);
 				}
+				else if (get_wave_type(&wave) == WAVE_TYPE_PTERY)
+				{
+					Init_Music_chk(&Vec_Music_2);
+				}
 				else
 				{
 					Init_Music_chk(&Vec_Music_9);
@@ -235,6 +245,7 @@ int main(void)
 			else
 			{
 				player_1_wave_flags = 0x00;
+				player_1.collect_count = 0;
 				last_wave_type = close_wave(&wave);
 				game_state = GAME_STATE_NORMAL;
 			}

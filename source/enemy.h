@@ -36,6 +36,7 @@
 #define ENEMY_STATE_REMOVED			51
 
 #define ENEMY_STATUS_RISE			0x01
+#define ENEMY_STATUS_SCREAM			0x02
 
 #define ENEMY_SPAWN_TRESHOLD		16
 #define ENEMY_SPAWN_ANIM_TRESHOLD	1
@@ -142,7 +143,8 @@ unsigned int hit_enemy_over(
 	);
 
 unsigned int collect_enemy(
-	struct enemy *enemy
+	struct enemy *enemy,
+	unsigned int count
 	);
 
 void draw_enemies(void);

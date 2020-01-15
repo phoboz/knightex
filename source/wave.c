@@ -28,11 +28,11 @@ static const struct wave_info wave_type_info[] =
 	{	11,	survival_wave_text		},
 	{	 1,	egg_wave_text			},
 	{	12,	gladiator_wave_text	},
-	{	11,	ptery_wave_text		}
+	{	 5,	ptery_wave_text		}
 };
 
 static const char survival_award_text[] =		"SURVIVAL BONUS \x80";
-static const char bonus_1000_text[] =		"1,000 \x80";
+static const char bonus_3000_text[] =		"3,000 \x80";
 
 static const struct wave_element wave_1[] =
 {
@@ -46,7 +46,6 @@ static const struct wave_element wave_1[] =
 static const struct wave_element wave_2[] =
 {
 	/*	treshold		index					type							race					param		*/
-	{	0,			PLATFORM_GROUND_LENGTH_MIN,	WAVE_ELEMENT_SET_GROUND_LENGTH,	0,					0			},
 	{	80,			2,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
 	{	255,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
 	{	255,			0,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
@@ -56,6 +55,7 @@ static const struct wave_element wave_2[] =
 static const struct wave_element wave_3[] =
 {
 	/*	treshold		index					type							race					param		*/
+	{	0,			PLATFORM_GROUND_LENGTH_MIN,	WAVE_ELEMENT_SET_GROUND_LENGTH,	0,					0			},
 	{	80,			0,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
 	{	255,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
 	{	255,			2,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
@@ -97,7 +97,7 @@ static const struct wave_element wave_6[] =
 {
 	/*	treshold		index					type							race					param		*/
 	{	0,			1,						WAVE_ELEMENT_DISABLE_PLATFORM,	0,					0			},
-	{	160,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
+	{	80,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
 	{	160,			2,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
 	{	160,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
 	{	160,			2,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0			},
@@ -111,7 +111,7 @@ static const struct wave_element wave_7[] =
 	{	0,			0,						WAVE_ELEMENT_DISABLE_PLATFORM,	0,					0			},
 	{	0,			1,						WAVE_ELEMENT_DISABLE_PLATFORM,	0,					0			},
 	{	0,			2,						WAVE_ELEMENT_DISABLE_PLATFORM,	0,					0			},
-	{	160,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
+	{	80,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
 	{	160,			2,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_BOUNCER	,	0			},
 	{	160,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
 	{	160,			2,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
@@ -126,7 +126,7 @@ static const struct wave_element wave_8[] =
 	{	0,			1,						WAVE_ELEMENT_DISABLE_PLATFORM,	0,					0			},
 	{	0,			2,						WAVE_ELEMENT_DISABLE_PLATFORM,	0,					0			},
 	{	0,			DIR_RIGHT,				WAVE_ELEMENT_ENEMY_IN_SKY,		ENEMY_RACE_PTERY,		WAVE_PTERY_Y	},
-	{	160,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
 	{	160,			2,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
 	{	160,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
 	{	160,			2,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
@@ -141,7 +141,7 @@ static const struct wave_element wave_9[] =
 	{	0,			1,						WAVE_ELEMENT_DISABLE_PLATFORM,	0,					0			},
 	{	0,			2,						WAVE_ELEMENT_DISABLE_PLATFORM,	0,					0			},
 	{	0,			4,						WAVE_ELEMENT_DISABLE_PLATFORM,	0,					0			},
-	{	160,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
+	{	80,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
 	{	160,			2,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
 	{	160,			1,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
 	{	160,			2,						WAVE_ELEMENT_ENEMY_AT_PAD,		ENEMY_RACE_HUNTER,		0,			},
@@ -692,7 +692,7 @@ void draw_award_wave(
 		case WAVE_AWARD_TYPE_SURVIVAL:
 			reset_text();
 			Print_Str_d(WAVE_TEXT_Y, -WAVE_TEXT_X-7, (char *) survival_award_text);
-			Print_Str_d(WAVE_TEXT_Y - WAVE_TEXT_SPACE, -WAVE_TEXT_X + 7, (char *) bonus_1000_text);
+			Print_Str_d(WAVE_TEXT_Y - WAVE_TEXT_SPACE, -WAVE_TEXT_X + 7, (char *) bonus_3000_text);
 			break;
 
 		default:

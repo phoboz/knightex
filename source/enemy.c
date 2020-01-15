@@ -367,6 +367,7 @@ void move_enemies(void)
 					{
 						enemy->attack_counter = 0;
 						enemy->ch.frame = PTERY_ATTACK_FRAME;
+						enemy_status |= ENEMY_STATUS_SCREAM;
 					}
 				}
 
@@ -941,22 +942,21 @@ unsigned int hit_enemy_over(
 }
 
 unsigned int collect_enemy(
-	struct enemy *enemy
+	struct enemy *enemy,
+	unsigned int count
 	)
 {
 	unsigned int result = 0;
 
 	if (enemy->invisible_counter >= ENEMY_INVISIBLE_TRESHOLD)
 	{
+		enemy->ch.frame = count - 1;
+		result = 25 * count;
+
 		if (enemy->state == ENEMY_STATE_EGG_DROP)
 		{
-			enemy->ch.frame = NUMBER_500;
-			result = 50;
-		}
-		else
-		{
-			enemy->ch.frame = NUMBER_250;
-			result = 25;
+			enemy->ch.frame += 2;
+			result += 50;
 		}
 
 		if (enemy->state == ENEMY_STATE_CALL_BIRD)

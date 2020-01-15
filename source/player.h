@@ -50,6 +50,7 @@ struct player
 	unsigned int speed_counter;
 	unsigned int gravity_counter;
 	unsigned long points_x10;
+	unsigned int collect_count;
 	unsigned int hit_roof;
 	unsigned int roof_counter;
 	unsigned int flap_countdown;
