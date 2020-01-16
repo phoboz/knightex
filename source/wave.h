@@ -69,6 +69,8 @@ void draw_award_wave(
 	unsigned int award_type
 	);
 
+void draw_finnish_wave(void);
+
 void announce_wave(
 	struct wave *wave
 	);

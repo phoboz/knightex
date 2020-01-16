@@ -34,6 +34,9 @@ static const struct wave_info wave_type_info[] =
 static const char survival_award_text[] =		"SURVIVAL BONUS \x80";
 static const char bonus_3000_text[] =		"3,000 \x80";
 
+static const char congrat_heading_text[] =	"CONGRATULATIONS \x80";
+static const char congrat_finnish_text[] =	"YOU HAVE DEFEATED ALL YOUR OPPONENTS \x80";
+
 static const struct wave_element wave_1[] =
 {
 	/*	treshold		index					type							race					param		*/
@@ -698,6 +701,13 @@ void draw_award_wave(
 		default:
 			break;
 	}
+}
+
+void draw_finnish_wave(void)
+{
+	reset_text();
+	Print_Str_d(WAVE_TEXT_Y, -WAVE_TEXT_X-14, (char *) congrat_heading_text);
+	Print_Str_d(WAVE_TEXT_Y - WAVE_TEXT_SPACE, -WAVE_TEXT_X - 60, (char *) congrat_finnish_text);
 }
 
 void announce_wave(

@@ -30,6 +30,7 @@
 #include "bounce_snd.h"
 #include "draw_snd.h"
 #include "scream_snd.h"
+#include "xlife_snd.h"
 
 #define MAX_ENEMIES				12
 #define NUMBER_OF_EXTRA_LIVES		4
@@ -39,7 +40,8 @@
 #define GAME_STATE_NORMAL			0
 #define GAME_STATE_AWARD			1
 #define GAME_STATE_NEXT_WAVE		2
-#define GAME_STATE_OVER			3
+#define GAME_STATE_FINNISH			3
+#define GAME_STATE_OVER			4
 
 #define PLAYER_1_NO_SURVIVE			0x01
 
@@ -80,7 +82,7 @@ void init_game(void)
 	new_wave_index = 0;
 
 /////////////////////
-//wave.wave_index = 3;
+//wave.wave_index = 23;
 ////////////////////
 }
 
@@ -105,13 +107,18 @@ void restart_game(void)
 	init_game();
 }
 
-void check_points(void)
+unsigned int check_points(void)
 {
+	unsigned int result = 0;
+
 	if (player_1.points_x10 >= player_1_next_extra_life)
 	{
 		player_1_extra_lives++;
 		player_1_next_extra_life += SCORE_FOR_EXTRA_LIFE_X10;
+		result = 1;
 	}
+
+	return result;
 }
 
 // ---------------------------------------------------------------------------
@@ -159,22 +166,34 @@ int main(void)
 			new_wave_index = move_wave(&wave);
 			if (new_wave_index)
 			{
-				curr_wave_index = new_wave_index;
-				new_wave_index = 0;
-				sfx_status_1 = 0;
-				sfx_status_2 = 0;
-				Vec_Music_Flag = 1;
 				if (last_wave_type == WAVE_TYPE_SURVIVAL &&
 				    (player_1_wave_flags & PLAYER_1_NO_SURVIVE) == 0x00)
 				{
 					player_1.points_x10 += SURVIVAL_AWARD_PONTS_X10;
 					check_points();
+
+					// Is is expected that a survival wave cannot be the last wave
+					curr_wave_index = new_wave_index;
 					game_state = GAME_STATE_AWARD;
 				}
 				else
 				{
-					game_state = GAME_STATE_NEXT_WAVE;
+					if (new_wave_index < 255)
+					{
+						curr_wave_index = new_wave_index;
+						game_state = GAME_STATE_NEXT_WAVE;
+					}
+					else
+					{
+						curr_wave_index = 0;
+						game_state = GAME_STATE_FINNISH;
+					}
 				}
+
+				new_wave_index = 0;
+				sfx_status_1 = 0;
+				sfx_status_2 = 0;
+				Vec_Music_Flag = 1;
 			}
 
 			player_1_status |= interaction_enemies_player(&player_1);
@@ -182,7 +201,11 @@ int main(void)
 			if (player_1_status &
 				(PLAYER_STATUS_COLLECT | PLAYER_STATUS_WIN | PLAYER_STATUS_HIT))
 			{
-				check_points();
+				if (check_points())
+				{
+					sfx_pointer_1 = (long unsigned int) (&xlife_snd_data);
+					sfx_status_1 = 1;
+				}
 			}
 
 			// Higher prio sound that cannot be interrupted
@@ -240,21 +263,6 @@ int main(void)
 				}
 			}
 		}
-		else if (game_state == GAME_STATE_AWARD)
-		{
-			if (Vec_Music_Flag)
-			{
-				DP_to_C8();
-				Init_Music_chk(&Vec_Music_4);
-			}
-			else
-			{
-				sfx_status_1 = 0;
-				sfx_status_2 = 0;
-				Vec_Music_Flag = 1;
-				game_state = GAME_STATE_NEXT_WAVE;
-			}
-		}
 		else if (game_state == GAME_STATE_NEXT_WAVE)
 		{
 			if (Vec_Music_Flag)
@@ -283,6 +291,21 @@ int main(void)
 				player_1_wave_flags = 0x00;
 				last_wave_type = close_wave(&wave);
 				game_state = GAME_STATE_NORMAL;
+			}
+		}
+		else if (game_state == GAME_STATE_AWARD || game_state == GAME_STATE_FINNISH)
+		{
+			if (Vec_Music_Flag)
+			{
+				DP_to_C8();
+				Init_Music_chk(&Vec_Music_4);
+			}
+			else
+			{
+				sfx_status_1 = 0;
+				sfx_status_2 = 0;
+				Vec_Music_Flag = 1;
+				game_state = GAME_STATE_NEXT_WAVE;
 			}
 		}
 		else if (game_state == GAME_STATE_OVER)
@@ -337,13 +360,17 @@ int main(void)
 		print_points_x10(120, -12, player_1.points_x10);
 
 		Intensity_5F();
-		if (game_state == GAME_STATE_AWARD)
+		if (game_state == GAME_STATE_NEXT_WAVE)
+		{
+			announce_wave(&wave);
+		}
+		else if (game_state == GAME_STATE_AWARD)
 		{
 			draw_award_wave(WAVE_AWARD_TYPE_SURVIVAL);
 		}
-		else if (game_state == GAME_STATE_NEXT_WAVE)
+		else if (game_state == GAME_STATE_FINNISH)
 		{
-			announce_wave(&wave);
+			draw_finnish_wave();
 		}
 		else if (game_state == GAME_STATE_OVER)
 		{
