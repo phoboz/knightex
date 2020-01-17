@@ -493,7 +493,7 @@ unsigned int move_player(
 	unsigned int result = move_character(&player->ch);
 	if (result == 2)
 	{
-		if (player->state != PLAYER_STATE_HIT)
+		if (player->state != PLAYER_STATE_HIT && player->state != PLAYER_STATE_DROWNED)
 		{
 			player->state_counter = 0;
 			player->state = PLAYER_STATE_DROWNED;

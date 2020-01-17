@@ -83,7 +83,7 @@ void init_game(void)
 	new_wave_index = 0;
 
 /////////////////////
-wave.wave_index = 2;
+//wave.wave_index = 2;
 ////////////////////
 }
 
@@ -362,7 +362,6 @@ int main(void)
 		reset_text();
 		print_points_x10(120, -12, player_1.points_x10);
 
-		Intensity_5F();
 		if (game_state == GAME_STATE_NEXT_WAVE)
 		{
 			announce_wave(&wave);
