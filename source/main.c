@@ -21,6 +21,7 @@
 #include "enemy.h"
 #include "wave.h"
 #include "text.h"
+#include "random.h"
 #include "flap_snd.h"
 #include "walk_snd.h"
 #include "brake_snd.h"
@@ -82,7 +83,7 @@ void init_game(void)
 	new_wave_index = 0;
 
 /////////////////////
-//wave.wave_index = 23;
+//wave.wave_index = 5;
 ////////////////////
 }
 
@@ -137,6 +138,8 @@ int main(void)
 	enable_controller_1_y();
 	disable_controller_2_x();
 	disable_controller_2_y();
+
+	init_random(5, 27, 3, 19);
 
 	init_game();
 

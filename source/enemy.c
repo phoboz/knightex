@@ -14,6 +14,7 @@
 #include "egg.h"
 #include "number.h"
 #include "player.h"
+#include "random.h"
 #include "enemy.h"
 
 // ---------------------------------------------------------------------------
@@ -168,8 +169,22 @@ unsigned int init_enemy_at_pad(
 {
 	unsigned int result;
 	const struct platform_pad *pad;
+	unsigned int index;
 
-	pad = get_platform_pad(pad_index);
+	if (pad_index == ENEMY_RANDOM_INDEX_12)
+	{
+		index = random_2() + 1;
+	}
+	else if (pad_index == ENEMY_RANDOM_INDEX_012)
+	{
+		index = random_3();
+	}
+	else
+	{
+		index = pad_index;
+	}
+
+	pad = get_platform_pad(index);
 	if (pad)
 	{
 		init_enemy(enemy, pad->y, pad->x, pad->dir, ENEMY_STATE_RISE, race);

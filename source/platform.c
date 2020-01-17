@@ -202,18 +202,46 @@ static const struct platform_pad platform_pads[MAX_PLATFORM_PADS] =
 static const struct egg_location egg_locations[MAX_EGG_LOCATIONS] =
 {
 	/*	y,	x		dir				index */
+	{	69,	-112,	DIR_RIGHT		},	// 0
 	{	69,	-102,	DIR_RIGHT		},	// 1
 	{	57,	-20,		DIR_RIGHT		},	// 2
-	{	69,	100,		DIR_LEFT		},	// 3
-	{	5,	-78,		DIR_RIGHT		},	// 4
-	{	-29,	-19,		DIR_RIGHT		},	// 5
-	{	-29,	18,		DIR_LEFT		},	// 6
-	{	9,	60,		DIR_LEFT		},	// 7
-	{	5,	112,		DIR_LEFT		},	// 8
-	{	-75,	-80,		DIR_RIGHT		},	// 9
-	{	-75,	-52,		DIR_RIGHT		},	// 10
-	{	-75,	52,		DIR_LEFT		},	// 11
-	{	-75,	80,		DIR_LEFT		}	// 12
+	{	57,	-10,		DIR_RIGHT		},	// 3
+	{	57,	0,		DIR_LEFT		},	// 4
+	{	57,	10,		DIR_LEFT		},	// 5
+	{	57,	20,		DIR_LEFT		},	// 6
+	{	69,	100,		DIR_LEFT		},	// 7
+	{	69,	110,		DIR_LEFT		},	// 8
+	{	5,	-108,	DIR_RIGHT		},	// 9
+	{	5,	-98,		DIR_RIGHT		},	// 10
+	{	5,	-88,		DIR_RIGHT		},	// 11
+	{	5,	-78,		DIR_RIGHT		},	// 12
+	{	-29,	-19,		DIR_RIGHT		},	// 13
+	{	-29,	-10,		DIR_RIGHT		},	// 14
+	{	-29,	0,		DIR_LEFT		},	// 15
+	{	-29,	10,		DIR_LEFT		},	// 16
+	{	-29,	18,		DIR_LEFT		},	// 17
+	{	9,	60,		DIR_LEFT		},	// 18
+	{	9,	70,		DIR_LEFT		},	// 19
+	{	9,	80,		DIR_LEFT		},	// 20
+	{	9,	90,		DIR_LEFT		},	// 21
+	{	5,	112,		DIR_LEFT		},	// 22
+	{	-75,	-80,		DIR_RIGHT		},	// 23
+	{	-75,	-70,		DIR_RIGHT		},	// 24
+	{	-75,	-60,		DIR_RIGHT		},	// 25
+	{	-75,	-50,		DIR_RIGHT		},	// 26 
+	{	-75,	-40,		DIR_RIGHT		},	// 27
+	{	-75,	-30,		DIR_RIGHT		},	// 28
+	{	-75,	-20,		DIR_RIGHT		},	// 39
+	{	-75,	-10,		DIR_RIGHT		},	// 30
+	{	-75,	0,		DIR_LEFT		},	// 31
+	{	-75,	10,		DIR_LEFT		},	// 32
+	{	-75,	20,		DIR_LEFT		},	// 33
+	{	-75,	30,		DIR_LEFT		},	// 34
+	{	-75,	40,		DIR_LEFT		},	// 35
+	{	-75,	50,		DIR_LEFT		},	// 36
+	{	-75,	60,		DIR_LEFT		},	// 37
+	{	-75,	70,		DIR_LEFT		},	// 38
+	{	-75,	80,		DIR_LEFT		}	// 39
 };
 
 static signed int platform_indices[MAX_PLATFORMS] =
