@@ -945,7 +945,7 @@ unsigned int hit_enemy_over(
 	}
 	else
 	{
-		enemy->ch_0.obj.y = enemy->ch.obj.y;
+		enemy->ch_0.obj.y = enemy->ch.obj.y + 6;
 		enemy->ch.dy = -1;
 		enemy->state_counter = 0;
 		enemy->state = ENEMY_STATE_EGG_DROP;
