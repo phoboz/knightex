@@ -38,6 +38,9 @@
 #define SURVIVAL_AWARD_PONTS_X10	300
 #define SCORE_FOR_EXTRA_LIFE_X10	2000
 
+#define SCORE_Y					120
+#define SCORE_X					-14
+
 #define GAME_STATE_NORMAL			0
 #define GAME_STATE_AWARD			1
 #define GAME_STATE_NEXT_WAVE		2
@@ -360,7 +363,7 @@ int main(void)
 
 		Intensity_5F();
 		reset_text();
-		print_points_x10(120, -12, player_1.points_x10);
+		print_points_x10(SCORE_Y, SCORE_X, player_1.points_x10);
 
 		if (game_state == GAME_STATE_NEXT_WAVE)
 		{
