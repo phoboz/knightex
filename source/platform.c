@@ -228,20 +228,11 @@ static const struct egg_location egg_locations[MAX_EGG_LOCATIONS] =
 	{	-75,	-80,		DIR_RIGHT		},	// 23
 	{	-75,	-70,		DIR_RIGHT		},	// 24
 	{	-75,	-60,		DIR_RIGHT		},	// 25
-	{	-75,	-50,		DIR_RIGHT		},	// 26 
-	{	-75,	-40,		DIR_RIGHT		},	// 27
-	{	-75,	-30,		DIR_RIGHT		},	// 28
-	{	-75,	-20,		DIR_RIGHT		},	// 39
-	{	-75,	-10,		DIR_RIGHT		},	// 30
-	{	-75,	0,		DIR_LEFT		},	// 31
-	{	-75,	10,		DIR_LEFT		},	// 32
-	{	-75,	20,		DIR_LEFT		},	// 33
-	{	-75,	30,		DIR_LEFT		},	// 34
-	{	-75,	40,		DIR_LEFT		},	// 35
-	{	-75,	50,		DIR_LEFT		},	// 36
-	{	-75,	60,		DIR_LEFT		},	// 37
-	{	-75,	70,		DIR_LEFT		},	// 38
-	{	-75,	80,		DIR_LEFT		}	// 39
+	{	-75,	-50,		DIR_RIGHT		},	// 26
+	{	-75,	50,		DIR_LEFT		},	// 27
+	{	-75,	60,		DIR_LEFT		},	// 28
+	{	-75,	70,		DIR_LEFT		},	// 39
+	{	-75,	80,		DIR_LEFT		}	// 30
 };
 
 static signed int platform_indices[MAX_PLATFORMS] =

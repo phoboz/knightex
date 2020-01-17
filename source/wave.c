@@ -91,8 +91,8 @@ static const struct wave_element wave_5[] =
 	//{	0,			22,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_BOUNCER	,	0			},
 	{	0,			23,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_BOUNCER	,	0			},
 	//{	0,			26,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_BOUNCER	,	0			},
-	//{	0,			36,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_BOUNCER	,	0			},
-	{	0,			39,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_BOUNCER	,	0			}
+	//{	0,			27,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_BOUNCER	,	0			},
+	{	0,			30,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_BOUNCER	,	0			}
 };
 
 static const struct wave_element wave_6[] =
@@ -165,8 +165,8 @@ static const struct wave_element wave_10[] =
 	{	0,			22,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_BOUNCER	,	0			},
 	{	0,			23,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_BOUNCER	,	0			},
 	{	0,			26,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_BOUNCER	,	0			},
-	{	0,			36,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_BOUNCER	,	0			},
-	{	0,			39,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_BOUNCER	,	0			}
+	{	0,			27,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_BOUNCER	,	0			},
+	{	0,			30,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_BOUNCER	,	0			}
 };
 
 static const struct wave_element wave_11[] =
@@ -244,8 +244,8 @@ static const struct wave_element wave_15[] =
 	{	0,			22,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
 	{	0,			23,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
 	{	0,			26,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
-	{	0,			36,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
-	{	0,			39,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			}
+	{	0,			27,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
+	{	0,			30,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			}
 };
 
 static const struct wave_element wave_16[] =
@@ -309,8 +309,8 @@ static const struct wave_element wave_20[] =
 	{	0,			22,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
 	{	0,			23,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
 	{	0,			26,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
-	{	0,			36,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
-	{	0,			39,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			}
+	{	0,			27,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
+	{	0,			30,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			}
 };
 
 static const struct wave_element wave_21[] =
@@ -381,8 +381,8 @@ static const struct wave_element wave_25[] =
 	{	0,			22,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
 	{	0,			23,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
 	{	0,			26,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
-	{	0,			36,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
-	{	0,			39,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			}
+	{	0,			27,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
+	{	0,			30,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			}
 };
 
 static const struct wave_element wave_26[] =
@@ -467,8 +467,8 @@ static const struct wave_element wave_30[] =
 	{	0,			22,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
 	{	0,			23,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
 	{	0,			26,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
-	{	0,			36,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
-	{	0,			39,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			}
+	{	0,			27,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			},
+	{	0,			30,						WAVE_ELEMENT_EGG_AT_LOCATION,	ENEMY_RACE_HUNTER,		0			}
 };
 
 static const struct wave_def waves[] =

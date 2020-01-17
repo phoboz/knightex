@@ -83,7 +83,7 @@ void init_game(void)
 	new_wave_index = 0;
 
 /////////////////////
-//wave.wave_index = 5;
+//wave.wave_index = 3;
 ////////////////////
 }
 
