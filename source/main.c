@@ -39,7 +39,7 @@
 #define SCORE_FOR_EXTRA_LIFE_X10	2000
 
 #define SCORE_Y					120
-#define SCORE_X					-14
+#define SCORE_X					-16
 
 #define GAME_STATE_NORMAL			0
 #define GAME_STATE_AWARD			1
@@ -86,7 +86,7 @@ void init_game(void)
 	new_wave_index = 0;
 
 /////////////////////
-//wave.wave_index = 2;
+//wave.wave_index = 24;
 ////////////////////
 }
 
